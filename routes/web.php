@@ -29,7 +29,16 @@ Route::group(['prefix' => 'cliente'], function() {
 
   Route::resource('empresas', 'EmpresaController');
 
-  Route::resource('pedidos', 'RequerimientoController');
+  Route::group(['prefix' => 'pedidos'], function() {
+    Route::get('validar-pedidos', 'RequerimientoController@validarPedidos')->name('pedidos.validar');
+  //TODO: Cambiar a POST
+    Route::get('aceptar/{requerimiento}', 'RequerimientoController@aceptar')->name('pedidos.aceptar');
+  //TODO: Cambiar a POST
+    Route::get('rechazar/{requerimiento}', 'RequerimientoController@rechazarPedidos')->name('pedidos.rechazar');
+    Route::get('{abastecimiento}', 'RequerimientoController@showCentro')->name('pedidos.centro');
+  });
+
+  Route::resource('requerimientos', 'RequerimientoController');
 
 });
 
@@ -40,5 +49,10 @@ Route::group(['prefix' => 'compass'], function() {
   })->name('compass.home');
 
   Route::resource('productos', 'ProductoController');
+
+  Route::group(['prefix' => 'ordenes'], function() {
+    Route::get('/', 'RequerimientoController@index')->name('compass.pedidos.index');
+    Route::get('verificar', 'RequerimientoController@verificar')->name('compass.pedidos.verificar');
+  });
 
 });

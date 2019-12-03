@@ -9,27 +9,36 @@
 @endsection
 
 @section('main')
-  <table class="table" id="datatable">
-    <thead>
-      <tr>
-        <th scope="col">Familia</th>
-        <th scope="col">Detalle</th>
-        <th scope="col">Marca</th>
-        <th scope="col">Formato</th>
-        <th scope="col">Cantidad</th>
-      </tr>
-    </thead>
-    <tbody>
-      @foreach ($productos as $producto)
-        <tr>
-          <td>{{$producto->familia}}</td>
-          <td>{{$producto->detalle}}</td>
-          <td>{{$producto->marca}}</td>
-          <td>{{$producto->formato}}</td>
-          <td><input type="text" name="cantidad" class="form-control-sm bg-secondary text-white"></td>
-        </tr>
-      @endforeach
-    </tbody>
-  </table>
+  <div class="card">
+    <header class="card-header">
+      <h4 class="card-title h1">Nueva Orden de Pedido</h4>
+    </header>
+    <form class="card-body" action="{{ route('requerimientos.store') }}" method="POST">
+      @csrf
+      <button class="btn btn-success">Guardar</button>
+      <table class="table" id="datatable">
+        <thead>
+          <tr>
+            <th scope="col">SKU</th>
+            <th scope="col">Detalle</th>
+            <th scope="col">Cantidad</th>
+          </tr>
+        </thead>
+        <tbody>
+          @foreach ($productos as $producto)
+            <tr>
+              <td>{{$producto->sku}}</td>
+              <td>{{$producto->detalle}}</td>
+              <td>
+                <input type="hidden" value="{{$producto->id}}" name="id[]"/>
+                <input type="text" name="cantidad[]" class="form-control">
+              </td>
+            </tr>
+          @endforeach
+        </tbody>
+      </table>
+    </form>
+  </div>
+  </div>
 
 @endsection

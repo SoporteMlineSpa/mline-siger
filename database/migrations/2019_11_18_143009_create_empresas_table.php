@@ -15,8 +15,11 @@ class CreateEmpresasTable extends Migration
   {
     Schema::create('empresas', function (Blueprint $table) {
       $table->bigIncrements('id');
-      $table->string('nombre');
+      $table->string('razon_social');
+      $table->string('rut');
+      $table->string('direccion');
       $table->unsignedBigInteger('holding_id')->nullable();
+      $table->unsignedBigInteger('abastecimiento_id')->nullable();
       $table->timestamps();
     });
   }

@@ -37,31 +37,14 @@ class User extends Authenticatable
     'email_verified_at' => 'datetime',
   ];
 
+  
   /**
-   * Holding asociados a ese usuario
+   * Get the owning User Model
    *
    */
-  public function holding()
+  public function userable()
   {
-    return $this->belongsTo('App\Holding');
-  }
-
-  /**
-   * Empresa asociados a ese usuario
-   *
-   */
-  public function empresa()
-  {
-    return $this->belongsTo('App\Empresa');
-  }
-
-  /**
-   * Abastecimiento asociados a ese usuario
-   *
-   */
-  public function abastecimiento()
-  {
-    return $this->belongsTo('App\Abastecimiento');
+    return $this->morphTo();
   }
   
 }

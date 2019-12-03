@@ -16,8 +16,8 @@ class CreateRequerimientosTable extends Migration
     Schema::create('requerimientos', function (Blueprint $table) {
       $table->bigIncrements('id');
       $table->string('nombre');
-      $table->unsignedInteger('estado')->default(0);
-      $table->unsignedBigInteger('abastecimiento_id');
+      $table->string('estado')->default('ESPERANDO VALIDACION');
+      $table->unsignedBigInteger('centro_id');
       $table->timestamps();
     });
   }

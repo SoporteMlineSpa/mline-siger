@@ -12,7 +12,7 @@ class Empresa extends Model
    */
   public function users()
   {
-    return $this->hasMany('App\User');
+    return $this->morphMany('App\User', 'userable');
   }
 
   /**
@@ -25,12 +25,12 @@ class Empresa extends Model
   }
 
   /**
-   * Los Puntos de Abastecimientos asociados a esa Empresa
+   * Los Centros asociados a esa Empresa
    *
    */
-  public function abastecimientos()
+  public function centros()
   {
-    return $this->hasMany('App\Abastecimiento');
+    return $this->hasMany('App\Centro');
   }
   
   

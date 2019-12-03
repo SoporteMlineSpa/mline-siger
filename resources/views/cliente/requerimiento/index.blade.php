@@ -12,71 +12,41 @@
   <div class="container">
 
     <div class="card">
-      <div class="card-header"><a class="btn btn-success" href="{{ route('pedidos.create') }}">Crear Orden de Pedido</a></div>
-      <div class="card-body">
-        @if (isset($empresa))
+      @if (isset($abastecimientos))
+        <div class="card-header"><a class="btn btn-success" href="{{ route('pedidos.validarPedidos') }}">Validar Requerimientos</a></div>
+        <div class="card-body">
           <!-- Usuario Empresa -->
           <div class="row">
-            <div class="col-2">
-              <v-select
-                :options="[
-                @foreach ($requerimientos as $abastecimiento)
-                  { 'label': '{{$abastecimiento->nombre}}', 'value': {{$abastecimiento->id}} },
-                @endforeach
-                ]"
-                ></v-select>
-            </div>
             <div class="col">
-              <table id="datatable" class="table">
-                <thead>
-                  <tr>
-                    <th scope="col">#</th>
-                    <th scope="col">Detalle</th>
-                    <th scope="col">Estado</th>
-                    <th scope="col">Acciones</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  @foreach ($abastecimiento as $requerimiento)
-                    <tr id="{{$requerimiento->id}}">
-                      <th scope="row">{{$loop->index}}</th>
-                      <td>{{$requerimiento->nombre}}</td>
-                      <td>{{$requerimiento->estado}}</td>
-                      <td><button class="btn btn-primary">Ver Orden de Pedido</button></td>
+              @if (!isset($requerimientos))
+                <table id="datatable" class="table">
+                  <thead>
+                    <tr>
+                      <th scope="col">#</th>
+                      <th scope="col">Nombre</th>
+                      <th scope="col">Acciones</th>
                     </tr>
-                  @endforeach
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody>
+                    @foreach ($abastecimientos as $abastecimiento)
+                      <tr>
+                        <th scope="row">{{$loop->index}}</th>
+                        <td>{{$abastecimiento->nombre}}</td>
+                        <td><a href="{{ route('pedidos.abastecimiento', $abastecimiento)}}">Ver Ordenes de Pedido</a></td>
+                      </tr>
+                    @endforeach
+                  </tbody>
+                </table>
+              @else
+              @endif
             </div>
           </div>
-        @elseif (!isset($empresa) && isset($abastecimientos))
+        @elseif (!isset($empresa) && isset($abastecimiento))
 
-          <!-- Usuario Punto de Abastecimiento -->
-          <h5 class="card-title h4 text-center border-bottom">{{$abastecimientos->nombre}}</h5>
-          <table id="datatable" class="table">
-            <thead>
-              <tr>
-                <th scope="col">#</th>
-                <th scope="col">Detalle</th>
-                <th scope="col">Estado</th>
-                <th scope="col">Acciones</th>
-              </tr>
-            </thead>
-            <tbody>
-              @foreach ($requerimientos as $requerimiento)
-                <tr>
-                  <th scope="row">{{$loop->index}}</th>
-                  <td>{{$requerimiento->nombre}}</td>
-                  <td>{{$requerimiento->estado}}</td>
-                  <td><button class="btn btn-primary">Ver Orden de Pedido</button></td>
-                </tr>
-              @endforeach
-            </tbody>
-          </table>
         @else
-          <div class="alert alert-danger">{{$msg}}</div>
+          <div class="alert alert-danger">{{$msg ?? ''}}</div>
         @endif
-      </div>
+        </div>
     </div>
 
   </div>

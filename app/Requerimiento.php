@@ -7,21 +7,21 @@ use Illuminate\Database\Eloquent\Model;
 class Requerimiento extends Model
 {
   /**
-   * Devulve los productos relacionados a ese Requerimietno
+   * Retorna los productos relacionados a ese Requerimietno
    *
    * @return App\Producto
    */
   public function productos()
   {
-    return $this->belongsToMany('App\Producto');
+    return $this->belongsToMany('App\Producto')->withPivot('cantidad');
   }
 
   /**
-   * Devuelve el Punto de Abastecimiento al que pertenece ese requerimiento
+   * Retorna el Centro al que pertenece ese requerimiento
    *
    * @return App\Abastecimiento
    */
-  public function abastecimiento()
+  public function centro()
   {
     return $this->belongsTo('App\Abastecimiento');
   }

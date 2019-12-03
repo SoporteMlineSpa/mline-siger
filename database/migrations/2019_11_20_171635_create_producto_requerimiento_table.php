@@ -17,6 +17,7 @@ class CreateProductoRequerimientoTable extends Migration
       $table->bigIncrements('id');
       $table->bigInteger('producto_id');
       $table->bigInteger('requerimiento_id');
+      $table->bigInteger('cantidad')->nullable();
       $table->timestamps();
     });
   }

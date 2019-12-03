@@ -13,7 +13,7 @@ class Producto extends Model
    */
   public function requerimientos()
   {
-    return $this->belongsToMany('App\Requerimiento');
+    return $this->belongsToMany('App\Requerimiento')->withPivot('cantidad');
   }
   
 }

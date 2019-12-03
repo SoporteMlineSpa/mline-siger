@@ -26,6 +26,7 @@ Vue.component('example-component', require('./components/ExampleComponent.vue').
 Vue.component('form-component', require('./components/FormComponent.vue').default)
 Vue.component('delete-btn-component', require('./components/DeleteBtnComponent.vue').default)
 Vue.component('modal-btn-component', require('./components/ModalBtnComponent.vue').default)
+Vue.component('dropdown-component', require('./components/DropdownComponent.vue').default)
 
 /**
  * Next, we will create a fresh Vue application instance and attach it to
@@ -38,5 +39,10 @@ const app = new Vue({
 })
 
 $(document).ready(function () {
-  $('#datatable').DataTable()
+    $('#datatable').DataTable({
+        dom: 'Bfrtip',
+        buttons: [
+            'copy', 'csv', 'excel', 'pdf'
+        ]
+    })
 })

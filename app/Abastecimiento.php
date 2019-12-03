@@ -7,31 +7,13 @@ use Illuminate\Database\Eloquent\Model;
 class Abastecimiento extends Model
 {
   /**
-   * Los usuarios asociados a ese Punto de Abastecimiento
+   * Devuelve las empresas asociadas a ese Punto de Abastecimiento
    *
+   * @return 
    */
-  public function users()
+  public function empresas()
   {
-    return $this->hasMany('App\User');
-  }
-
-  /**
-   * La Empresa asociada a ese Punto de Abastecimiento
-   *
-   */
-  public function empresa()
-  {
-    return $this->belongsTo('App\Empresa');
-  }
-
-  /**
-   * Los Requerimientos asociados a ese Punto de Abastecimiento
-   *
-   * @return App\Requerimiento
-   */
-  public function requerimientos()
-  {
-    return $this->hasMany('App\Requerimiento');
+    return $this->hasMany('App\Empresa');
   }
   
   

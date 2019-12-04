@@ -228,9 +228,10 @@ class RequerimientoController extends Controller
   public function verificar()
   {
     $requerimientos = \App\Requerimiento::where('estado', 'VALIDADO')->get();
-    $productos = [];
-    foreach ($requerimientos as $requerimiento) {
-      array_push($productos, $requerimiento->productos);
-    }
+    $productos = \App\Producto::whereHas('requerimientos', function ($q) {
+      $q->where('estado', 'VALIDADO');
+    })->get();
+
+    return view('compass.verificar_index')->with(compact('productos'));
   }
 }

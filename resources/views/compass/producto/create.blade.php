@@ -9,17 +9,23 @@
 @endsection
 
 @section('main')
-  <form-component
-    :form="{
-      action: '{{ route('productos.store') }}',
-      method: 'POST',
-      items: [
-        {name: 'familia', label: 'Familia', type: 'text'},
-        {name: 'detalle', label: 'Detalle', type: 'text'},
-        {name: 'marca', label: 'Marca', type: 'text'},
-        {name: 'formato', label: 'Formato', type: 'text'},
-        {name: 'precio', label: 'Precio', type: 'text'},
-      ]
-    }"
-    ></form-component>
+  <div class="container">
+    <div class="card">
+      <h5 class="card-header font-bold text-xl">Nuevo Producto</h5>
+      <div class="card-body">
+        <form-component
+          :form="{
+          action: '{{ route('productos.store') }}',
+          method: 'POST',
+          items: [
+          {name: 'sku', label: 'Familia', type: 'text'},
+          {name: 'detalle', label: 'Detalle', type: 'text'},
+          {name: 'stock', label: 'Stock', type: 'number'},
+          {name: 'precio', label: 'Precio', type: 'text'},
+          ]
+          }"
+          ></form-component>
+      </div>
+    </div>
+  </div>
 @endsection

@@ -103,6 +103,12 @@
 
         </div>
 
+        <!-- Footer -->
+        <footer class="row border-top bg-light mt-5 p-5 align-items-center justify-content-center">
+            <span><b>Mline</b><i class="fas fa-copyright"></i> SIGER . Todos los derechos reservados. {{date("Y")}}</span>
+        </footer>
+        <!-- /Footer -->
+
         <!-- Scripts -->
         <script src="{{ asset('js/app.js') }}"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js" charset="utf-8"></script>

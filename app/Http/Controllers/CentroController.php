@@ -52,18 +52,43 @@ class CentroController extends Controller
      */
     public function store(Request $request)
     {
-        //
-    }
+        $centro = new Centro;
+        $centro->nombre = $request->input('nombre');
+        $centro->empresa()->associate(\App\Empresa::find($request->input('empresa')));
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Centro  $centro
-     * @return \Illuminate\Http\Response
-     */
-    public function show(Centro $centro)
-    {
-        //
+        if ($centro->saveOrFail()) {
+            $msg = [
+                'data' => [
+                    'centro' => [
+                        'type' => 'centro',
+                        'id' => $centro->id,
+                        'attributes' => $centro,
+                    ],
+                    'usuario' => [
+                        'type' => 'Usuario',
+                        'id' => Auth::id(),
+                        'attributes' => Auth::user()
+                    ]
+                ],
+                'meta' => [
+                    'title' => '¡Centro guardado exitosamente!',
+                    'message' => 'Un nuevo Centro fue creado con los siguientes datos:<br /><b>Nombre:</b>'.$centro->nombre.'<br/><b>Empresa:</b>'.$centro->empresa()->get('razon_social')->first()->razon_social
+                ]
+            ];
+
+            return redirect()->route('centro.index')->with(compact('msg'));
+        } else {
+            $msg = [
+                'errors' => [
+                    'status' => '500',
+                    'title' => 'Error guardando Centro',
+                    'detail' => 'Ocurrio un error guardando el centro:'.$e,
+                    'source' => $e
+                ]
+            ];
+
+            return redirect()->route('centro.index')->with(compact('msg'));
+        }
     }
 
     /**
@@ -74,7 +99,15 @@ class CentroController extends Controller
      */
     public function edit(Centro $centro)
     {
-        //
+        if (Auth::user()->userable instanceof \App\Empresa) {
+            $empresas = Auth::user()->userable;
+        } elseif (Auth::user()->userable instanceof \App\CompassRole) {
+            $empresas = \App\Empresa::all();
+        } else {
+            $empresas = [];
+        }
+
+        return view('centro.edit')->with(compact('centro', 'empresas'));
     }
 
     /**
@@ -86,7 +119,44 @@ class CentroController extends Controller
      */
     public function update(Request $request, Centro $centro)
     {
-        //
+        $centro->nombre = $request->input('nombre');
+        if ($request->has('empresa')) {
+            $centro->empresa()->dissociate();
+            $centro->empresa()->associate(\App\Empresa::find($request->input('empresa')));
+        }
+
+        if ($centro->saveOrFail()) {
+            $msg = [
+                'data' => [
+                    'centro' => [
+                        'type' => 'Centro',
+                        'id' => $centro->id,
+                        'attributes' => $centro,
+                    ],
+                    'usuario' => [
+                        'type' => 'Usuario',
+                        'id' => Auth::id(),
+                        'attributes' => Auth::user()
+                    ]
+                ],
+                'meta' => [
+                    'title' => '¡Centro guardado exitosamente!',
+                    'message' => 'El Centro fue actualizado con los siguientes datos:<br /><b>Nombre:</b>'.$centro->nombre.'<br/><b>Empresa:</b>'.$centro->empresa()->get('razon_social')->first()->razon_social
+                ]
+            ];
+            return redirect()->route('centros.index')->with(compact('msg'));
+        } else {
+            $msg = [
+                'errors' => [
+                    'status' => '500',
+                    'title' => 'Error guardando Centro',
+                    'detail' => 'Ocurrio un error guardando el Centro:'.$e,
+                    'source' => $e
+                ]
+            ];
+
+            return redirect()->route('centro.index')->with(compact('msg'));
+        }
     }
 
     /**
@@ -97,6 +167,31 @@ class CentroController extends Controller
      */
     public function destroy(Centro $centro)
     {
-        //
+        try {
+            $centro->delete();
+
+            return response()->json([
+                'data' => [
+                    'centro' => [
+                        'type' => 'centro',
+                        'id' => $centro->id,
+                        'attributes' => $centro,
+                    ],
+                ],
+                'meta' => [
+                    'title' => '¡Centro eliminado exitosamente!',
+                    'message' => 'El Centro <b>'.$centro->nombre.'</b> ha sido borrado.<br />La pagina se recargara'
+                ]
+            ], 200);
+        } catch (Exception $e) {
+            return response()->json([
+                'errors' => [
+                    'status' => '500',
+                    'title' => 'Error eliminando Centro',
+                    'detail' => 'Ocurrio un error eliminando el Centro',
+                    'source' => $e
+                ]
+            ], 500);
+        }
     }
 }

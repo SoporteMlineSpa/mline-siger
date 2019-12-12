@@ -21,14 +21,14 @@
         <div class="card">
             <h3 class="card-header font-bold text-xl">Nuevo Centro</h3>
             <div class="card-body">
-                <form action="{{route('centros.store')}}" method="POST" accept-charset="utf-8">
+                <form action="{{route('centros.update', $centro)}}" method="POST" accept-charset="utf-8">
                     @csrf
+                    @method('PUT')
 
                     <div class="form-group row">
                         <label class="col-sm-2" for="razon_social">Nombre:</label>
                         <span class="col-sm-6">
-                            <input class="form-control" required type="text" name="nombre">
-                            <p class="text-muted">Obligatorio</p>
+                            <input class="form-control" value="{{$centro->nombre}}" required type="text" name="nombre">
                         </span>
                     </div>
 
@@ -38,7 +38,7 @@
                         <span class="col-sm-6">
                             <select name="empresa" class="form-control">
                                 @foreach ($empresas as $empresa)
-                                    <option value="{{$empresa->id}}">{{$empresa->razon_social}}</option>
+                                    <option value="{{$empresa->id}}" @if($empresa->id == $centro->empresa_id) {{_("selected")}} @endif>{{$empresa->razon_social}}</option>
                                 @endforeach
                             </select>
                         </span>

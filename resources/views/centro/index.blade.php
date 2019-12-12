@@ -35,10 +35,10 @@
                     <tr>
                       <th scope="row">{{ $loop->index }}</th>
                       <td>{{ $centro->nombre }}</td>
-                      <td>{{ $centro->empresa()->get('nombre') }}</td>
+                      <td>{{ $centro->empresa()->get('razon_social')->first()->razon_social }}</td>
                       <td>
-                        <a class="btn btn-primary" href="{{route('centro.edit', $centro)}}"><i class="fas fa-edit"></i></a>
-                        <delete-btn-component action="{{ route('centro.destroy', $centro) }}"></delete-btn-component>
+                        <a class="btn btn-primary" href="{{route('centros.edit', $centro)}}"><i class="fas fa-edit"></i></a>
+                        <delete-btn-component action="{{ route('centros.destroy', $centro) }}"></delete-btn-component>
                       </td>
                     </tr>
                   @endforeach
@@ -48,3 +48,19 @@
       </div>
   </div>
 @endsection
+
+@if (\Session::has('msg'))
+    @php
+        $msg = \Session::get('msg');
+    @endphp
+    @section('js')
+        <script charset="utf-8">
+            (Swal.fire({
+                title: '{{$msg['meta']['title']}}',
+                html: '{!! $msg['meta']['message'] !!}',
+                icon: 'success'
+            }))();
+
+        </script>
+    @endsection
+@endif

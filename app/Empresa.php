@@ -43,5 +43,16 @@ class Empresa extends Model
   {
       return $this->belongsToMany('App\Producto');
   }
+
+  /**
+   * El Punto de Abastecimiento asociado a esa Empresa
+   *
+   * @return App\Abastecimiento
+   */
+  public function abastecimiento()
+  {
+      return $this->belongsTo('App\Abastecimiento');
+  }
+  
   
 }

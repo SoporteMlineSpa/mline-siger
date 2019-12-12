@@ -38,12 +38,13 @@ class EmpresaController extends Controller
         if (Auth::user()->userable instanceof \App\Holding) {
             $holdings = Auth::user()->userable;
         } elseif (Auth::user()->userable instanceof \App\CompassRole) {
-            $holdings = \App\Empresa::all();
+            $holdings = \App\Holding::all();
         } else {
             $holdings = [];
         }
+        $abastecimientos = \App\Abastecimiento::all();
 
-        return view('empresa.create')->with(compact('holdings'));
+        return view('empresa.create')->with(compact('holdings', 'abastecimientos'));
     }
 
     /**
@@ -54,15 +55,17 @@ class EmpresaController extends Controller
      */
     public function store(Request $request)
     {
-        try {
-            $holding = Holding::find($request->input('holding'));
-            $empresa = new Empresa();
-            $empresa->nombre = $request->input('nombre');
-            $empresa->holding()->associate($holding);
-            $empresa->saveOrFail();
-            $empresa->users()->attach(Auth::user());
+        $empresa = new Empresa;
+        $empresa->razon_social = $request->input('razon_social');
+        $empresa->rut = $request->input('rut');
+        $empresa->direccion = $request->input('direccion');
 
-            return response()->json([
+        ($empresa->abastecimiento()->associate(\App\Abastecimiento::find($request->input('abastecimiento'))));
+        if ($request->has('holding')) {
+            $empresa->holding()->associate(\App\Holding::find($request->input('holding')));
+        }
+        if ($empresa->saveOrFail()) {
+            $msg = [
                 'data' => [
                     'empresa' => [
                         'type' => 'Empresa',
@@ -77,30 +80,21 @@ class EmpresaController extends Controller
                 ],
                 'meta' => [
                     'title' => '¡Empresa guardada exitosamente!',
-                    'message' => 'Una nueva empresa fue creada con los siguientes datos:<br /> <b>Nombre:</b>'.$empresa->nombre.'<br /><b>Holding:</b>'.$holding->nombre
+                    'message' => 'Una nueva Empresa fue creada con los siguientes datos:<br /><b>Razon Social:</b>'.$empresa->razon_social.'<br/><b>RUT:</b>'.$empresa->rut.'<br/><b>Direccion:</b>'.$empresa->direccion.'<br/><b>Punto de Abastecimiento:</b>'.$empresa->abastecimiento()->get('nombre')->first()->nombre
                 ]
-            ], 201);
-        } catch (Exception $e) {
-            return response()->json([
+            ];
+            return redirect()->route('empresas.index')->with(compact('msg'));
+        } else {
+            $msg = [
                 'errors' => [
                     'status' => '500',
-                    'title' => 'Error guardando empresa',
-                    'detail' => 'Ocurrio un error guardando la empresa:'.$e,
+                    'title' => 'Error guardando Empresa',
+                    'detail' => 'Ocurrio un error guardando la Empresa:'.$e,
                     'source' => $e
                 ]
-            ], 500);
+            ];
+            return redirect()->route('empresas.index')->with(compact('msg'));
         }
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Empresa  $empresa
-     * @return \Illuminate\Http\Response
-     */
-    public function show(Empresa $empresa)
-    {
-        //
     }
 
     /**
@@ -119,7 +113,9 @@ class EmpresaController extends Controller
             $holdings = [];
         }
 
-        return view('empresa.edit')->with(compact('empresa', 'holdings'));
+        $abastecimientos = \App\Abastecimiento::all();
+
+        return view('empresa.edit')->with(compact('empresa', 'holdings', 'abastecimientos'));
     }
 
     /**
@@ -131,35 +127,34 @@ class EmpresaController extends Controller
      */
     public function update(Request $request, Empresa $empresa)
     {
-        $empresa = new Empresa();
         $empresa->razon_social = $request->input('razon_social');
         $empresa->rut = $request->input('rut');
         $empresa->direccion = $request->input('direccion');
-        if (null !== $request->input('holding')) {
+        $empresa->abastecimiento()->associate(\App\Abastecimiento::find($request->input('abastecimiento')));
+        if ($request->has('holding')) {
             $empresa->holding()->associate(Holding::find($request->input('holding')));
         }
-        $empresa->saveOrFail();
-        $empresa->users()->attach(Auth::user());
-
-        $msg = [
-            'data' => [
-                'empresa' => [
-                    'type' => 'Empresa',
-                    'id' => $empresa->id,
-                    'attributes' => $empresa,
+        if ($empresa->saveOrFail()) {
+            $msg = [
+                'data' => [
+                    'empresa' => [
+                        'type' => 'Empresa',
+                        'id' => $empresa->id,
+                        'attributes' => $empresa,
+                    ],
+                    'usuario' => [
+                        'type' => 'Usuario',
+                        'id' => Auth::id(),
+                        'attributes' => Auth::user()
+                    ]
                 ],
-                'usuario' => [
-                    'type' => 'Usuario',
-                    'id' => Auth::id(),
-                    'attributes' => Auth::user()
+                'meta' => [
+                    'title' => '¡Empresa guardada exitosamente!',
+                    'message' => 'La Empresa fue actualizada con los siguientes datos:<br /><b>Holding:</b>'.$empresa->holding()->get('nombre')->first()->nombre.'<br/><b>Razon Social:</b>'.$empresa->razon_social.'<br/><b>RUT:</b>'.$empresa->rut.'<br/><b>Direccion:</b>'.$empresa->direccion.'<br/><b>Punto de Abastecimiento:</b>'.$empresa->abastecimiento()->get('nombre')->first()->nombre
                 ]
-            ],
-            'meta' => [
-                'title' => '¡Empresa guardada exitosamente!',
-                'message' => 'Una nueva empresa fue creada con los siguientes datos:<br /> <b>Nombre:</b>'.$empresa->nombre.'<br /><b>Holding:</b>'.$holding->nombre
-            ]
-        ];
-        return back()->with(compact($msg));
+            ];
+            return redirect()->route('empresas.index')->with(compact('msg'));
+        }
     }
 
     /**

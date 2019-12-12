@@ -2,14 +2,14 @@
 
 @section('title', 'Lista de Empresas | Mline SIGER')
 
-@if ((Auth::user()->userable instanceof \App\Empresa))
+@if ((Auth::user()->userable instanceof \App\Holding))
     @section('home-route', route('cliente.home'))
 @elseif (Auth::user()->userable instanceof \App\CompassRole)
     @section('home-route', route('compass.home'))
 @endif
 
 @section('nav-menu')
-@if ((Auth::user()->userable instanceof \App\Empresa))
+@if ((Auth::user()->userable instanceof \App\Holding))
     @include('cliente.menu')
 @elseif (Auth::user()->userable instanceof \App\CompassRole)
     @include('compass.menu')
@@ -50,3 +50,19 @@
         </div>
     </div>
 @endsection
+
+@if (\Session::has('msg'))
+    @php
+        $msg = \Session::get('msg');
+    @endphp
+    @section('js')
+        <script charset="utf-8">
+            (Swal.fire({
+                title: '{{$msg['meta']['title']}}',
+                html: '{!! $msg['meta']['message'] !!}',
+                icon: 'success'
+            }))();
+
+        </script>
+    @endsection
+@endif

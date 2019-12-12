@@ -64,10 +64,9 @@ class ProductoController extends Controller
                         'title' => '¡Producto guardado exitosamente!',
                         'message' => '
                         Un nuevo producto fue creado con los siguientes datos:<br />
-                        <b>Familia:</b>'.$producto->familia.'<br />
+                        <b>SKU:</b>'.$producto->sku.'<br />
                         <b>Detalle:</b>'.$producto->detalle.'<br />
-                        <b>Marca:</b>'.$producto->marca.'<br />
-                        <b>Formato:</b>'.$producto->formato.'<br />
+                        <b>Stock:</b>'.$producto->stock.'<br />
                         <b>Precio:</b>'.$producto->precio.'<br />
                         '
         ]
@@ -85,17 +84,6 @@ class ProductoController extends Controller
   }
 
   /**
-   * Display the specified resource.
-   *
-   * @param  \App\Producto  $producto
-   * @return \Illuminate\Http\Response
-   */
-  public function show(Producto $producto)
-  {
-    //
-  }
-
-  /**
    * Show the form for editing the specified resource.
    *
    * @param  \App\Producto  $producto
@@ -103,7 +91,11 @@ class ProductoController extends Controller
    */
   public function edit(Producto $producto)
   {
-    //
+      $empresas = \App\Empresa::all();
+      $selected = $producto->empresas()->get()->map(function ($empresa) {
+        return $empresa->id;
+      });
+      return view('compass.producto.edit')->with(compact('producto', 'empresas', 'selected'));
   }
 
   /**
@@ -115,7 +107,46 @@ class ProductoController extends Controller
    */
   public function update(Request $request, Producto $producto)
   {
-    //
+            $producto->sku = $request->input('sku');
+            $producto->detalle = $request->input('detalle');
+            $producto->stock = $request->input('stock');
+            $producto->precio = $request->input('precio');
+            if ($producto->saveOrFail()) {
+                if (in_array(0, $request->input('empresa'))) {
+                    $empresas = \App\Empresa::where('id', '>', 0)->get('id');
+                    $producto->empresas()->attach($empresas);
+                } else {
+                    $producto->empresas()->attach($request->input('empresa'));
+                }
+
+            $msg = [
+                'data' => [
+                    'producto' => [
+                        'type' => 'Producto',
+                        'id' => $producto->id,
+                        'attributes' => $producto,
+                    ]
+                ],
+                'meta' => [
+                    'title' => '¡Producto guardado exitosamente!',
+                        'message' => 'Un nuevo producto fue creado con los siguientes datos:<br /><b>SKU:</b>'.$producto->sku.'<br /><b>Detalle:</b>'.$producto->detalle.'<br /><b>Stock:</b>'.$producto->stock.'<br /><b>Precio:</b>'.$producto->precio.'<br />'
+                ]
+              ];
+                return redirect()->route('productos.index')->with(compact('msg'));
+            } else {
+
+                $msg = [
+                    'errors' => [
+                      'status' => '500',
+                      'title' => 'Error guardando producto',
+                      'detail' => 'Ocurrio un error guardando el producto:'.$e,
+                      'source' => $e
+                    ]
+                  ];
+                return redirect()->route('productos.index')->with(compact('msg'));
+            }
+
+
   }
 
   /**

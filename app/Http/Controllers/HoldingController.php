@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Holding;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class HoldingController extends Controller
 {
@@ -14,7 +15,9 @@ class HoldingController extends Controller
      */
     public function index()
     {
-        //
+        $holdings = Holding::all();
+
+        return view('holding.index')->with(compact('holdings'));
     }
 
     /**
@@ -24,7 +27,7 @@ class HoldingController extends Controller
      */
     public function create()
     {
-        //
+        return view('holding.create');
     }
 
     /**
@@ -35,18 +38,38 @@ class HoldingController extends Controller
      */
     public function store(Request $request)
     {
-        //
-    }
+        $holding = new Holding;
+        $holding->nombre = $request->input('nombre');
+        if ($holding->saveOrFail()) {
+            return response()->json([
+                'data' => [
+                    'holding' => [
+                        'type' => 'Holding',
+                        'id' => $holding->id,
+                        'attributes' => $holding,
+                    ],
+                    'usuario' => [
+                        'type' => 'Usuario',
+                        'id' => Auth::id(),
+                        'attributes' => Auth::user()
+                    ]
+                ],
+                'meta' => [
+                    'title' => '¡Holding guardado exitosamente!',
+                    'message' => 'Un nuevo Holding fue creado con los siguientes datos:<br /> <b>Nombre:</b>'.$holding->nombre
+                ]
+            ], 201);
+        } else {
+            return response()->json([
+                'errors' => [
+                    'status' => '500',
+                    'title' => 'Error guardando Holding',
+                    'detail' => 'Ocurrio un error guardando el Holding:'.$e,
+                    'source' => $e
+                ]
+            ], 500);
+        }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Holding  $holding
-     * @return \Illuminate\Http\Response
-     */
-    public function show(Holding $holding)
-    {
-        //
     }
 
     /**
@@ -57,7 +80,7 @@ class HoldingController extends Controller
      */
     public function edit(Holding $holding)
     {
-        //
+        return view('holding.edit')->with(compact('holding'));
     }
 
     /**
@@ -69,7 +92,39 @@ class HoldingController extends Controller
      */
     public function update(Request $request, Holding $holding)
     {
-        //
+        $holding->nombre = $request->input('nombre');
+        if ($holding->saveOrFail()) {
+            $msg = [
+                'data' => [
+                    'holding' => [
+                        'type' => 'Holding',
+                        'id' => $holding->id,
+                        'attributes' => $holding,
+                    ],
+                    'usuario' => [
+                        'type' => 'Usuario',
+                        'id' => Auth::id(),
+                        'attributes' => Auth::user()
+                    ]
+                ],
+                'meta' => [
+                    'title' => '¡Holding guardado exitosamente!',
+                    'message' => 'El Holding fue actualizado con los siguientes datos:<br /> <b>Nombre:</b>'.$holding->nombre
+                ]
+            ];
+            return redirect()->route('holdings.index')->with(compact('msg'));
+        } else {
+            $msg = [
+                'errors' => [
+                    'status' => '500',
+                    'title' => 'Error guardando Holding',
+                    'detail' => 'Ocurrio un error guardando el Holding:'.$e,
+                    'source' => $e
+                ]
+            ];
+
+            return redirect()->route('holdings.index')->with(compact('msg'));
+        }
     }
 
     /**
@@ -80,6 +135,31 @@ class HoldingController extends Controller
      */
     public function destroy(Holding $holding)
     {
-        //
+        try {
+            $holding->delete();
+
+            return response()->json([
+                'data' => [
+                    'holding' => [
+                        'type' => 'holding',
+                        'id' => $holding->id,
+                        'attributes' => $holding,
+                    ],
+                ],
+                'meta' => [
+                    'title' => '¡Holding eliminado exitosamente!',
+                    'message' => 'El Holding <b>'.$holding->nombre.'</b> ha sido borrado.<br />La pagina se recargara'
+                ]
+            ], 200);
+        } catch (Exception $e) {
+            return response()->json([
+                'errors' => [
+                    'status' => '500',
+                    'title' => 'Error eliminando Holding',
+                    'detail' => 'Ocurrio un error eliminando el Holding',
+                    'source' => $e
+                ]
+            ], 500);
+        }
     }
 }

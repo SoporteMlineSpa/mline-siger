@@ -7,63 +7,69 @@ use Illuminate\Http\Request;
 
 class ProductoController extends Controller
 {
-  /**
-   * Display a listing of the resource.
-   *
-   * @return \Illuminate\Http\Response
-   */
-  public function index()
-  {
-    $productos = Producto::all();
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function index()
+    {
+        $productos = Producto::all();
 
-    return view('compass.producto.index')->with(compact('productos'));
-  }
+        return view('compass.producto.index')->with(compact('productos'));
+    }
 
-  /**
-   * Show the form for creating a new resource.
-   *
-   * @return \Illuminate\Http\Response
-   */
-  public function create()
-  {
-    return view('compass.producto.create');
-  }
+    /**
+     * Show the form for creating a new resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function create()
+    {
+        $empresas = \App\Empresa::all();
+        return view('compass.producto.create')->with(compact('empresas'));
+    }
 
-  /**
-   * Store a newly created resource in storage.
-   *
-   * @param  \Illuminate\Http\Request  $request
-   * @return \Illuminate\Http\Response
-   */
-  public function store(Request $request)
-  {
-    try {
-      $producto = new Producto();
-      $producto->familia = $request->input('familia');
-      $producto->detalle = $request->input('detalle');
-      $producto->marca = $request->input('marca');
-      $producto->formato = $request->input('formato');
-      $producto->precio = $request->input('precio');
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function store(Request $request)
+    {
+        try {
+            $producto = new Producto();
+            $producto->sku = $request->input('sku');
+            $producto->detalle = $request->input('detalle');
+            $producto->stock = $request->input('stock');
+            $producto->precio = $request->input('precio');
+            $producto->saveOrFail();
+            if (in_array(0, $request->input('empresa'))) {
+                $empresas = \App\Empresa::where('id', '>', 0)->get('id');
+                $producto->empresas()->attach($empresas);
+            } else {
+                $producto->empresas()->attach($request->input('empresa'));
+            }
 
-      $producto->saveOrFail();
 
-      return response()->json([
-        'data' => [
-          'producto' => [
-            'type' => 'Producto',
-            'id' => $producto->id,
-            'attributes' => $producto,
-          ]        ],
-        'meta' => [
-          'title' => '¡Producto guardado exitosamente!',
-          'message' => '
-            Un nuevo producto fue creado con los siguientes datos:<br />
-            <b>Familia:</b>'.$producto->familia.'<br />
-            <b>Detalle:</b>'.$producto->detalle.'<br />
-            <b>Marca:</b>'.$producto->marca.'<br />
-            <b>Formato:</b>'.$producto->formato.'<br />
-            <b>Precio:</b>'.$producto->precio.'<br />
-          '
+            return response()->json([
+                'data' => [
+                    'producto' => [
+                        'type' => 'Producto',
+                        'id' => $producto->id,
+                        'attributes' => $producto,
+                    ]        ],
+                    'meta' => [
+                        'title' => '¡Producto guardado exitosamente!',
+                        'message' => '
+                        Un nuevo producto fue creado con los siguientes datos:<br />
+                        <b>Familia:</b>'.$producto->familia.'<br />
+                        <b>Detalle:</b>'.$producto->detalle.'<br />
+                        <b>Marca:</b>'.$producto->marca.'<br />
+                        <b>Formato:</b>'.$producto->formato.'<br />
+                        <b>Precio:</b>'.$producto->precio.'<br />
+                        '
         ]
       ], 201);
     } catch (Exception $e) {

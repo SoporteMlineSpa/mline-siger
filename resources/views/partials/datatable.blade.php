@@ -6,7 +6,7 @@
       @endif
       @foreach ($headers as $header)
         <th scope="col">
-          {{ $header }}
+          {{ ucfirst($header) }}
         </th>
       @endforeach
       @if (isset($acciones))

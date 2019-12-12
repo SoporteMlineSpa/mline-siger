@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Centro extends Model
 {
   /**
-   * Los usuarios asociados a ese Punto de Abastecimiento
+   * Los usuarios asociados a ese Centro
    *
    */
   public function users()
@@ -16,7 +16,7 @@ class Centro extends Model
   }
 
   /**
-   * La Empresa asociada a ese Punto de Abastecimiento
+   * La Empresa asociada a ese Centro
    *
    */
   public function empresa()
@@ -25,7 +25,7 @@ class Centro extends Model
   }
 
   /**
-   * Los Requerimientos asociados a ese Punto de Abastecimiento
+   * Los Requerimientos asociados a ese Centro
    *
    * @return App\Requerimiento
    */

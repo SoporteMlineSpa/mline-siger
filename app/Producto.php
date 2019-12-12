@@ -15,5 +15,16 @@ class Producto extends Model
   {
     return $this->belongsToMany('App\Requerimiento')->withPivot('cantidad');
   }
+
+  /**
+   * Retorna las Empresas para ese producto
+   *
+   * @return App\Empresas
+   */
+  public function Empresas()
+  {
+      return $this->belongsToMany('App\Empresa');
+  }
+  
   
 }

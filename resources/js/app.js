@@ -5,7 +5,9 @@
  */
 
 require('./bootstrap')
-import vSelect from 'vue-select'
+import * as Tabs from 'vue-slim-tabs'
+import Swal from 'sweetalert2'
+import Chart from 'chart.js'
 
 var Vue = window.Vue = require('vue')
 
@@ -20,13 +22,13 @@ var Vue = window.Vue = require('vue')
 // const files = require.context('./', true, /\.vue$/i)
 // files.keys().map(key => Vue.component(key.split('/').pop().split('.')[0], files(key).default))
 
-Vue.component('v-select', vSelect)
-
-Vue.component('example-component', require('./components/ExampleComponent.vue').default)
 Vue.component('form-component', require('./components/FormComponent.vue').default)
 Vue.component('delete-btn-component', require('./components/DeleteBtnComponent.vue').default)
 Vue.component('modal-btn-component', require('./components/ModalBtnComponent.vue').default)
 Vue.component('dropdown-component', require('./components/DropdownComponent.vue').default)
+Vue.component('bar-chart-component', require('./components/BarChartComponent.vue').default)
+
+Vue.use(Tabs)
 
 /**
  * Next, we will create a fresh Vue application instance and attach it to
@@ -43,6 +45,9 @@ $(document).ready(function () {
         dom: 'Bfrtip',
         buttons: [
             'copy', 'csv', 'excel', 'pdf'
-        ]
+        ],
+        language: {
+            url: '//cdn.datatables.net/plug-ins/1.10.20/i18n/Spanish.json'
+        }
     })
 })

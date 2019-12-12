@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Notifications\EstadoUpdated;
 use App\Requerimiento;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -9,229 +10,297 @@ use Illuminate\Support\Facades\DB;
 
 class RequerimientoController extends Controller
 {
-  /**
-   * Display a listing of the resource.
-   *
-   * @return \Illuminate\Http\Response
-   */
-  public function index()
-  {
-    $user = Auth::user();
-    switch (get_class($user->userable)) {
-      case 'App\Empresa':
-        $empresa = $user->userable;
-        $centros = $empresa->centros()->get();
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function index()
+    {
+        $user = Auth::user();
+        switch (get_class($user->userable)) {
+        case 'App\Empresa':
+            $empresa = $user->userable;
+            $centros = $empresa->centros()->get();
 
-        return view('cliente.requerimiento.empresa_index')->with(compact('centros'));
+            return view('requerimiento.empresa_index')->with(compact('centros'));
 
-        break;
+            break;
 
-      case 'App\Centro':
-        $centro = $user->userable;
-        $requerimientos = $centro->requerimientos()->get();
+        case 'App\Centro':
+            $centro = $user->userable;
+            $requerimientos = $centro->requerimientos()->get();
 
-        return view('cliente.requerimiento.centro_index')->with(compact('requerimientos', 'centro'));
+            return view('requerimiento.centro_index')->with(compact('requerimientos', 'centro'));
 
-        break;
+            break;
 
-      case 'App\CompassRole':
-        $requerimientos = \App\Requerimiento::where('estado', 'VALIDADO')->get();
+        case 'App\CompassRole':
+            $requerimientos = Requerimiento::where('estado', 'VALIDADO')->get();
 
-        return view('compass.pedidos_index')->with(compact('requerimientos'));
-        break;
+            return view('compass.pedidos_index')->with(compact('requerimientos'));
+            break;
 
-      default:
-        $msg = "Este usuario no esta asignado a ninguna empresa o centro";
-        return view('cliente.requerimiento.index')->with(compact('msg'));
+        default:
+            $msg = "Este usuario no esta asignado a ninguna empresa o centro";
+            return view('requerimiento.index')->with(compact('msg'));
 
-        break;
-    }
-  }
-
-  /**
-   * Muestra las ordenes de pedidos para un Centro
-   *
-   * @param  \App\centro  $centro
-   * @return \Illuminate\Http\Response
-   */
-  public function showCentro($centroId)
-  {
-    $centro = \App\Centro::findOrFail($centroId);
-    $requerimientos = $centro->requerimientos()->get();
-
-    return view('cliente.requerimiento.centro_show')->with(compact('centro', 'requerimientos'));
-  }
-
-  /**
-   * Muestra las ordenes de pedidos pendiente y permite validarlas
-   *
-   * @return void
-   */
-  public function validarPedidos()
-  {
-    $empresa = Auth::user()->userable;
-    $centros = $empresa->centros()->get();
-    $pedidos = [];
-    foreach ($centros as $centro) {
-      $requerimientos = $centro->requerimientos()->where('estado', 'ESPERANDO VALIDACION')->get();
-      if (!$requerimientos->isEmpty()) {
-        array_push($pedidos, ['centro' => $centro, 'requerimientos' => $requerimientos]);
-      } else {
-        continue;
-      }
-    }
-    return view('cliente.requerimiento.validar-pedidos')->with(compact('pedidos'));
-
-  }
-
-  //TODO: Cambiar a POST
-  /**
-   * Cambia el estado del requerimiento a "VALIDADO".
-   *
-   * @return void
-   */
-  public function aceptar($requerimientoId)
-  {
-    $requerimiento = \App\Requerimiento::findOrFail($requerimientoId);
-
-    $requerimiento->estado = "VALIDADO";
-    $requerimiento->save();
-
-    return back()->with(['msg' => "Orden de Pedido Aceptada"]);
-  }
-
-
-  //TODO: Cambiar a POST
-  /**
-   * Cambia el estado del requerimiento a "RECHAZADO"
-   *
-   * @return void
-   */
-  public function rechazar($requerimientoId)
-  {
-    $requerimiento->estado = "RECHAZADO";
-    $requerimiento->save();
-
-    return back()->with(['msg' => "Orden de Pedido Rechazado"]);;
-  }
-
-  //TODO: Cambiar a POST
-  /**
-   * Cambia el estado de todos los requerimientos a "VALIDADO".
-   *
-   * @return void
-   */
-  public function aceptarTodos($requerimientos)
-  {
-    foreach ($requerimientos as $requerimiento) {
-      $requerimiento->estado = "VALIDADO";
-      $requerimiento->save();
+            break;
+        }
     }
 
-    return back()->with(['msg' => 'Ordenes de Pedido Aceptadas']);
-  }
-  
-  
-  /**
-   * Show the form for creating a new resource.
-   *
-   * @return \Illuminate\Http\Response
-   */
-  public function create()
-  {
-    try {
-      $productos = \App\Producto::all();
+    /**
+     * Muestra las ordenes de pedidos para un Centro
+     *
+     * @param  \App\centro  $centro
+     * @param Int Estado
+     * @return \Illuminate\Http\Response
+     */
+    public function showCentro($centroId, $estadoId = null)
+    {
+        $centro = \App\Centro::findOrFail($centroId);
+        $requerimientos = null;
+        switch ($estadoId) {
+        case 0:
+            $requerimientos = $centro->requerimientos()->where('estado', 'ESPERANDO VALIDACION')->get();
+            break;
+        case 1:
+            $requerimientos = $centro->requerimientos()->where('estado', 'VALIDADO')->get();
+            break;
+        case 2:
+            $requerimientos = $centro->requerimientos()->where('estado', 'EN PROCESAMIENTO')->get();
+            break;
+        case 3:
+            $requerimientos = $centro->requerimientos()->where('estado', 'EN BODEGA')->get();
+            break;
+        case 4:
+            $requerimientos = $centro->requerimientos()->where('estado', 'DESPACHADO')->get();
+            break;
+        case 5:
+            $requerimientos = $centro->requerimientos()->where('estado', 'ENTREGADO')->get();
+            break;
+        case 6:
+            $requerimientos = $centro->requerimientos()->where('estado', 'RECHAZADO')->get();
+            break;
+        default:
+            $requerimientos = $centro->requerimientos()->get();
+            break;
 
-      return view('cliente.requerimiento.create')->with(compact('productos'));
-    } catch (Exception $e) {
-      dd('Not logged in');
+        }
+
+        return view('requerimiento.centro_show')->with(compact('centro', 'requerimientos'));
     }
-  }
 
-  /**
-   * Store a newly created resource in storage.
-   *
-   * @param  \Illuminate\Http\Request  $request
-   * @return \Illuminate\Http\Response
-   */
-  public function store(Request $request)
-  {
-    $centro = Auth::user()->userable;
-    $requerimiento = new Requerimiento;
-    $requerimiento->nombre = 'Requerimiento '.Date('d-M-Y');
-    $centro->requerimientos()->save($requerimiento);
+    /**
+     * Muestra las ordenes de pedidos pendiente y permite validarlas
+     *
+     * @return void
+     */
+    public function validarPedidos()
+    {
+        $empresa = Auth::user()->userable;
+        $centros = $empresa->centros()->whereHas('requerimientos', function ($query) {
+            $query->where('estado', 'ESPERANDO VALIDACION');
+        })->get();
 
-    foreach ($request->input('cantidad') as $key => $cantidad) {
-      if ($cantidad === null) {
-        continue;
-      } else {
-        $producto = $requerimiento->productos()->save(\App\Producto::where('id', $request->input('id')[$key])->firstOrFail());
-        $requerimiento->productos()->updateExistingPivot($producto->id, [ 'cantidad' => $cantidad]);
-      }
+        return view('requerimiento.validar_pedidos')->with(compact('centros'));
+
+    }
+
+    /**
+     * Cambia el estado del requerimiento a "VALIDADO".
+     *
+     * @return void
+     */
+    public function aceptar(Request $request)
+    {
+        $requerimientoId = json_decode($request->input('requerimiento'), true);
+
+        $requerimiento = Requerimiento::find($requerimientoId['id']);
+        $requerimiento->estado = "VALIDADO";
+        $requerimiento->save();
+
+        $users = $requerimiento->getUserByRequerimiento();
+
+        foreach ($users as $user) {
+            $user->notify((new EstadoUpdated($requerimiento))->delay(\Carbon\Carbon::now()->addSeconds(60)));
+        }
+
+        return back()->with(['msg' => ['title' => '¡Orden aceptada exitosamente!', 'text' => 'La Orden de Pedido fue aceptada']]);
     }
 
 
-    return back()->with(['msg' => 'Exito']);
+    /**
+     * Cambia el estado del requerimiento a "RECHAZADO"
+     *
+     * @return void
+     */
+    public function rechazar(Request $request)
+    {
+        $requerimientoId = json_decode($request->input('requerimiento'), true);
 
-  }
+        $requerimiento = Requerimiento::find($requerimientoId['id']);
+        $requerimiento->estado = "RECHAZADO";
+        $requerimiento->save();
 
-  /**
-   * Display the specified resource.
-   *
-   * @param  \App\Requerimiento  $requerimiento
-   * @return \Illuminate\Http\Response
-   */
-  public function show(Requerimiento $requerimiento)
-  {
-    //
-  }
+        $users = $requerimiento->getUserByRequerimiento();
 
-  /**
-   * Show the form for editing the specified resource.
-   *
-   * @param  \App\Requerimiento  $requerimiento
-   * @return \Illuminate\Http\Response
-   */
-  public function edit(Requerimiento $requerimiento)
-  {
-    //
-  }
+        foreach ($users as $user) {
+            $user->notify((new EstadoUpdated($requerimiento))->delay(\Carbon\Carbon::now()->addSeconds(60)));
+        }
 
-  /**
-   * Update the specified resource in storage.
-   *
-   * @param  \Illuminate\Http\Request  $request
-   * @param  \App\Requerimiento  $requerimiento
-   * @return \Illuminate\Http\Response
-   */
-  public function update(Request $request, Requerimiento $requerimiento)
-  {
-    //
-  }
+        return back()->with(['msg' => ['title' => '¡Orden rechazada exitosamente!', 'text' => 'La Orden de Pedido fue rechazada']]);;
+    }
 
-  /**
-   * Remove the specified resource from storage.
-   *
-   * @param  \App\Requerimiento  $requerimiento
-   * @return \Illuminate\Http\Response
-   */
-  public function destroy(Requerimiento $requerimiento)
-  {
-    //
-  }
+    /**
+     * Cambia el estado de todos los requerimientos a "VALIDADO".
+     *
+     * @return void
+     */
+    public function aceptarTodos(Request $request)
+    {
+        $empresa = Auth::user()->userable;
+        $centros = $empresa->centros()->whereHas('requerimientos', function ($query) {
+            $query->where('estado', 'ESPERANDO VALIDACION');
+        })->get();
 
-  /**
-   * Lista de Requerimientos segun su estado y productos
-   *
-   * @return \Illuminate\Http\Response
-   */
-  public function verificar()
-  {
-    $requerimientos = \App\Requerimiento::where('estado', 'VALIDADO')->get();
-    $productos = \App\Producto::whereHas('requerimientos', function ($q) {
-      $q->where('estado', 'VALIDADO');
-    })->get();
+        foreach ($centros as $centro) {
+            $requerimientos = $centro->requerimientos()->where('estado', 'ESPERANDO VALIDACION')->get();
+            foreach ($requerimientos as $requerimiento) {
+                $requerimiento->estado = 'VALIDADO';
+                $requerimiento->save();
 
-    return view('compass.verificar_index')->with(compact('productos'));
-  }
+                $users = $requerimiento->getUserByRequerimiento();
+
+                foreach ($users as $user) {
+                    $user->notify((new EstadoUpdated($requerimiento))->delay(\Carbon\Carbon::now()->addSeconds(60)));
+                }
+            }
+        }
+
+        $msg = ['title' => '¡Ordenes aceptadas exitosamente!', 'text' => 'Todas las Ordenes fueron aceptadas'];
+        return back()->with(compact('msg'));
+    }
+
+
+    /**
+     * Show the form for creating a new resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function create()
+    {
+        $empresa = Auth::user()->userable->empresa()->firstOrFail();
+        $productos = $empresa->productos()->get();;
+
+        return view('requerimiento.create')->with(compact('productos'));
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function store(Request $request)
+    {
+        $centro = Auth::user()->userable;
+        $requerimiento = new Requerimiento;
+        $requerimiento->nombre = $request->input('nombre');
+        $centro->requerimientos()->save($requerimiento);
+
+        foreach ($request->input('cantidad') as $key => $cantidad) {
+            if ($cantidad === null) {
+                continue;
+            } else {
+                $producto = $requerimiento->productos()->save(\App\Producto::where('id', $request->input('id')[$key])->firstOrFail());
+                $requerimiento->productos()->updateExistingPivot($producto->id, [ 'cantidad' => $cantidad]);
+            }
+        }
+
+        $users = $requerimiento->getUserByRequerimiento();
+
+        foreach ($users as $user) {
+            $user->notify((new EstadoUpdated($requerimiento))->delay(\Carbon\Carbon::now()->addSeconds(60)));
+        }
+
+        return back()->with(['msg' => 'Exito']);
+
+    }
+
+    /**
+     * Lista de Requerimientos segun su estado y productos
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function verificar()
+    {
+        $requerimientos = Requerimiento::where('estado', 'VALIDADO')->get();
+
+        if ($requerimientos->count() > 0) {
+            $requerimientoId = $requerimientos->map(function ($requerimiento) {
+                $requerimiento->estado = "EN PROCESAMIENTO";
+                $requerimiento->save();
+                $requerimiento->getUserByRequerimiento()->map(function ($user) {
+                    $user->notify((new EstadoUpdated($requerimiento))->delay(\Carbon\Carbon::now()->addSeconds(60)));
+                });
+
+                return $requerimiento->id;
+            });
+            $productos = DB::table('producto_requerimiento')
+                ->join('productos', 'producto_requerimiento.producto_id', '=', 'productos.id')
+                ->select(DB::raw('productos.sku, productos.detalle, SUM(producto_requerimiento.cantidad) as cantidad'))
+                ->whereIn('producto_requerimiento.requerimiento_id', $requerimientoId)
+                ->groupBy('productos.sku', 'productos.detalle')
+                ->get();
+        } else {
+            $productos = collect([]);
+        }
+
+
+        return view('compass.verificar_index')->with(compact('productos'));
+    }
+
+    /**
+     * Lista de Ordenes de Pedidos verificadas por Centros
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function indexCajas()
+    {
+        $centros = \App\Centro::whereHas('requerimientos', function ($query) {
+            $query->where('estado', 'VALIDADO');
+        })->get();
+
+        return view('compass.cajas_index')->with(compact('centros'));
+    }
+
+    /**
+     * Muesta informacion para un requerimiento por su Id
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function show($requerimientoId)
+    {
+        $requerimiento = Requerimiento::findOrFail($requerimientoId);
+
+        return view('compass.cajas_show')->with(compact('requerimiento'));
+    }
+
+    /**
+     * Muestra el formulario para reutilizar una orden de pedido
+     *
+     * @param Int $requerimientoId
+     * @return \Illuminate\Http\Response
+     */
+    public function edit($requerimientoId)
+    {
+        $empresa = Auth::user()->userable->empresa()->firstOrFail();
+        $requerimiento = Requerimiento::findOrFail($requerimientoId);
+        $productosRequerimiento = $requerimiento->productos()->get();
+        $productos = $productosRequerimiento->union($empresa->productos()->get());
+
+        return view('requerimiento.edit')->with(compact('requerimiento', 'productos'));
+    }
+
 }

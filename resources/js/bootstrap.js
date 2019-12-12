@@ -6,18 +6,18 @@
  */
 
 try {
-  window._ = require('lodash')
-  window.Popper = require('popper.js').default
-  window.$ = window.jQuery = require('jquery')
-  require('bootstrap')
-  require('jszip')
-  require('pdfmake')
-  require('datatables.net-bs4')
-  require('datatables.net-buttons-bs4')
-  require('datatables.net-buttons/js/buttons.html5.js')
-  require('datatables.net-responsive-bs4')
-  require('datatables.net-scroller-bs4')
-  window.Swal = require('sweetalert2')
+    window._ = require('lodash');
+    window.Popper = require('popper.js').default;
+    window.$ = window.jQuery = require('jquery');
+    require('bootstrap');
+    require('jszip');
+    require('pdfmake');
+    require('datatables.net-bs4');
+    require('datatables.net-buttons-bs4');
+    require('datatables.net-buttons/js/buttons.html5.js');
+    require('datatables.net-responsive-bs4');
+    require('datatables.net-scroller-bs4');
+    window.Swal = require('sweetalert2');
 } catch (e) {}
 
 /**

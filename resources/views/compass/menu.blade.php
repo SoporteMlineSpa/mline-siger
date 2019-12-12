@@ -1,17 +1,70 @@
-@section('nav-menu')
-  <li class="mr-6 my-2 md:my-0">
-    <a href="{{route('compass.home')}}" class="block py-1 md:py-3 pl-1 align-middle text-orange-600 no-underline hover:text-gray-900 border-b-2 border-orange-600 hover:border-orange-600">
-      <i class="fas fa-home fa-fw mr-3 text-orange-600"></i><span class="pb-1 md:pb-0 text-sm">Home</span>
+<li class="nav-item">
+    <a class="nav-link" href="{{ route('compass.home')}}"><i class="fas fa-home mr-2"></i>Inicio</a>
+</li>
+<li class="nav-item dropdown">
+    <a class="nav-link dropdown-toggle" href="#" role="button" id="dropdownRequerimientos" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        <i class="fas fa-clipboard-list mr-2"></i>
+        Ordenes de Pedido
     </a>
-  </li>
-  <li class="mr-6 my-2 md:my-0">
-    <a href="{{ route('compass.pedidos.index') }}" class="block py-1 md:py-3 pl-1 align-middle text-gray-500 no-underline hover:text-gray-900 border-b-2 border-white hover:border-pink-500">
-      <i class="fas fa-tasks fa-fw mr-3"></i><span class="pb-1 md:pb-0 text-sm">Ordenes de Pedido</span>
+    <div class="dropdown-menu">
+        <a class="dropdown-item" href="{{route('compass.pedidos.index')}}">Lista</a>
+        @if (Auth::user()->userable->name === 'Compras')
+            <a class="dropdown-item" href="{{ route('compass.pedidos.verificar')}}">Verificar</a>
+        @endif
+        @if (Auth::user()->userable->name === 'Despacho')
+            <a class="dropdown-item" href="{{ route('compass.pedidos.cajasIndex')}}">Armar Cajas</a>
+        @endif
+    </div>
+</li>
+<li class="nav-item dropdown">
+    <a class="nav-link dropdown-toggle" href="#" role="button" id="dropdownProductos" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        <i class="fas fa-th-list mr-2"></i>
+        Productos
     </a>
-  </li>
-  <li class="mr-6 my-2 md:my-0">
-    <a href="{{route('productos.index')}}" class="block py-1 md:py-3 pl-1 align-middle text-gray-500 no-underline hover:text-gray-900 border-b-2 border-white hover:border-purple-500">
-      <i class="fas fa-wallet fa-fw mr-3"></i><span class="pb-1 md:pb-0 text-sm">Productos</span>
+    <div class="dropdown-menu">
+        <a class="dropdown-item" href="{{route('productos.index')}}">Lista</a>
+        <a class="dropdown-item" href="{{route('productos.create')}}">Nuevo</a>
+    </div>
+</li>
+<li class="nav-item dropdown">
+    <a class="nav-link dropdown-toggle" href="#" role="button" id="dropdownProductos" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        <i class="fas fa-building mr-2"></i>
+        Holdings
     </a>
-  </li>
-@endsection
+    <div class="dropdown-menu">
+        <a class="dropdown-item" href="">Lista</a>
+        <a class="dropdown-item" href="">Nuevo</a>
+        <a class="dropdown-item" href="">Usuarios</a>
+    </div>
+</li>
+<li class="nav-item dropdown">
+    <a class="nav-link dropdown-toggle" href="#" role="button" id="dropdownProductos" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        <i class="fas fa-industry mr-2"></i>
+        Empresas
+    </a>
+    <div class="dropdown-menu">
+        <a class="dropdown-item" href="{{route('empresas.index')}}">Lista</a>
+        <a class="dropdown-item" href="{{route('empresas.create')}}">Nuevo</a>
+        <a class="dropdown-item" href="">Usuarios</a>
+    </div>
+</li>
+<li class="nav-item dropdown">
+    <a class="nav-link dropdown-toggle" href="#" role="button" id="dropdownProductos" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        <i class="fas fa-warehouse mr-2"></i>
+        Centros
+    </a>
+    <div class="dropdown-menu">
+        <a class="dropdown-item" href="{{route('empresas.index')}}">Lista</a>
+        <a class="dropdown-item" href="{{route('empresas.create')}}">Nuevo</a>
+        <a class="dropdown-item" href="">Usuarios</a>
+    </div>
+</li>
+<li class="nav-item dropdown">
+    <a class="nav-link dropdown-toggle" href="#" role="button" id="dropdownProductos" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        <i class="fas fa-home mr-2"></i>
+        Compass
+    </a>
+    <div class="dropdown-menu">
+        <a class="dropdown-item" href="">Usuarios</a>
+    </div>
+</li>

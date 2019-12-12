@@ -3,7 +3,7 @@
     <div v-for="(item, index) in form.items" :key="index" class="form-group">
       <label for="item.name">{{item.label}}</label>
       <input v-if="item.type !== 'select'" class="form-control" v-model="formValues[item.name]" :type="item.type" :name="item.name"/>
-      <select v-if="item.type === 'select'" class="form-control" :name="item.name" v-model="formValues[item.name]">
+      <select v-if="item.type === 'select'" :multiple="item.multiple" class="form-control" :name="item.name" v-model="formValues[item.name]">
         <option v-for="(option, index) in item.options" :key="index" :value="option.value">{{option.label}}</option>
       </select>
     </div>

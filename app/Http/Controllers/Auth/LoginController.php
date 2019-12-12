@@ -19,14 +19,9 @@ class LoginController extends Controller
     |
     */
 
-    use AuthenticatesUsers;
-
-    /**
-     * Where to redirect users after login.
-     *
-     * @var string
-     */
-    protected $redirectTo = '/home';
+    use AuthenticatesUsers {
+        logout as performLogout;
+    }
 
     /**
      * Where to redirect users after login.
@@ -35,18 +30,22 @@ class LoginController extends Controller
      */
     protected function redirectTo()
     {
-      switch (Auth::user()->role) {
-        case 0:
+      switch (get_class(Auth::user()->userable)) {
+        case '\App\CompassRole':
           return '/compass';
           break;
-        case 1:
-          return '/cliente';
-          break;
         default:
-          return '/home';
+          return '/cliente';
           break;
       }
     }
+
+    public function logout(Request $request)
+    {
+        $this->performLogout($request);
+        return redirect()->route('login');
+    }
+    
     
 
     /**

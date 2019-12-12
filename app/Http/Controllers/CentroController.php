@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Centro;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class CentroController extends Controller
 {
@@ -14,7 +15,15 @@ class CentroController extends Controller
      */
     public function index()
     {
-        //
+        if (Auth::user()->userable instanceof \App\Empresa) {
+            $centros = Auth::user()->userable->centros()->get();
+        } elseif (Auth::user()->userable instanceof \App\CompassRole) {
+            $centros = Centro::all();
+        } else {
+            $centros = [];
+        }
+
+        return view('centro.index')->with(compact('centros'));
     }
 
     /**
@@ -24,7 +33,15 @@ class CentroController extends Controller
      */
     public function create()
     {
-        //
+        if (Auth::user()->userable instanceof \App\Empresa) {
+            $empresas = Auth::user()->userable;
+        } elseif (Auth::user()->userable instanceof \App\CompassRole) {
+            $empresas = \App\Empresa::all();
+        } else {
+            $empresa = [];
+        }
+
+        return view('centro.create')->with(compact('empresas'));
     }
 
     /**

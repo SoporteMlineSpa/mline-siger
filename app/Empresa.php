@@ -34,4 +34,14 @@ class Empresa extends Model
   }
   
   
+  /**
+   * Los productos asociados a ese Empresa
+   *
+   * @return App\Productos
+   */
+  public function productos()
+  {
+      return $this->belongsToMany('App\Producto');
+  }
+  
 }

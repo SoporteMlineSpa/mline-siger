@@ -32,9 +32,9 @@
         Holdings
     </a>
     <div class="dropdown-menu">
-        <a class="dropdown-item" href="">Lista</a>
-        <a class="dropdown-item" href="">Nuevo</a>
-        <a class="dropdown-item" href="">Usuarios</a>
+        <a class="dropdown-item" href="{{route('holdings.index')}}">Lista</a>
+        <a class="dropdown-item" href="{{route('holdings.create')}}">Nuevo</a>
+        <a class="dropdown-item" href="{{route('usuarios.index', 'h')}}">Usuarios</a>
     </div>
 </li>
 <li class="nav-item dropdown">
@@ -45,7 +45,7 @@
     <div class="dropdown-menu">
         <a class="dropdown-item" href="{{route('empresas.index')}}">Lista</a>
         <a class="dropdown-item" href="{{route('empresas.create')}}">Nuevo</a>
-        <a class="dropdown-item" href="">Usuarios</a>
+        <a class="dropdown-item" href="{{route('usuarios.index', 'e')}}">Usuarios</a>
     </div>
 </li>
 <li class="nav-item dropdown">
@@ -54,9 +54,9 @@
         Centros
     </a>
     <div class="dropdown-menu">
-        <a class="dropdown-item" href="{{route('empresas.index')}}">Lista</a>
-        <a class="dropdown-item" href="{{route('empresas.create')}}">Nuevo</a>
-        <a class="dropdown-item" href="">Usuarios</a>
+        <a class="dropdown-item" href="{{route('centros.index')}}">Lista</a>
+        <a class="dropdown-item" href="{{route('centros.create')}}">Nuevo</a>
+        <a class="dropdown-item" href="{{route('usuarios.index', 'c')}}">Usuarios</a>
     </div>
 </li>
 <li class="nav-item dropdown">
@@ -65,6 +65,6 @@
         Compass
     </a>
     <div class="dropdown-menu">
-        <a class="dropdown-item" href="">Usuarios</a>
+        <a class="dropdown-item" href="{{route('usuarios.index', 'r')}}">Usuarios</a>
     </div>
 </li>

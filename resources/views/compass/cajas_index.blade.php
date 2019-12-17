@@ -16,24 +16,28 @@
                 <tabs>
                 @foreach ($centros as $centro)
                     <tab title="{{$centro->nombre}}">
-                    <table id="datatable" class="table">
-                        <thead>
-                            <tr>
-                                <th scope="col">Nombre</th>
-                                <th scope="col">Estado</th>
-                                <th scope="col">Armar</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach ($centro->requerimientos()->get() as $requerimiento)
+                    <div class="container mt-2">
+                    <div class="table-responsive">
+                        <table id="datatable" class="table table-sm">
+                            <thead>
                                 <tr>
-                                    <td>{{$requerimiento->nombre}}</td>
-                                    <td>{{$requerimiento->estado}}</td>
-                                    <td><a class="btn btn-primary" href="{{ route('compass.pedidos.show', $requerimiento)}}">Armar Caja</a></td>
+                                    <th scope="col">Nombre</th>
+                                    <th scope="col">Estado</th>
+                                    <th scope="col">Armar</th>
                                 </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody>
+                                @foreach ($centro->requerimientos()->get() as $requerimiento)
+                                    <tr>
+                                        <td>{{$requerimiento->nombre}}</td>
+                                        <td>{{$requerimiento->estado}}</td>
+                                        <td><a class="btn btn-primary" href="{{ route('compass.pedidos.show', $requerimiento)}}">Armar Caja</a></td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                    </div>
                     </tab>
                 @endforeach
                 </tabs>

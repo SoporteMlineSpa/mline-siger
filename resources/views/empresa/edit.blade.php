@@ -21,7 +21,7 @@
         <div class="card">
             <h3 class="card-header font-bold text-xl">Editar Empresa</h3>
             <div class="card-body">
-                <form action="{{route('empresas.update', $empresas)}}" method="POST" accept-charset="utf-8">
+                <form action="{{route('empresas.update', $empresa)}}" method="POST" accept-charset="utf-8">
                     @csrf
                     @method('PUT')
 
@@ -32,7 +32,7 @@
                                 <select name="holding" class="form-control">
                                     <option value="">Sin Holding</option>
                                     @foreach($holdings as $holding)
-                                        <option value="{{$holding->id}}" @if($holding->id == $empresas->holding_id) {{_("selected")}} @endif>{{$holding->nombre}}</option>
+                                        <option value="{{$holding->id}}" @if($holding->id == $empresa->holding_id) {{_("selected")}} @endif>{{$holding->nombre}}</option>
                                     @endforeach
                                 </select>
                             </div>
@@ -42,20 +42,20 @@
                     <div class="form-group row">
                         <label class="col-sm-2" for="razon_social">Razon Social:</label>
                         <div class="col-sm-6">
-                            <input class="form-control" type="text" name="razon_social" value="{{$empresas->razon_social ?? ''}}">
+                            <input class="form-control" type="text" name="razon_social" value="{{$empresa->razon_social ?? ''}}">
                         </div>
                     </div>
 
                     <div class="form-group row">
                         <label class="col-sm-2" for="rut">RUT:</label>
                         <div class="col-sm-6">
-                            <input class="form-control" type="text" name="rut" value="{{$empresas->rut ?? ''}}">
+                            <input class="form-control" type="text" name="rut" value="{{$empresa->rut ?? ''}}">
                         </div>
                     </div>
                     <div class="form-group row">
                         <label class="col-sm-2" for="direccion">Direccion:</label>
                         <div class="col-sm-6">
-                            <input class="form-control" type="text" name="direccion" value="{{$empresas->direccion ?? ''}}">
+                            <input class="form-control" type="text" name="direccion" value="{{$empresa->direccion ?? ''}}">
                         </div>
                     </div>
 
@@ -64,7 +64,7 @@
                         <div class="col-sm-6">
                             <select name="abastecimiento" class="form-control">
                                 @foreach($abastecimientos as $abastecimiento)
-                                    <option value="{{$abastecimiento->id}}" @if($abastecimiento->id == $empresas->abastecimiento_id) {{_("selected")}} @endif>{{$abastecimiento->nombre}}</option>
+                                    <option value="{{$abastecimiento->id}}" @if($abastecimiento->id == $empresa->abastecimiento_id) {{_("selected")}} @endif>{{$abastecimiento->nombre}}</option>
                                 @endforeach
                             </select>
                         </div>

@@ -19,7 +19,7 @@
 @section('main')
     <div class="container">
         <div class="card">
-            <h3 class="card-header font-bold text-xl">Lista de Usuarios {{$type}}</h3>
+            <h3 class="card-header font-bold text-xl">Lista de Usuarios</h3>
             <div class="card-body">
                 <table id="datatable" class="table">
                     <thead>
@@ -27,6 +27,7 @@
                             <th scope="col">#</th>
                             <th scope="col">Nombre</th>
                             <th scope="col">E-mail</th>
+                            <th scope="col">Tipo de Usuario</th>
                             <th scope="col">Accion</th>
                         </tr>
                     </thead>
@@ -36,6 +37,7 @@
                                 <th scope="row">{{ $loop->index }}</th>
                                 <td>{{ $user->name }}</td>
                                 <td>{{ $user->email }}</td>
+                                <td>{{ ($user->userable_id !== null) ? substr($user->userable_type, 4) : 'Sin Asignar' }}</td>
                                 <td>
                                     <a class="btn btn-primary" href="{{route('usuarios.edit', $user)}}"><i class="fas fa-edit"></i></a>
                                     <delete-btn-component action="{{ route('usuarios.destroy', $user) }}"></delete-btn-component>

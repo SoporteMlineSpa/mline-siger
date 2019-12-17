@@ -27,6 +27,7 @@ Vue.component('delete-btn-component', require('./components/DeleteBtnComponent.v
 Vue.component('modal-btn-component', require('./components/ModalBtnComponent.vue').default)
 Vue.component('dropdown-component', require('./components/DropdownComponent.vue').default)
 Vue.component('bar-chart-component', require('./components/BarChartComponent.vue').default)
+Vue.component('create-presupuesto-component', require('./components/CreatePresupuestoComponent.vue').default);
 
 Vue.use(Tabs)
 

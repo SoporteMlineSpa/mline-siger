@@ -9,6 +9,31 @@ use Illuminate\Support\Facades\Auth;
 class CentroController extends Controller
 {
     /**
+     * Muestra el listado de Centros con los Requerimientos
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function indexRequerimientos($empresaId = null, $estadoId = null)
+    {
+        $centros = collect([]);
+        if (Auth::user()->userable instanceof \App\Empresa) {
+            $centrosUser = Auth::user()->userable->centros()->get();
+            foreach ($centrosUser as $centro) {
+                $centros->push($centro);
+            }
+        } elseif (Auth::user()->userable instanceof \App\CompassRole) {
+            if ($empresaId !== null) {
+                $centros = \App\Empresa::find($empresaId)->getCentrosByEstado($estadoId);
+            } else {
+                $centros = \App\Centro::all();
+            }
+        }
+
+        return view('requerimiento.index.centro')->with(compact('centros'));
+    }
+    
+        
+    /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
@@ -33,12 +58,11 @@ class CentroController extends Controller
      */
     public function create()
     {
+        $empresas = collect([]);
         if (Auth::user()->userable instanceof \App\Empresa) {
-            $empresas = Auth::user()->userable;
+            $empresas->push(Auth::user()->userable);
         } elseif (Auth::user()->userable instanceof \App\CompassRole) {
             $empresas = \App\Empresa::all();
-        } else {
-            $empresa = [];
         }
 
         return view('centro.create')->with(compact('empresas'));
@@ -99,12 +123,11 @@ class CentroController extends Controller
      */
     public function edit(Centro $centro)
     {
+        $empresas = collect([]);
         if (Auth::user()->userable instanceof \App\Empresa) {
-            $empresas = Auth::user()->userable;
+            $empresas->push(Auth::user()->userable);
         } elseif (Auth::user()->userable instanceof \App\CompassRole) {
             $empresas = \App\Empresa::all();
-        } else {
-            $empresas = [];
         }
 
         return view('centro.edit')->with(compact('centro', 'empresas'));

@@ -10,19 +10,32 @@ use Illuminate\Support\Facades\Auth;
 class EmpresaController extends Controller
 {
     /**
+     * Listado de Empresas y sus Requerimientos
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function indexRequerimientos($estadoId = null)
+    {
+        $empresas = collect([]);
+        if (Auth::user()->userable instanceof \App\Holding) {
+            $empresasUser = Auth::user()->userable->empresas()->get();
+            foreach ($empresasUser as $empresa) {
+                $empresas->push($empresa);
+            }
+        } elseif (Auth::user()->userable instanceof \App\CompassRole) {
+            $empresas = \App\Empresa::all();
+        }
+
+        return view('requerimiento.index.empresa')->with(compact('empresas'));
+    }
+    
+    /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
     public function index()
     {
-        if (Auth::user()->userable instanceof \App\Empresa) {
-            $empresas = Auth::user()->userable;
-        } elseif (Auth::user()->userable instanceof \App\CompassRole) {
-            $empresas = \App\Empresa::all();
-        } else {
-            $empresa = [];
-        }
         $empresas = Empresa::all();
 
         return view('empresa.index')->with(compact('empresas'));

@@ -26,4 +26,24 @@ class Holding extends Model
   }
   
   
+  /**
+   * Retorna el Presupuesto de ese Holding
+   *
+   * @return App\Presupuesto
+   */
+  public function presupuesto()
+  {
+      return $this->morphOne('App\Presupuesto', 'presupuesteable');
+  }
+
+  /**
+   * Retorna true si el Holding tiene un Presupuesto creado
+   *
+   * @return bool
+   */
+  public function hasPresupuesto()
+  {
+      return $this->presupuesto()->get()->isNotEmpty();
+  }
+  
 }

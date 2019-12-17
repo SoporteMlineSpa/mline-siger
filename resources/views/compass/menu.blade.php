@@ -7,7 +7,7 @@
         Ordenes de Pedido
     </a>
     <div class="dropdown-menu">
-        <a class="dropdown-item" href="{{route('compass.pedidos.index')}}">Lista</a>
+        <a class="dropdown-item" href="{{route('pedidos.indexEmpresa')}}">Lista</a>
         @if (Auth::user()->userable->name === 'Compras')
             <a class="dropdown-item" href="{{ route('compass.pedidos.verificar')}}">Verificar</a>
         @endif
@@ -61,10 +61,14 @@
 </li>
 <li class="nav-item dropdown">
     <a class="nav-link dropdown-toggle" href="#" role="button" id="dropdownProductos" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-        <i class="fas fa-home mr-2"></i>
-        Compass
+        <i class="fas fa-users mr-2"></i>
+        Usuarios
     </a>
     <div class="dropdown-menu">
-        <a class="dropdown-item" href="{{route('usuarios.index', 'r')}}">Usuarios</a>
+        <a class="dropdown-item" href="{{route('usuarios.index', 'r')}}">Usuarios Compass</a>
+        <a class="dropdown-item" href="{{route('usuarios.index')}}">Todos los Usuarios</a>
+        <div class="dropdown-divider"></div>
+        <a class="dropdown-item" href="{{route('register')}}">Nuevo Usuario</a>
+        <a class="dropdown-item" href="{{route('usuarios.asignar')}}">Asignar Usuario</a>
     </div>
 </li>

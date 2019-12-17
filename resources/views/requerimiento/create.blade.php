@@ -25,28 +25,31 @@
           </div>
       </div>
       <div class="row">
-          <div class="container table-responsive">
-              <table class="table" id="datatable">
-                <thead>
-                  <tr>
-                    <th scope="col">SKU</th>
-                    <th scope="col">Detalle</th>
-                    <th scope="col">Cantidad</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  @foreach ($productos as $producto)
-                    <tr>
-                      <td>{{$producto->sku}}</td>
-                      <td>{{$producto->detalle}}</td>
-                      <td>
-                        <input type="hidden" value="{{$producto->id}}" name="id[]"/>
-                        <input type="text" name="cantidad[]" class="form-control form-control-sm">
-                      </td>
-                    </tr>
-                  @endforeach
-                </tbody>
-              </table>
+          <div class="container">
+              <div class="table-responsive">
+                  <table class="table table-sm" id="datatable">
+                    <thead>
+                      <tr>
+                        <th scope="col">SKU</th>
+                        <th scope="col">Detalle</th>
+                        <th scope="col">Cantidad</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      @foreach ($productos as $producto)
+                        <tr>
+                          <td>{{$producto->sku}}
+                            <input type="hidden" value="{{$producto->id}}" name="id[]"/>
+                          </td>
+                          <td>{{$producto->detalle}}</td>
+                          <td>
+                            <input type="text" name="cantidad[]" class="border rounded">
+                          </td>
+                        </tr>
+                      @endforeach
+                    </tbody>
+                  </table>
+              </div>
           </div>
       </div>
     </form>

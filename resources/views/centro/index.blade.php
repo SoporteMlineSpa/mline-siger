@@ -21,29 +21,33 @@
       <div class="card">
           <h3 class="card-header font-bold text-xl">Lista de Centros</h3>
           <div class="card-body">
-              <table id="datatable" class="table">
-                <thead>
-                  <tr>
-                    <th scope="col">#</th>
-                    <th scope="col">Nombre</th>
-                    <th scope="col">Empresa</th>
-                    <th scope="col">Accion</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  @foreach($centros as $centro)
-                    <tr>
-                      <th scope="row">{{ $loop->index }}</th>
-                      <td>{{ $centro->nombre }}</td>
-                      <td>{{ $centro->empresa()->get('razon_social')->first()->razon_social }}</td>
-                      <td>
-                        <a class="btn btn-primary" href="{{route('centros.edit', $centro)}}"><i class="fas fa-edit"></i></a>
-                        <delete-btn-component action="{{ route('centros.destroy', $centro) }}"></delete-btn-component>
-                      </td>
-                    </tr>
-                  @endforeach
-                </tbody>
-              </table>
+              <div class="container mt-2">
+              <div class="table-responsive">
+                  <table id="datatable" class="table table-sm">
+                    <thead>
+                      <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">Nombre</th>
+                        <th scope="col">Empresa</th>
+                        <th scope="col">Accion</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      @foreach($centros as $centro)
+                        <tr>
+                          <th scope="row">{{ $loop->index }}</th>
+                          <td>{{ $centro->nombre }}</td>
+                          <td>{{ $centro->empresa()->get('razon_social')->first()->razon_social }}</td>
+                          <td>
+                            <a class="btn btn-primary" href="{{route('centros.edit', $centro)}}"><i class="fas fa-edit"></i></a>
+                            <delete-btn-component action="{{ route('centros.destroy', $centro) }}"></delete-btn-component>
+                          </td>
+                        </tr>
+                      @endforeach
+                    </tbody>
+                  </table>
+              </div>
+              </div>
           </div>
       </div>
   </div>

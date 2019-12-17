@@ -10,44 +10,6 @@ use Illuminate\Support\Facades\DB;
 
 class RequerimientoController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
-    {
-        $user = Auth::user();
-        switch (get_class($user->userable)) {
-        case 'App\Empresa':
-            $empresa = $user->userable;
-            $centros = $empresa->centros()->get();
-
-            return view('requerimiento.empresa_index')->with(compact('centros'));
-
-            break;
-
-        case 'App\Centro':
-            $centro = $user->userable;
-            $requerimientos = $centro->requerimientos()->get();
-
-            return view('requerimiento.centro_index')->with(compact('requerimientos', 'centro'));
-
-            break;
-
-        case 'App\CompassRole':
-            $requerimientos = Requerimiento::where('estado', 'VALIDADO')->get();
-
-            return view('compass.pedidos_index')->with(compact('requerimientos'));
-            break;
-
-        default:
-            $msg = "Este usuario no esta asignado a ninguna empresa o centro";
-            return view('requerimiento.index')->with(compact('msg'));
-
-            break;
-        }
-    }
 
     /**
      * Muestra las ordenes de pedidos para un Centro
@@ -59,36 +21,9 @@ class RequerimientoController extends Controller
     public function showCentro($centroId, $estadoId = null)
     {
         $centro = \App\Centro::findOrFail($centroId);
-        $requerimientos = null;
-        switch ($estadoId) {
-        case 0:
-            $requerimientos = $centro->requerimientos()->where('estado', 'ESPERANDO VALIDACION')->get();
-            break;
-        case 1:
-            $requerimientos = $centro->requerimientos()->where('estado', 'VALIDADO')->get();
-            break;
-        case 2:
-            $requerimientos = $centro->requerimientos()->where('estado', 'EN PROCESAMIENTO')->get();
-            break;
-        case 3:
-            $requerimientos = $centro->requerimientos()->where('estado', 'EN BODEGA')->get();
-            break;
-        case 4:
-            $requerimientos = $centro->requerimientos()->where('estado', 'DESPACHADO')->get();
-            break;
-        case 5:
-            $requerimientos = $centro->requerimientos()->where('estado', 'ENTREGADO')->get();
-            break;
-        case 6:
-            $requerimientos = $centro->requerimientos()->where('estado', 'RECHAZADO')->get();
-            break;
-        default:
-            $requerimientos = $centro->requerimientos()->get();
-            break;
+        $requerimientos = $centro->getRequerimientosByEstado($estadoId);
 
-        }
-
-        return view('requerimiento.centro_show')->with(compact('centro', 'requerimientos'));
+        return view('requerimiento.index.show')->with(compact('centro', 'requerimientos'));
     }
 
     /**
@@ -210,11 +145,9 @@ class RequerimientoController extends Controller
         $centro->requerimientos()->save($requerimiento);
 
         foreach ($request->input('cantidad') as $key => $cantidad) {
-            if ($cantidad === null) {
-                continue;
-            } else {
+            if ($cantidad > 0) {
                 $producto = $requerimiento->productos()->save(\App\Producto::where('id', $request->input('id')[$key])->firstOrFail());
-                $requerimiento->productos()->updateExistingPivot($producto->id, [ 'cantidad' => $cantidad]);
+                $requerimiento->productos()->updateExistingPivot($producto->id, ['cantidad' => $cantidad]);
             }
         }
 
@@ -239,12 +172,6 @@ class RequerimientoController extends Controller
 
         if ($requerimientos->count() > 0) {
             $requerimientoId = $requerimientos->map(function ($requerimiento) {
-                $requerimiento->estado = "EN PROCESAMIENTO";
-                $requerimiento->save();
-                $requerimiento->getUserByRequerimiento()->map(function ($user) {
-                    $user->notify((new EstadoUpdated($requerimiento))->delay(\Carbon\Carbon::now()->addSeconds(60)));
-                });
-
                 return $requerimiento->id;
             });
             $productos = DB::table('producto_requerimiento')
@@ -260,6 +187,33 @@ class RequerimientoController extends Controller
 
         return view('compass.verificar_index')->with(compact('productos'));
     }
+
+    /**
+     * Cambia los Estado del Requerimiento a En Bodega
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function doVerificar()
+    {
+        $requerimientos = Requerimiento::where('estado', 'VALIDADO')->get();
+        $requerimientos->map(function($requerimiento) {
+            $requerimiento->estado = "EN BODEGA";
+            $requerimiento->save();
+            $users = $requerimiento->getUserByRequerimiento();
+            foreach ($users as $user) {
+                $user->notify((new EstadoUpdated($requerimiento))->delay(\Carbon\Carbon::now()->addSeconds(60)));
+            }
+        });
+        $msg = [
+            'meta' => [
+                'title' => '¡Ordenes de Pedido enviados a Bodega!',
+                'message' => 'Las Ordenes de pedido fueron enviadas a los Usuarios de Bodega'
+            ]
+        ];
+
+        return redirect()->route('compass.pedidos.index')->with(compact('msg'));
+    }
+
 
     /**
      * Lista de Ordenes de Pedidos verificadas por Centros
@@ -297,8 +251,7 @@ class RequerimientoController extends Controller
     {
         $empresa = Auth::user()->userable->empresa()->firstOrFail();
         $requerimiento = Requerimiento::findOrFail($requerimientoId);
-        $productosRequerimiento = $requerimiento->productos()->get();
-        $productos = $productosRequerimiento->union($empresa->productos()->get());
+        $productos = $requerimiento->productos()->get()->union($empresa->productos()->get());
 
         return view('requerimiento.edit')->with(compact('requerimiento', 'productos'));
     }

@@ -33,15 +33,15 @@ class Requerimiento extends Model
      */
     public function getUserByRequerimiento()
     {
-        $users = [];
+        $users = collect([]);
 
         $centro = $this->centro()->firstOrFail();
         $centroUser = $centro->users()->firstOrFail();
-        array_push($users, $centroUser);
+        $users->push($centroUser);
 
         $empresa = $centro->empresa()->firstOrFail();
         $empresaUser = $empresa->users()->firstOrFail();
-        array_push($users, $empresaUser);
+        $users->push($empresaUser);
 
         $compassUsers = \App\User::whereHasMorph(
             'userable',
@@ -51,10 +51,27 @@ class Requerimiento extends Model
             }
         )->get();
         foreach ($compassUsers as $user) {
-            array_push($users, $user);
+            $users->push($user);
         }
 
         return $users;
     }
+
+    /**
+     * Retorna el Total de ese Requerimiento
+     *
+     * @return Int
+     */
+    public function getTotal()
+    {
+        $productos = $this->productos()->get();
+        $total = $productos->map(function($producto) {
+            return $producto->pivot->cantidad * $producto->precio;
+        })->reduce(function($carry, $item) {
+            return ($carry + $item);
+        });
+        return $total;
+    }
+    
     
 }

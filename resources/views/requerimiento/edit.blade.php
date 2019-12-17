@@ -23,6 +23,27 @@
           <div class="form-group">
               <button class="btn btn-success">Guardar</button>
           </div>
+          <div class="alert alert-info container table-responsive">
+            Esta Orden de Pedido incluye los siguientes productos:
+            <table class="table table-sm">
+                <thead>
+                    <tr>
+                        <th scope="col">SKU</th>
+                        <th scope="col">Detalle</th>
+                        <th scope="col">Cantidad</th>
+                    </tr>
+                </thead>
+                <tbody>
+            @foreach ($requerimiento->productos()->get() as $producto)
+                <tr>
+                    <td>{{$producto->sku}}</td>
+                    <td>{{$producto->detalle}}</td>
+                    <td>{{$producto->pivot->cantidad}}</td>
+                </tr>
+            @endforeach
+                </tbody>
+            </table>
+          </div>
       </div>
             <div class="row">
                 <div class="container table-responsive">
@@ -41,7 +62,7 @@
                                     <td>{{$producto->detalle}}</td>
                                     <td>
                                         <input type="hidden" value="{{$producto->id}}" name="id[]"/>
-                                        <input type="text" name="cantidad[]" class="form-control form-control-sm">
+                                        <input type="text" name="cantidad[]" value="{{$producto->pivot->cantidad}}" class="form-control form-control-sm">
                                     </td>
                                 </tr>
                             @endforeach

@@ -14,11 +14,13 @@ class PresupuestoController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function indexHolding()
+    public function indexHolding($year = null, $mes = null, $acumulado = 0)
     {
         $empresas = Auth::user()->userable->empresas()->get();
-        $presupuestos = $empresas->map(function($empresa) {
-            return $empresa->presupuesto()->get();
+        $inicial = $empresas->map(function($empresa) {
+            return $empresa->getTotalPresupuestoByDate($mes, $year);
+        })->reduce(function($carry, $item) {
+            return $carry + $item;
         });
         return view('presupuesto.index.holding')->with(compact('presupuestos'));
     }
@@ -28,22 +30,92 @@ class PresupuestoController extends Controller
      *
      * @return void
      */
-    public function indexEmpresa($empresaId = null, $mes = null, $year = null, $soloMes = false)
+    public function indexEmpresa($empresaId = null, Request $request, $acumulado = 0)
     {
-        if ($empresaId === null) {
+        $year = $request->has('year') ? $request->get('year') : null;
+        $mes = $request->has('mes') ? $request->get('mes') : null;
+        if (is_null($empresaId)) {
             $centros = Auth::user()->userable->centros()->get();
-            $inicial = Auth::user()->userable->getTotalPresupuestoByDate($mes, $year);
+            if ($acumulado == 1) {
+                $inicial = Auth::user()->userable->getTotalPresupuestoByDate(null, $year);
+            } else {
+                $inicial = Auth::user()->userable->getTotalPresupuestoByDate($mes, $year);
+            }
         } else {
             $centros = \App\Empresa::find($empresaId)->centros()->get();
-            $inicial = \App\Empresa::find($empresaId)->getTotalPresupuestoByDate($mes, $year);
+            if ($acumulado == 1) {
+                $inicial = \App\Empresa::find($empresaId)->getTotalPresupuestoByDate(null, $year);
+            } else {
+                $inicial = \App\Empresa::find($empresaId)->getTotalPresupuestoByDate($mes, $year);
+            }
         }
         $date = Carbon::create($year ?? date("Y"), $mes ?? date("m"));
 
-        $requerimientos = $centros->map(function($centro) use ($date) {
-            return $centro->requerimientos()->whereYear('created_at', $date->year)->whereMonth('created_at', $date->month)->get();
+        $requerimientos = $centros->map(function($centro) use ($date, $year, $mes, $acumulado) {
+            $query = $centro->requerimientos();
+            if (!is_null($year)) {
+                $query = $query->whereYear('created_at', $date->year);
+            }
+            if (!is_null($mes) && !($acumulado == 1)) {
+                $query = $query->whereMonth('created_at', $date->month);
+            }
+            return $query->get();
         });
 
-        return view('presupuesto.index.empresa')->with(compact('requerimientos', 'inicial'));
+        return view('presupuesto.index.empresa')->with(compact('requerimientos', 'inicial', 'date'));
+    }
+
+    /**
+     * Lista de Cuenta segun su Presupuesto
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function indexCentro($centroId = null, Request $request, $acumulado = 0, $soloMes = 1)
+    {
+        $year = $request->has('year') ? $request->get('year') : null;
+        $mes = $request->has('mes') ? $request->get('mes') : null;
+        if (is_null($centroId)) {
+            $centro = Auth::user()->userable;
+            $inicial = $centro->getTotalPresupuestoByDate($mes, $year);
+        } else {
+            $centro = \App\Centro::find($centroId);
+            $inicial = $centro->getTotalPresupuestoByDate($mes, $year);
+        }
+
+        $date = Carbon::create($year ?? date("Y"), $mes ?? date("m"));
+
+        $requerimientos = $centro->requerimientos();
+        if (!is_null($year)) {
+            $requerimientos = $requerimientos->whereYear('created_at', $date->year);
+        }
+        if (!is_null($mes)) {
+            $requerimientos = $requerimientos->whereMonth('created_at', $date->month);
+        }
+        $requerimientos = $requerimientos->get();
+
+        return view('presupuesto.index.centro')->with(compact('requerimientos', 'inicial', 'date'));
+    }
+    
+    /**
+     * Retorna el CMI de la Empresa
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function cmi($empresaId = null)
+    {
+        if (is_null($empresaId)) {
+            $centros = Auth::user()->userable->centros()->get();
+        } else {
+            $centros = \App\Empresa::findOrFail($empresaId)->centros()->get();
+        }
+        $cmi = collect([]);
+        foreach ($centros as $centro) {
+            $iniciales = $centro->presupuestos()->whereYear("fecha_gestion", date("Y") + 1)->get();
+            $totales = $centro->getTotalByMes();
+            $cmi->push(collect([$centro, $iniciales, $totales]));
+        }
+
+        return view('presupuesto.index.cmi')->with(compact('cmi'));
     }
 
     /**

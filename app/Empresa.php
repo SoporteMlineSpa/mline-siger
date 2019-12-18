@@ -154,8 +154,15 @@ class Empresa extends Model
     {
         $date = \Carbon\Carbon::create($year ?? date("Y"), $mes ?? date("m"));
 
-        $presupuestoTotal = $this->centros()->get()->map(function($centro) use ($date) {
-            return (($centro->presupuestos()->whereYear('fecha_gestion', $date->year)->whereMonth('fecha_gestion', $date->month)->get('monto')->first()->monto));
+        $presupuestoTotal = $this->centros()->get()->map(function($centro) use ($date, $mesId, $year) {
+            $query = $centro->presupuestos();
+            if ($year !== null) {
+                $query = $query->whereYear('fecha_gestion', $date->year);
+            }
+            if ($mesId !== null) {
+                $query = $query->whereMonth('fecha_gestion', $date->month);
+            }
+            return (($query->get('monto')->first()->monto));
         })->reduce(function ($carry, $item) {
             return $carry + $item;
         });

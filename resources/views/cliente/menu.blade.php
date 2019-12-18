@@ -31,8 +31,11 @@
         <a class="dropdown-item" href="{{route('presupuesto.create')}}">Cargar</a>
         @if(Auth::user()->userable instanceof App\Holding)
             <a class="dropdown-item" href="{{route('presupuesto.indexHolding')}}">Cuenta Corriente</a>
-        @else(Auth::user()->userable instanceof App\Empresa)
+        @elseif(Auth::user()->userable instanceof App\Empresa)
             <a class="dropdown-item" href="{{route('presupuesto.indexEmpresa')}}">Cuenta Corriente</a>
+            <a class="dropdown-item" href="{{route('presupuesto.cmi')}}">Consolidado</a>
+        @else(Auth::user()->userable instanceof App\Empresa)
+            <a class="dropdown-item" href="{{route('presupuesto.indexCentro')}}">Cuenta Corriente</a>
         @endif
     </div>
 </li>

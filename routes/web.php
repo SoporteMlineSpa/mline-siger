@@ -64,10 +64,12 @@ Route::group(['middleware' => 'auth'], function() {
             Route::post('aceptar-todos', 'RequerimientoController@aceptarTodos')->name('pedidos.aceptarTodos');
         });
 
+        Route::get('presupuestos/cmi', 'PresupuestoController@cmi')->name('presupuesto.cmi');
+        Route::get('presupuesto/empresa/{empresaId?}/{mes?}{year?}{acumulado?}', 'PresupuestoController@indexEmpresa')->name('presupuesto.indexEmpresa');
+        Route::get('presupuesto/centro/{centroId?}/{mes?}{year?}{acumulado?}', 'PresupuestoController@indexCentro')->name('presupuesto.indexCentro');
         Route::resource('presupuesto', 'PresupuestoController')->except([
             'index', 'show'
         ]);
-        Route::get('presupuesto/{empresaId?}/{mes?}/{year?}/{soloMes?}', 'PresupuestoController@indexEmpresa')->name('presupuesto.indexEmpresa');
     });
 
     // Rutas de Compass

@@ -79,4 +79,48 @@ class Centro extends Model
         }
     }
 
+    /**
+     * Retorna el Total del Presupuesto segun el Mes y el Año
+     *
+     * @return Int
+     */
+    public function getTotalPresupuestoByDate($mesId = null, $year = null)
+    {
+        $date = \Carbon\Carbon::create($year ?? date("Y"), $mes ?? date("m"));
+        $query = $this->presupuestos();
+        if ($year !== null) {
+            $query = $query->whereYear('fecha_gestion', $date->year);
+        }
+        if ($mesId !== null) {
+            $query = $query->whereMonth('fecha_gestion', $date->month);
+        }
+
+        return $query->get();
+    }
+
+    /**
+     * Retornar el total de todos los Requerimientos segun el Mes y el Año
+     *
+     * @return Collection[int]
+     */
+    public function getTotalByMes($year = null)
+    {
+        if (is_null($year)) {
+            $requerimientos = $this->requerimientos()->whereYear('created_at', date("Y"))->get()->groupBy(function($d) {
+                return \Carbon\Carbon::parse($d->created_at)->format('m');
+            });;
+        } else {
+            $requerimientos = $this->requerimientos()->whereYear('created_at', $year)->get()->groupBy(function($d) {
+                return \Carbon\Carbon::parse($d->created_at)->format('m');
+            });;
+        }
+        $total = $requerimientos->map(function ($mes, $index) {
+            $totalMes = $mes->reduce(function($carry, $requerimiento) {
+                return $carry + $requerimiento->getTotal();
+            });
+            return [$index => $totalMes];
+        });
+        return $total;
+    }
+
 }

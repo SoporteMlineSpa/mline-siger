@@ -95,7 +95,7 @@ class PresupuestoController extends Controller
 
         return view('presupuesto.index.centro')->with(compact('requerimientos', 'inicial', 'date'));
     }
-    
+
     /**
      * Retorna el CMI de la Empresa
      *
@@ -104,18 +104,29 @@ class PresupuestoController extends Controller
     public function cmi($empresaId = null)
     {
         if (is_null($empresaId)) {
-            $centros = Auth::user()->userable->centros()->get();
+            $empresa = Auth::user()->userable;
+            $centros = $empresa->centros()->get();
         } else {
-            $centros = \App\Empresa::findOrFail($empresaId)->centros()->get();
+            $empresa = \App\Empresa::findOrFail($empresaId);
+            $centros = $empresa->centros()->get();
         }
-        $cmi = collect([]);
-        foreach ($centros as $centro) {
+        $cmi = $centros->map(function($centro) {
             $iniciales = $centro->presupuestos()->whereYear("fecha_gestion", date("Y") + 1)->get();
             $totales = $centro->getTotalByMes();
-            $cmi->push(collect([$centro, $iniciales, $totales]));
-        }
 
-        return view('presupuesto.index.cmi')->with(compact('cmi'));
+            return collect(['centro' => $centro, 'iniciales' => $iniciales, 'totales' => $totales]);
+        });
+
+        $totalPresupuesto = collect([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12])->map(function($i) use ($empresa) {
+            return $empresa->getTotalPresupuestoByDate($i, date("Y") + 1);
+        });
+
+        $totalGasto = collect([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12])->map(function($i) use ($empresa) {
+            return $empresa->getGastoByDate($i, date("Y"));
+        });
+
+
+        return view('presupuesto.index.cmi')->with(compact('cmi', 'totalPresupuesto', 'totalGasto'));
     }
 
     /**
@@ -166,7 +177,7 @@ class PresupuestoController extends Controller
             });
         });
 
-        return response()->json([
+        return response(200)->json([
             "meta" => [
                 "title" => 'Presupuesto Guardado',
                 "msg" => 'El Presupuesto fue guardado exitosamente'

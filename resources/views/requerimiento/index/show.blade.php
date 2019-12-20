@@ -35,18 +35,25 @@
                     <tbody>
                         @foreach($requerimientos as $requerimiento)
                             <tr>
-                                <td>{{ $requerimiento->nombre }}</td>
+                                <td>
+                                    <a href="{{ route('pedidos.show', $requerimiento) }}">{{ $requerimiento->nombre }}</a>
+                                </td>
                                 <td>{{ $requerimiento->estado }}</td>
                                 <td>{{ $requerimiento->created_at }}</td>
                                 <td>
-                                    <modal-btn-component
-                                        title="Orden de Pedido"
-                                        :message='[
-                                        { data: @json($requerimiento->productos), type: "Array", keys: ["sku", "detalle", "pivot"], pivot: "cantidad"}
-                                        ]'>Ver Orden de Pedido</modal-btn-component>
-                                    @if (Auth::user()->userable instanceof \App\Centro)
-                                        <a class="btn btn-success" href="{{ route('requerimientos.edit', $requerimiento) }}">Usar</a>
-                                    @endif
+                                    <div class="btn-group" role="group">
+                                        <modal-btn-component
+                                            title="Orden de Pedido"
+                                            :message='[
+                                            { data: @json($requerimiento->productos), type: "Array", keys: ["sku", "detalle", "pivot"], pivot: "cantidad"}
+                                            ]'>Ver Orden de Pedido</modal-btn-component>
+                                        @if (Auth::user()->userable instanceof \App\Centro)
+                                            <a class="btn btn-info" href="{{ route('requerimientos.edit', $requerimiento) }}">Usar</a>
+                                            @if ( $requerimiento->estado === 'DESPACHADO')
+                                            <a class="btn btn-success" href="{{ route('pedidos.entregado', $requerimiento) }}">Recibido</a>
+                                            @endif
+                                        @endif
+                                    </div>
                                 </td>
                             </tr>
                         @endforeach
@@ -57,3 +64,19 @@
 
     </div>
 @endsection
+
+@if (\Session::has('msg'))
+    @php
+        $msg = \Session::get('msg');
+    @endphp
+    @section('js')
+        <script charset="utf-8">
+            (Swal.fire({
+                title: '{{$msg['meta']['title']}}',
+                html: '{!! $msg['meta']['message'] !!}',
+                icon: 'success'
+            }))();
+
+        </script>
+    @endsection
+@endif

@@ -33,6 +33,7 @@ export default {
                     keys.forEach(element => {
                         msg += '<b>' + (element.charAt(0).toUpperCase() + element.slice(1)) + '</b>: ' + this.message[i].data[element] + '<br />'
                     })
+                    msg += '<br />'
 
                 }
                 if (this.message[i].type === "Array") {
@@ -53,7 +54,7 @@ export default {
                         msg += '<tr>'
 
                         keys.forEach(key => {
-                            msg += '<td>' + (key === 'pivot' ? element.pivot[this.message[i].pivot] : element[key]) + '</td>'
+                            msg += '<td class="text-left">' + (key === 'pivot' ? element.pivot[this.message[i].pivot] : element[key]) + '</td>'
 
                         })
                         msg += '</tr>'

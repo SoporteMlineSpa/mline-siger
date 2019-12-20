@@ -64,9 +64,19 @@ export default {
             year: null
         }
     },
+    computed: {
+        data: function() {
+            let self = this;
+            let data = this.presupuesto.map((x, index) => {
+                return {'centro': self.items[index], 'presupuesto': x};
+            });
+
+            return data;
+        }
+    },
     methods: {
         getFullYear: function() {
-            var date = new Date();
+            let date = new Date();
             return date.getFullYear();
         },
         getMonthName: function(id) {
@@ -77,58 +87,60 @@ export default {
             let total = evt.target.value;
             let subtotal = total / 12;
             for (var i = 0; i < 13; i++) {
-                this.presupuesto[centroId][i] = subtotal.toFixed(2);
+                this.presupuesto[centroId][i] = Math.round(subtotal);
             }
         },
         totalPorMes: function(mesId, evt) {
             let total = evt.target.value;
             let subtotal = total / this.items.length;
             for (var i = 0; i < this.items.length; i++) {
-                this.presupuesto[i][mesId] = subtotal.toFixed(2);
+                this.presupuesto[i][mesId] = Math.round(subtotal);
             }
         },
         calcularTotales: function(centroId, mesId) {
-            let totalCentro = 0;
-            let centroArr = this.presupuesto[centroId].map(function(x) {
-                if(!(x === undefined)) {
-                    totalCentro += parseFloat(x)
-                }
-            });
-            let totalMes = 0;
-            let mesArr = this.presupuesto.map(function(x) {
-                if (!(x[mesId] === undefined)) {
-                    totalMes += parseFloat(x[mesId]);
-                }
-            });
-            this.totalCentro[centroId] = totalCentro.toFixed(2);
-            this.totalMes[mesId] = totalMes.toFixed(2);
+            let totalCentro = this.presupuesto[centroId].filter((item) => !(item === undefined)).reduce((carry, x) => parseInt(carry) + parseInt(x));
+            let totalMes = this.presupuesto.filter((item) => !(item[mesId] === undefined)).reduce((carry, x) => parseInt(carry) + parseInt(x[mesId]));
+
+            this.totalCentro[centroId] = Math.round(totalCentro);
+            this.totalMes[mesId] = Math.round(totalMes);
         },
         submit: function() {
-            //TODO: Agregar animacion para cargar al momento de hacer el post
-            let data = [];
-            var self = this;
-            this.presupuesto.map(function(x, index) {
-                data.push({
-                    'centro': self.items[index],
-                    'presupuesto': x
-                })
-            });
-            axios
-                .post(this.action, {
-                    input: data,
-                    year: this.year
-                })
-                .then(function (response) {
-                    let data = response.data.meta;
+            let self = this;
+            Swal.fire({
+                title: 'Guardando Presupuesto',
+                text: '¿Deseas guardar este Presupuesto?',
+                showCancelButton: true,
+                confirmButtonText: 'Guardar',
+                cancelButtonText: 'Cancelar',
+                showLoaderOnConfirm: true,
+                preConfirm: () => {
+                    return axios
+                        .post(self.action, {
+                            input: self.data,
+                            year: self.year
+                        })
+                        .then(response => {
+                            console.log({response})
+                            if (!response.ok) {
+                                throw new Error(response.statusText)
+                            }
+                            return response.data
+                        })
+                        .catch(error => {
+                            Swal.showValidationMessage(
+                                `Error Guardando Presupuesto: ${error}`
+                            )
+                        })
+                },
+                allowOutsideClick: () => !Swal.isLoading()
+            }).then((result) => {
+                if (result.meta) {
                     Swal.fire({
-                        title: data.title,
-                        text: data.msg,
-                        icon: 'success'
-                    });
-                })
-                .catch(function (error) {
-                    console.error(error)
-                })
+                        title: result.meta.title,
+                        html: result.meta.msg
+                    })
+                }
+            })
         }
     },
     created() {

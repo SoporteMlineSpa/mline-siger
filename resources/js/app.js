@@ -51,4 +51,11 @@ $(document).ready(function () {
             url: '//cdn.datatables.net/plug-ins/1.10.20/i18n/Spanish.json'
         }
     })
+    $('#datatable-requerimiento').DataTable({
+        paging: false,
+        fixedHeader: true,
+        language: {
+            url: '//cdn.datatables.net/plug-ins/1.10.20/i18n/Spanish.json'
+        }
+    })
 })

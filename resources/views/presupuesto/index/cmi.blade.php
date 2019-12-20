@@ -34,11 +34,11 @@
                             <tbody>
                                 @for ($i = 0; $i < count($cmi); $i++)
                                     <tr>
-                                        <th scope="row">{{ $cmi[$i][0]->nombre }}</th>
+                                        <th scope="row">{{ $cmi[$i]['centro']->nombre }}</th>
                                         @for ($j = 0; $j < 12; $j++)
-                                            <td>{{ $real = ($cmi[$i][2]->has($j+1) ? $cmi[$i][2][$j + 1][$j + 1] : 0) }}</td>
-                                            <td>{{ $presupuesto = ($cmi[$i][1][$j]->monto / 100) }}</td>
-                                            <td>{{ $mes = $presupuesto - $real}}</td>
+                                            <td>{{ number_format($real = ($cmi[$i]['totales']->has($j+1) ? $cmi[$i]['totales'][$j + 1][$j + 1] : 0), 0) }}</td>
+                                            <td>{{ number_format($presupuesto = ($cmi[$i]['iniciales'][$j]->monto), 0) }}</td>
+                                            <td>{{ number_format($mes = $presupuesto - $real, 0)}}</td>
                                         @endfor
                                     </tr>
                                 @endfor
@@ -46,9 +46,9 @@
                             <tfoot>
                                     <th scope="row">Total</th>
                                     @for ($j = 0; $j < 12; $j++)
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
+                                        <td>{{ number_format($totalGasto[$j], 0)}}</td>
+                                        <td>{{ number_format($totalPresupuesto[$j], 0) }}</td>
+                                        <td>{{ number_format($totalPresupuesto[$j] - $totalGasto[$j], 0)}}</td>
                                     @endfor
                             </tfoot>
                         </table>

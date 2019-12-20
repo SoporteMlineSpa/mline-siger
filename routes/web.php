@@ -42,7 +42,8 @@ Route::group(['middleware' => 'auth'], function() {
     Route::group(['prefix' => 'pedidos'], function() {
         Route::get('lista', 'EmpresaController@indexRequerimientos')->name('pedidos.indexEmpresa');
         Route::get('empresa/{empresa?}/{estado?}', 'CentroController@indexRequerimientos')->name('pedidos.indexCentro');
-        Route::get('centro/{centroId}/{estado?}', 'RequerimientoController@showCentro')->name('pedidos.centro');
+        Route::get('centro/{centro}/{estado?}', 'RequerimientoController@showCentro')->name('pedidos.centro');
+        Route::get('{requerimiento}', 'RequerimientoController@show')->name('pedidos.show');
     });
 
     // Rutas del Cliente
@@ -57,11 +58,12 @@ Route::group(['middleware' => 'auth'], function() {
             Route::get('editar/{requerimiento}', 'RequerimientoController@edit')->name('requerimientos.edit');
 
             Route::get('validar-pedidos', 'RequerimientoController@validarPedidos')->name('pedidos.validar');
-            Route::get('{centro}/{estado?}', 'RequerimientoController@showCentro')->name('pedidos.centro');
 
             Route::post('aceptar', 'RequerimientoController@aceptar')->name('pedidos.aceptar');
             Route::post('rechazar', 'RequerimientoController@rechazar')->name('pedidos.rechazar');
             Route::post('aceptar-todos', 'RequerimientoController@aceptarTodos')->name('pedidos.aceptarTodos');
+
+            Route::get('recibida/{requerimiento}', 'RequerimientoController@entregado')->name('pedidos.entregado');
         });
 
         Route::get('presupuestos/cmi', 'PresupuestoController@cmi')->name('presupuesto.cmi');
@@ -96,7 +98,8 @@ Route::group(['middleware' => 'auth'], function() {
             Route::post('verificar', 'RequerimientoController@doVerificar')->name('compass.verificar');
 
             Route::get('armar', 'RequerimientoController@indexCajas')->name('compass.pedidos.cajasIndex');
-            Route::get('armar/{requerimientoId}', 'RequerimientoController@show')->name('compass.pedidos.show');
+            Route::get('armar/{requerimientoId}', 'RequerimientoController@showCaja')->name('compass.pedidos.show');
+            Route::post('despachar/{requerimiento}', 'RequerimientoController@despachar')->name('compass.pedidos.despachar');
         });
 
     });

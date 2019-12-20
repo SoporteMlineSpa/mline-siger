@@ -152,7 +152,7 @@ class Empresa extends Model
      */
     public function getTotalPresupuestoByDate($mesId = null, $year = null)
     {
-        $date = \Carbon\Carbon::create($year ?? date("Y"), $mes ?? date("m"));
+        $date = \Carbon\Carbon::create($year ?? date("Y"), $mesId ?? date("m"));
 
         $presupuestoTotal = $this->centros()->get()->map(function($centro) use ($date, $mesId, $year) {
             $query = $centro->presupuestos();
@@ -170,6 +170,32 @@ class Empresa extends Model
         return $presupuestoTotal;
     }
 
+    /**
+     * Retorna los Gastos segun el Mes y el Año
+     *
+     * @params Int $mesId, Int $year
+     * @return void
+     */
+    public function getGastoByDate($mesId = null, $year = null)
+    {
+        $date = \Carbon\Carbon::create($year ?? date("Y"), $mesId ?? date("m"));
+
+        $gastoTotal = $this->centros()->get()
+                           ->map(function ($centro) use ($date) {
+                               return $centro->getTotalByMes($date->year);
+                           })
+                           ->filter(function($value) {
+                               return count($value) > 0;
+                           })
+                           ->filter(function($value) use($mesId) {
+                               return $value->has($mesId);
+                           })
+                           ->reduce(function($carry, $item) use($mesId) {
+                               return $carry + $item[$mesId][$mesId];
+                           });
+
+        return $gastoTotal ?? 0;
+    }
 
 
 }

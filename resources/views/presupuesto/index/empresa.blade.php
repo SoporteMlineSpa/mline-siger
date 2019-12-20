@@ -60,9 +60,9 @@
                                     <td>Presupuesto</td>
                                     <td>Carga Inicial</td>
                                     <td>{{ __($date->year.$date->month) }}</td>
-                                    <td>{{ number_format($inicial / 100, 2) }}</td>
+                                    <td>{{ number_format($inicial / 100, 0) }}</td>
                                     <td></td>
-                                    <td>{{ number_format($inicial / 100, 2)}}</td>
+                                    <td>{{ number_format($inicial / 100, 0)}}</td>
                                 </tr>
                                 @php
                                     $saldo = ($inicial / 100);
@@ -87,8 +87,8 @@
                                                     ]'>{{$pedido->id}}</modal-btn-component>
                                             </td>
                                             <td></td>
-                                            <td>{{ number_format($pedido->getTotal(), 2) }}</td>
-                                            <td>{{ number_format(($saldo -= $pedido->getTotal()), 2) }}</td>
+                                            <td>{{ number_format($pedido->getTotal(), 0) }}</td>
+                                            <td>{{ number_format(($saldo -= $pedido->getTotal()), 0) }}</td>
                                         </tr>
                                     @endforeach
                                 @endforeach

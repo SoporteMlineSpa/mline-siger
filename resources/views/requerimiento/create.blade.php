@@ -27,7 +27,7 @@
       <div class="row">
           <div class="container">
               <div class="table-responsive">
-                  <table class="table table-sm" id="datatable">
+                  <table class="table table-sm" id="datatable-requerimiento">
                     <thead>
                       <tr>
                         <th scope="col">SKU</th>

@@ -51,31 +51,34 @@ class Centro extends Model
      */
     public function getRequerimientosByEstado($estadoId = null)
     {
+        if ($estadoId === null) {
+            $estadoId = 7;
+        }
         switch ($estadoId) {
-        case 0:
-            return $this->requerimientos()->where('estado', 'ESPERANDO VALIDACION')->get();
-            break;
-        case 1:
-            return $this->requerimientos()->where('estado', 'VALIDADO')->get();
-            break;
-        case 2:
-            return $this->requerimientos()->where('estado', 'EN PROCESAMIENTO')->get();
-            break;
-        case 3:
-            return $this->requerimientos()->where('estado', 'EN BODEGA')->get();
-            break;
-        case 4:
-            return $this->requerimientos()->where('estado', 'DESPACHADO')->get();
-            break;
-        case 5:
-            return $this->requerimientos()->where('estado', 'ENTREGADO')->get();
-            break;
-        case 6:
-            return $this->requerimientos()->where('estado', 'RECHAZADO')->get();
-            break;
-        default:
-            return $this->requerimientos()->get();
-            break;
+            case 0:
+                return $this->requerimientos()->where('estado', 'ESPERANDO VALIDACION')->get();
+                break;
+            case 1:
+                return $this->requerimientos()->where('estado', 'VALIDADO')->get();
+                break;
+            case 2:
+                return $this->requerimientos()->where('estado', 'EN PROCESAMIENTO')->get();
+                break;
+            case 3:
+                return $this->requerimientos()->where('estado', 'EN BODEGA')->get();
+                break;
+            case 4:
+                return $this->requerimientos()->where('estado', 'DESPACHADO')->get();
+                break;
+            case 5:
+                return $this->requerimientos()->where('estado', 'ENTREGADO')->get();
+                break;
+            case 6:
+                return $this->requerimientos()->where('estado', 'RECHAZADO')->get();
+                break;
+            case 7:
+                return $this->requerimientos;
+                break;
         }
     }
 
@@ -86,7 +89,7 @@ class Centro extends Model
      */
     public function getTotalPresupuestoByDate($mesId = null, $year = null)
     {
-        $date = \Carbon\Carbon::create($year ?? date("Y"), $mes ?? date("m"));
+        $date = \Carbon\Carbon::create($year ?? date("Y"), $mesId ?? date("m"));
         $query = $this->presupuestos();
         if ($year !== null) {
             $query = $query->whereYear('fecha_gestion', $date->year);
@@ -108,15 +111,15 @@ class Centro extends Model
         if (is_null($year)) {
             $requerimientos = $this->requerimientos()->whereYear('created_at', date("Y"))->get()->groupBy(function($d) {
                 return \Carbon\Carbon::parse($d->created_at)->format('m');
-            });;
+            });
         } else {
             $requerimientos = $this->requerimientos()->whereYear('created_at', $year)->get()->groupBy(function($d) {
                 return \Carbon\Carbon::parse($d->created_at)->format('m');
-            });;
+            });
         }
         $total = $requerimientos->map(function ($mes, $index) {
             $totalMes = $mes->reduce(function($carry, $requerimiento) {
-                return $carry + $requerimiento->getTotal();
+                return $carry + ($requerimiento->getTotal() ?? 0);
             });
             return [$index => $totalMes];
         });

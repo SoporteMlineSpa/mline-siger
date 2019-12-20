@@ -2,10 +2,22 @@
 
 namespace App;
 
+use App\Notifications\EstadoUpdated;
 use Illuminate\Database\Eloquent\Model;
 
 class Requerimiento extends Model
 {
+    protected static function boot()
+    {
+        parent::boot();
+        static::saved( function ($model) {
+            $users = $model->getUserByRequerimiento();
+            $users->map(function ($user) use ($model) {
+                $user->notify((new EstadoUpdated($model))->delay(\Carbon\Carbon::now()->addSeconds(60)));
+            });
+        });
+    }
+    
     /**
      * Retorna los productos relacionados a ese Requerimietno
      *
@@ -13,7 +25,7 @@ class Requerimiento extends Model
      */
     public function productos()
     {
-        return $this->belongsToMany('App\Producto')->withPivot('cantidad');
+        return $this->belongsToMany('App\Producto')->withPivot('cantidad', 'real', 'observacion');
     }
 
     /**
@@ -70,6 +82,7 @@ class Requerimiento extends Model
         })->reduce(function($carry, $item) {
             return ($carry + $item);
         });
+
         return $total;
     }
     

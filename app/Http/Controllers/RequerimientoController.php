@@ -151,12 +151,6 @@ class RequerimientoController extends Controller
             }
         }
 
-        $users = $requerimiento->getUserByRequerimiento();
-
-        foreach ($users as $user) {
-            $user->notify((new EstadoUpdated($requerimiento))->delay(\Carbon\Carbon::now()->addSeconds(60)));
-        }
-
         return back()->with(['msg' => 'Exito']);
 
     }
@@ -199,10 +193,6 @@ class RequerimientoController extends Controller
         $requerimientos->map(function($requerimiento) {
             $requerimiento->estado = "EN BODEGA";
             $requerimiento->save();
-            $users = $requerimiento->getUserByRequerimiento();
-            foreach ($users as $user) {
-                $user->notify((new EstadoUpdated($requerimiento))->delay(\Carbon\Carbon::now()->addSeconds(60)));
-            }
         });
         $msg = [
             'meta' => [
@@ -211,7 +201,7 @@ class RequerimientoController extends Controller
             ]
         ];
 
-        return redirect()->route('compass.pedidos.index')->with(compact('msg'));
+        return redirect()->route('pedidos.indexEmpresa')->with(compact('msg'));
     }
 
 
@@ -223,7 +213,7 @@ class RequerimientoController extends Controller
     public function indexCajas()
     {
         $centros = \App\Centro::whereHas('requerimientos', function ($query) {
-            $query->where('estado', 'VALIDADO');
+            $query->where('estado', 'EN BODEGA');
         })->get();
 
         return view('compass.cajas_index')->with(compact('centros'));
@@ -234,7 +224,7 @@ class RequerimientoController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function show($requerimientoId)
+    public function showCaja($requerimientoId)
     {
         $requerimiento = Requerimiento::findOrFail($requerimientoId);
 
@@ -255,5 +245,84 @@ class RequerimientoController extends Controller
 
         return view('requerimiento.edit')->with(compact('requerimiento', 'productos'));
     }
+
+    /**
+     * Actualiza el Requerimiento a DESPACHADO, junto a informacion adicional de Compass
+     *
+     * @param \Illuminate\Http\Request $request
+     * @param \App\Requerimiento $requerimiento
+     * @return \Illuminate\Http\Response
+     */
+    public function despachar(Request $request, \App\Requerimiento $requerimiento)
+    {
+        //TODO: Generar Guia de Despacho
+
+        $productos = collect($request->input('productos'));
+        $reales = collect($request->input('real'));
+        $observaciones = collect($request->input('observaciones'));
+
+        $productos->map(function($item, $index) use ($requerimiento, $reales, $observaciones) {
+            $producto = json_decode($item, true);
+            $requerimiento->productos()->updateExistingPivot($producto['id'], ['real' => $reales[$index], 'observacion' => $observaciones[$index]]);
+        });
+
+        $requerimiento->estado = "DESPACHADO";
+        if ($requerimiento->saveOrFail()) {
+            $msg = [
+                'meta' => [
+                    'title' => '¡Orden de Pedido Despachada!',
+                    'message' => 'La Orden de Pedido fue despachada sin problemas'
+                ]
+            ];
+
+            return redirect()->route('pedidos.indexEmpresa')->with(compact('msg'));
+        }
+    }
+
+    /**
+     * Detalles de un Requerimiento en especifico
+     *
+     * @param \App\Requerimiento $requerimiento
+     * @return \Illuminate\Http\Response
+     */
+    public function show(\App\Requerimiento $requerimiento)
+    {
+        $centro = $requerimiento->centro;
+        $empresa = $centro->empresa;
+        $productos = $requerimiento->productos;
+
+        return view('requerimiento.show')->with(compact('requerimiento', 'centro', 'empresa', 'productos'));
+    }
+    
+    /**
+     * Cambia el estado de un Requerimiento a ENTREGADO
+     *
+     * @para \App\Requerimiento $requerimiento
+     * @return \Illuminate\Http\Response
+     */
+    public function entregado(\App\Requerimiento $requerimiento)
+    {
+        $requerimiento->estado = "ENTREGADO";
+        if ($requerimiento->saveOrFail()) {
+            $msg = [
+                'meta' => [
+                    'title' => '¡Orden de Pedido Recibida!',
+                    'message' => 'La Orden de Pedido fue Recibida sin problemas'
+                ]
+            ];
+
+            return back()->with(compact('msg'));
+        } else {
+            $msg = [
+                'meta' => [
+                    'title' => '¡Error!',
+                    'message' => 'La Orden de Pedido no pudo ser actualizada al estado Recibida'
+                ]
+            ];
+
+            return back()->with(compact('msg'));
+        }
+    }
+    
 
 }

@@ -32,7 +32,6 @@
                         <table id="datatable" class="table">
                             <thead>
                                 <tr>
-                                    <th scope="col">#</th>
                                     <th scope="col">Nombre</th>
                                     <th scope="col">Estado</th>
                                     <th scope="col">Acciones</th>
@@ -41,8 +40,7 @@
                             <tbody>
                                 @foreach ($centro->requerimientos()->where('estado', 'ESPERANDO VALIDACION')->get() as $requerimiento)
                                     <tr>
-                                        <th scope="row">{{ $loop->index }}</th>
-                                        <td>{{ $requerimiento->nombre }}</td>
+                                        <td><a href="{{ route('pedidos.show', $requerimiento) }}">{{ $requerimiento->nombre }}</a></td>
                                         <td>{{ $requerimiento->estado }}</td>
                                         <td class="d-flex flex-row">
                                             <modal-btn-component

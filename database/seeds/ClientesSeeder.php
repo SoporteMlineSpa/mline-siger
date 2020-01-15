@@ -1,144 +1,627 @@
 <?php
 
+use App\Abastecimiento;
+use App\Empresa;
 use Illuminate\Database\Seeder;
 
 class ClientesSeeder extends Seeder
 {
-  /**
-   * Run the database seeds.
-   *
-   * @return void
-   */
-  public function run()
-  {
+    /**
+     * Run the database seeds.
+     *
+     * @return void
+     */
+    public function run()
+    {
+        $empresa = Empresa::create([
+            "razon_social" => 'AUSTRALIS MAR S.A',
+            "rut" => '76003885-7',
+            "giro" => 'CULTIVO ESPECIES ACUATICAS',
+            "direccion" => 'SANTA ROSA N°560, OFICINA 15 A, PUERTO VARAS'
+        ]);
 
-    $abastecimiento = new App\Abastecimiento;
-    $abastecimiento->nombre = 'Eurest CL Puerto Montt';
-    $abastecimiento->save();
+        $empresa->users()->create([
+            "name" => 'Cristian Carrillo',
+            "email" => 'ccarrillo@australis-sa.com',
+            "password" => bcrypt('$F?v@Q5)')
+        ]);
 
-    $australis = new App\Empresa;
-    $australis->razon_social = 'Australis Mar S.A';
-    $australis->rut = '76.003.885-7';
-    $australis->direccion = 'Santa Rosa #560, Oficina 15 A, Puerto Varas';
+        $empresa->centros()->createMany([
+            [
+                "nombre"=> "Costa",
+                "direccion"=> "Sector San José s/n, Calbuco",
+                "comuna"=> "Calbuco",
+                "ciudad"=> "Calbuco"
+            ],
+            [
+                "nombre"=> "Humos 2",
+                "direccion"=> "Sector San José s/n, Calbuco",
+                "comuna"=> "Calbuco",
+                "ciudad"=> "Calbuco"
+            ],
+            [
+                "nombre"=> "Traiguén",
+                "direccion"=> "Sector San José s/n, Calbuco",
+                "comuna"=> "Calbuco",
+                "ciudad"=> "Calbuco"
+            ],
+            [
+                "nombre"=> "Humos 3",
+                "direccion"=> "Sector San José s/n, Calbuco",
+                "comuna"=> "Calbuco",
+                "ciudad"=> "Calbuco"
+            ],
+            [
+                "nombre"=> "Humos 5",
+                "direccion"=> "Sector San José s/n, Calbuco",
+                "comuna"=> "Calbuco",
+                "ciudad"=> "Calbuco"
+            ],
+            [
+                "nombre"=> "Humos 6",
+                "direccion"=> "Sector San José s/n, Calbuco",
+                "comuna"=> "Calbuco",
+                "ciudad"=> "Calbuco"
+            ],
+            [
+                "nombre"=> "Melchor 4",
+                "direccion"=> "Sector San José s/n, Calbuco",
+                "comuna"=> "Calbuco",
+                "ciudad"=> "Calbuco"
+            ],
+            [
+                "nombre"=> "Moraleda",
+                "direccion"=> "Sector San José s/n, Calbuco",
+                "comuna"=> "Calbuco",
+                "ciudad"=> "Calbuco"
+            ]
+        ]);
 
-    $abastecimiento->empresas()->save($australis);
+        $empresa = Empresa::create([
+            "razon_social" => 'Salmones Blumar S.A',
+            "rut" => '76653690-5',
+            "giro" => 'ACUICULTURA',
+            "direccion" => 'Avenida Juan Soler Manfredini 11 Of 1202, Puerto Montt'
+        ]);
 
-    $australis->centros()->saveMany([
-      new App\Centro(['nombre' => 'Costa']),
-      new App\Centro(['nombre' => 'Humos 2']),
-      new App\Centro(['nombre' => 'Traiguén']),
-      new App\Centro(['nombre' => 'Humos 3']),
-      new App\Centro(['nombre' => 'Humos 5']),
-      new App\Centro(['nombre' => 'Humos 6']),
-      new App\Centro(['nombre' => 'Melchor 4']),
-      new App\Centro(['nombre' => 'Moraleda']),
-    ]);
-    $australis->users()->save(
-      factory(App\User::class)->make()
-    );
+        $empresa->users()->create([
+            "name" => 'Alejandro Guerrero',
+            "email" => 'alejandro.guerrero@blumar.com',
+            "password" => bcrypt('9y#G<D\r')
+        ]);
 
-    $blumar = new App\Empresa;
-    $blumar->razon_social = 'Salmones Blumar S.A';
-    $blumar->rut = '76653690-5';
-    $blumar->direccion = 'Avenida Juan Soler Manfredini 11 Of 1202, Puerto Montt';
+        $empresa->centros()->createMany([
+            [
+                "nombre" => "Caicura",
+                "direccion" => "Camino a Chinquihue, Km 5,1 Puerto Montt",
+                "comuna" => "Puerto Montt",
+                "ciudad" => "Puerto Montt"
+            ],
+            [
+                "nombre" => "Chivato 1",
+                "direccion" => "Camino a Chinquihue, Km 5,1 Puerto Montt",
+                "comuna" => "Puerto Montt",
+                "ciudad" => "Puerto Montt"
+            ],
+            [
+                "nombre" => "Chivato 2",
+                "direccion" => "Camino a Chinquihue, Km 5,1 Puerto Montt",
+                "comuna" => "Puerto Montt",
+                "ciudad" => "Puerto Montt"
+            ],
+            [
+                "nombre" => "Concheo 2",
+                "direccion" => "Camino a Chinquihue, Km 5,1 Puerto Montt",
+                "comuna" => "Puerto Montt",
+                "ciudad" => "Puerto Montt"
+            ],
+            [
+                "nombre" => "Dring 3",
+                "direccion" => "Camino a Chinquihue, Km 5,1 Puerto Montt",
+                "comuna" => "Puerto Montt",
+                "ciudad" => "Puerto Montt"
+            ],
+            [
+                "nombre" => "Dring 1",
+                "direccion" => "Camino a Chinquihue, Km 5,1 Puerto Montt",
+                "comuna" => "Puerto Montt",
+                "ciudad" => "Puerto Montt"
+            ],
+            [
+                "nombre" => "Elena NW",
+                "direccion" => "Camino a Chinquihue, Km 5,1 Puerto Montt",
+                "comuna" => "Puerto Montt",
+                "ciudad" => "Puerto Montt"
+            ],
+            [
+                "nombre" => "Ester",
+                "direccion" => "Camino a Chinquihue, Km 5,1 Puerto Montt",
+                "comuna" => "Puerto Montt",
+                "ciudad" => "Puerto Montt"
+            ],
+            [
+                "nombre" => "Forsyth",
+                "direccion" => "Camino a Chinquihue, Km 5,1 Puerto Montt",
+                "comuna" => "Puerto Montt",
+                "ciudad" => "Puerto Montt"
+            ],
+            [
+                "nombre" => "Level",
+                "direccion" => "Camino a Chinquihue, Km 5,1 Puerto Montt",
+                "comuna" => "Puerto Montt",
+                "ciudad" => "Puerto Montt"
+            ],
+            [
+                "nombre" => "Midhurst",
+                "direccion" => "Camino a Chinquihue, Km 5,1 Puerto Montt",
+                "comuna" => "Puerto Montt",
+                "ciudad" => "Puerto Montt"
+            ],
+            [
+                "nombre" => "Ninualac 1",
+                "direccion" => "Camino a Chinquihue, Km 5,1 Puerto Montt",
+                "comuna" => "Puerto Montt",
+                "ciudad" => "Puerto Montt"
+            ],
+            [
+                "nombre" => "Ninualac 2",
+                "direccion" => "Camino a Chinquihue, Km 5,1 Puerto Montt",
+                "comuna" => "Puerto Montt",
+                "ciudad" => "Puerto Montt"
+            ],
+            [
+                "nombre" => "Orestes",
+                "direccion" => "Camino a Chinquihue, Km 5,1 Puerto Montt",
+                "comuna" => "Puerto Montt",
+                "ciudad" => "Puerto Montt"
+            ],
+            [
+                "nombre" => "Punta Rouse",
+                "direccion" => "Camino a Chinquihue, Km 5,1 Puerto Montt",
+                "comuna" => "Puerto Montt",
+                "ciudad" => "Puerto Montt"
+            ],
+            [
+                "nombre" => "Se Forsyth",
+                "direccion" => "Camino a Chinquihue, Km 5,1 Puerto Montt",
+                "comuna" => "Puerto Montt",
+                "ciudad" => "Puerto Montt"
+            ],
+            [
+                "nombre" => "Tangbac",
+                "direccion" => "Camino a Chinquihue, Km 5,1 Puerto Montt",
+                "comuna" => "Puerto Montt",
+                "ciudad" => "Puerto Montt"
+            ],
+            [
+                "nombre" => "Team Baños 1",
+                "direccion" => "Camino a Chinquihue, Km 5,1 Puerto Montt",
+                "comuna" => "Puerto Montt",
+                "ciudad" => "Puerto Montt"
+            ],
+            [
+                "nombre" => "Team Depto Baños 2",
+                "direccion" => "Camino a Chinquihue, Km 5,1 Puerto Montt",
+                "comuna" => "Puerto Montt",
+                "ciudad" => "Puerto Montt"
+            ],
+            [
+                "nombre" => "Victoria",
+                "direccion" => "Camino a Chinquihue, Km 5,1 Puerto Montt",
+                "comuna" => "Puerto Montt",
+                "ciudad" => "Puerto Montt"
+            ]
+        ]);
 
-    $abastecimiento->empresas()->save($blumar);
+        $empresa = Empresa::create([
+            "razon_social" => 'Exportadora Los Fiordos Limitada',
+            "rut" => '79872420-7',
+            "giro" => 'REPRODUCCION Y CRIANZAS DE PECES MARINOS',
+            "direccion" => 'Avenida Diego Portales n° 2000, Puerto Montt'
+        ]);
 
-    $blumar->centros()->saveMany([
-      new App\Centro(['nombre' => 'Caicura']),
-      new App\Centro(['nombre' => 'Chivato 1']),
-      new App\Centro(['nombre' => 'Chivato 2']),
-      new App\Centro(['nombre' => 'Concheo 2']),
-      new App\Centro(['nombre' => 'Dring 3']),
-      new App\Centro(['nombre' => 'Dring 1']),
-      new App\Centro(['nombre' => 'Elena NW']),
-      new App\Centro(['nombre' => 'Ester']),
-      new App\Centro(['nombre' => 'Forsyth']),
-      new App\Centro(['nombre' => 'Level']),
-      new App\Centro(['nombre' => 'Midhurst']),
-      new App\Centro(['nombre' => 'Ninualac 1']),
-      new App\Centro(['nombre' => 'Ninualac 2']),
-      new App\Centro(['nombre' => 'Orestes']),
-      new App\Centro(['nombre' => 'Punta Rouse']),
-      new App\Centro(['nombre' => 'Se Forsyth']),
-      new App\Centro(['nombre' => 'Tangbac']),
-      new App\Centro(['nombre' => 'Team Baños 1']),
-      new App\Centro(['nombre' => 'Team Depto Baños 2']),
-      new App\Centro(['nombre' => 'Victoria'])
-    ]);
-    $blumar->users()->save(factory(App\User::class)->make());
+        $empresa->users()->createMany([
+            [
+                "name" => 'Pablo Villagran',
+                "email" => 'pablo.villagran@aquachile.cl',
+                "password" => bcrypt('[pmQ3vy?')
+            ]
+        ]);
 
-    $fiordos = new App\Empresa;
-    $fiordos->razon_social = 'Exportadora Los Fiordos Limitada';
-    $fiordos->rut = '79872420-7';
-    $fiordos->direccion = 'Avenida Diego Portales n° 2000, Puerto Montt';
+        $empresa->centros()->createMany([
+            [
+                "nombre" => "Acuario",
+                "direccion" => "Arturo Prat 313, Puerto Cisnes",
+                "comuna" => "Puerto Cisnes",
+                "ciudad" => "Puerto Cisnes"
+            ],
+            [
+                "nombre" => "Angostura",
+                "direccion" => "Arturo Prat 313, Puerto Cisnes",
+                "comuna" => "Puerto Cisnes",
+                "ciudad" => "Puerto Cisnes"
+            ],
+            [
+                "nombre" => "Bahia Anita",
+                "direccion" => "Arturo Prat 313, Puerto Cisnes",
+                "comuna" => "Puerto Cisnes",
+                "ciudad" => "Puerto Cisnes"
+            ],
+            [
+                "nombre" => "Catalina",
+                "direccion" => "Arturo Prat 313, Puerto Cisnes",
+                "comuna" => "Puerto Cisnes",
+                "ciudad" => "Puerto Cisnes"
+            ],
+            [
+                "nombre" => "Esperanza",
+                "direccion" => "Arturo Prat 313, Puerto Cisnes",
+                "comuna" => "Puerto Cisnes",
+                "ciudad" => "Puerto Cisnes"
+            ],
+            [
+                "nombre" => "Estero Nieto",
+                "direccion" => "Arturo Prat 313, Puerto Cisnes",
+                "comuna" => "Puerto Cisnes",
+                "ciudad" => "Puerto Cisnes"
+            ],
+            [
+                "nombre" => "Estero Soto",
+                "direccion" => "Arturo Prat 313, Puerto Cisnes",
+                "comuna" => "Puerto Cisnes",
+                "ciudad" => "Puerto Cisnes"
+            ],
+            [
+                "nombre" => "Gala 1",
+                "direccion" => "Arturo Prat 313, Puerto Cisnes",
+                "comuna" => "Puerto Cisnes",
+                "ciudad" => "Puerto Cisnes"
+            ],
+            [
+                "nombre" => "Graffer",
+                "direccion" => "Arturo Prat 313, Puerto Cisnes",
+                "comuna" => "Puerto Cisnes",
+                "ciudad" => "Puerto Cisnes"
+            ],
+            [
+                "nombre" => "Isla Suarez",
+                "direccion" => "Arturo Prat 313, Puerto Cisnes",
+                "comuna" => "Puerto Cisnes",
+                "ciudad" => "Puerto Cisnes"
+            ],
+            [
+                "nombre" => "Marta",
+                "direccion" => "Arturo Prat 313, Puerto Cisnes",
+                "comuna" => "Puerto Cisnes",
+                "ciudad" => "Puerto Cisnes"
+            ],
+            [
+                "nombre" => "Martina",
+                "direccion" => "Arturo Prat 313, Puerto Cisnes",
+                "comuna" => "Puerto Cisnes",
+                "ciudad" => "Puerto Cisnes"
+            ],
+            [
+                "nombre" => "Melimoyu",
+                "direccion" => "Arturo Prat 313, Puerto Cisnes",
+                "comuna" => "Puerto Cisnes",
+                "ciudad" => "Puerto Cisnes"
+            ],
+            [
+                "nombre" => "Piscicultura Magdalena",
+                "direccion" => "Arturo Prat 313, Puerto Cisnes",
+                "comuna" => "Puerto Cisnes",
+                "ciudad" => "Puerto Cisnes"
+            ],
+            [
+                "nombre" => "Punta Ganso",
+                "direccion" => "Arturo Prat 313, Puerto Cisnes",
+                "comuna" => "Puerto Cisnes",
+                "ciudad" => "Puerto Cisnes"
+            ],
+            [
+                "nombre" => "San Andres",
+                "direccion" => "Arturo Prat 313, Puerto Cisnes",
+                "comuna" => "Puerto Cisnes",
+                "ciudad" => "Puerto Cisnes"
+            ],
+            [
+                "nombre" => "Villegas",
+                "direccion" => "Arturo Prat 313, Puerto Cisnes",
+                "comuna" => "Puerto Cisnes",
+                "ciudad" => "Puerto Cisnes"
+            ],
+            [
+                "nombre" => "Bodega Cisnes",
+                "direccion" => "Arturo Prat 313, Puerto Cisnes",
+                "comuna" => "Puerto Cisnes",
+                "ciudad" => "Puerto Cisnes"
+            ],
+            [
+                "nombre" => "Acuario",
+                "direccion" => "Arturo Prat 313, Puerto Cisnes",
+                "comuna" => "Puerto Cisnes",
+                "ciudad" => "Puerto Cisnes"
+            ],
+            [
+                "nombre" => "Angostura",
+                "direccion" => "Arturo Prat 313, Puerto Cisnes",
+                "comuna" => "Puerto Cisnes",
+                "ciudad" => "Puerto Cisnes"
+            ],
+            [
+                "nombre" => "Base Melinka",
+                "direccion" => "Camino a Repollal s/n, Melinka",
+                "comuna" => "Guaitecas",
+                "ciudad" => "Guaitecas"
+            ],
+            [
+                "nombre" => "Betecoi",
+                "direccion" => "Camino a Repollal s/n, Melinka",
+                "comuna" => "Guaitecas",
+                "ciudad" => "Guaitecas"
+            ],
+            [
+                "nombre" => "Canal Perez Norte",
+                "direccion" => "Camino a Repollal s/n, Melinka",
+                "comuna" => "Guaitecas",
+                "ciudad" => "Guaitecas"
+            ],
+            [
+                "nombre" => "Carabelas",
+                "direccion" => "Camino a Repollal s/n, Melinka",
+                "comuna" => "Guaitecas",
+                "ciudad" => "Guaitecas"
+            ],
+            [
+                "nombre" => "Chaffer",
+                "direccion" => "Camino a Repollal s/n, Melinka",
+                "comuna" => "Guaitecas",
+                "ciudad" => "Guaitecas"
+            ],
+            [
+                "nombre" => "Concoto",
+                "direccion" => "Camino a Repollal s/n, Melinka",
+                "comuna" => "Guaitecas",
+                "ciudad" => "Guaitecas"
+            ],
+            [
+                "nombre" => "Cuptana 9",
+                "direccion" => "Camino a Repollal s/n, Melinka",
+                "comuna" => "Guaitecas",
+                "ciudad" => "Guaitecas"
+            ],
+            [
+                "nombre" => "Elena",
+                "direccion" => "Camino a Repollal s/n, Melinka",
+                "comuna" => "Guaitecas",
+                "ciudad" => "Guaitecas"
+            ],
+            [
+                "nombre" => "Garrao 2",
+                "direccion" => "Camino a Repollal s/n, Melinka",
+                "comuna" => "Guaitecas",
+                "ciudad" => "Guaitecas"
+            ],
+            [
+                "nombre" => "Isla May",
+                "direccion" => "Camino a Repollal s/n, Melinka",
+                "comuna" => "Guaitecas",
+                "ciudad" => "Guaitecas"
+            ],
+            [
+                "nombre" => "Lagreze",
+                "direccion" => "Camino a Repollal s/n, Melinka",
+                "comuna" => "Guaitecas",
+                "ciudad" => "Guaitecas"
+            ],
+            [
+                "nombre" => "Luna 2",
+                "direccion" => "Camino a Repollal s/n, Melinka",
+                "comuna" => "Guaitecas",
+                "ciudad" => "Guaitecas"
+            ],
+            [
+                "nombre" => "Navarro",
+                "direccion" => "Camino a Repollal s/n, Melinka",
+                "comuna" => "Guaitecas",
+                "ciudad" => "Guaitecas"
+            ],
+            [
+                "nombre" => "Serrano",
+                "direccion" => "Camino a Repollal s/n, Melinka",
+                "comuna" => "Guaitecas",
+                "ciudad" => "Guaitecas"
+            ],
+            [
+                "nombre" => "Sierra",
+                "direccion" => "Camino a Repollal s/n, Melinka",
+                "comuna" => "Guaitecas",
+                "ciudad" => "Guaitecas"
+            ],
+            [
+                "nombre" => "Valverde 4",
+                "direccion" => "Camino a Repollal s/n, Melinka",
+                "comuna" => "Guaitecas",
+                "ciudad" => "Guaitecas"
+            ],
+            [
+                "nombre" => "Valverde 5",
+                "direccion" => "Camino a Repollal s/n, Melinka",
+                "comuna" => "Guaitecas",
+                "ciudad" => "Guaitecas"
+            ],
+            [
+                "nombre" => "Valverde 6",
+                "direccion" => "Camino a Repollal s/n, Melinka",
+                "comuna" => "Guaitecas",
+                "ciudad" => "Guaitecas"
+            ],
+            [
+                "nombre" => "Verdugo 1",
+                "direccion" => "Camino a Repollal s/n, Melinka",
+                "comuna" => "Guaitecas",
+                "ciudad" => "Guaitecas"
+            ],
+            [
+                "nombre" => " Verdugo 2",
+                "direccion" => "Camino a Repollal s/n, Melinka",
+                "comuna" => "Guaitecas",
+                "ciudad" => "Guaitecas"
+            ]
+        ]);
 
-    $abastecimiento->empresas()->save($fiordos);
+        $empresa = Empresa::create([
+            "razon_social" => 'Empresas Aquachile S.A',
+            "rut" => '86247400-7',
+            "giro" => 'Cultivo Marinos, Procesadora de Productos',
+            "direccion" => 'Cardonal s/n Lote B, Puerto Montt'
+        ]);
 
-    $fiordos->centros()->saveMany([
-      new App\Centro(['nombre' => 'Acuario']),
-      new App\Centro(['nombre' => 'Angostura']),
-      new App\Centro(['nombre' => 'Bahia Anita']),
-      new App\Centro(['nombre' => 'Catalina']),
-      new App\Centro(['nombre' => 'Esperanza']),
-      new App\Centro(['nombre' => 'Estero Nieto']),
-      new App\Centro(['nombre' => 'Estero Soto']),
-      new App\Centro(['nombre' => 'Gala 1']),
-      new App\Centro(['nombre' => 'Graffer']),
-      new App\Centro(['nombre' => 'Isla Suarez']),
-      new App\Centro(['nombre' => 'Marta']),
-      new App\Centro(['nombre' => 'Martina']),
-      new App\Centro(['nombre' => 'Melimoyu']),
-      new App\Centro(['nombre' => 'Piscicultura Magdalena']),
-      new App\Centro(['nombre' => 'Punta Ganso']),
-      new App\Centro(['nombre' => 'San Andres']),
-      new App\Centro(['nombre' => 'Villegas']),
-      new App\Centro(['nombre' => 'Bodega Cisnes']),
-      new App\Centro(['nombre' => 'Base Melinka']),
-      new App\Centro(['nombre' => 'Betecoi']),
-      new App\Centro(['nombre' => 'Canal Perez Norte']),
-      new App\Centro(['nombre' => 'Carabelas']),
-      new App\Centro(['nombre' => 'Chaffer']),
-      new App\Centro(['nombre' => 'Concoto']),
-      new App\Centro(['nombre' => 'Cuptana 9']),
-      new App\Centro(['nombre' => 'Elena']),
-      new App\Centro(['nombre' => 'Garrao 2']),
-      new App\Centro(['nombre' => 'Isla May']),
-      new App\Centro(['nombre' => 'Lagreze']),
-      new App\Centro(['nombre' => 'Luna 2']),
-      new App\Centro(['nombre' => 'Navarro']),
-      new App\Centro(['nombre' => 'Serrano']),
-      new App\Centro(['nombre' => 'Sierra']),
-      new App\Centro(['nombre' => 'Valverde 4']),
-      new App\Centro(['nombre' => 'Valverde 5']),
-      new App\Centro(['nombre' => 'Valverde 6']),
-      new App\Centro(['nombre' => 'Verdugo 1']),
-      new App\Centro(['nombre' => 'Verdugo 2']),
-      new App\Centro(['nombre' => 'Tecnico Cabañas Piscicultura Hornopiren']),
-      new App\Centro(['nombre' => 'Tecnico Administración Piscicultura Hornopiren'])
-    ]);
-    $fiordos->users()->save(factory(App\User::class)->make());
+        $empresa->users()->create([
+            "name" => 'Ana Aldea Ainol',
+            "email" => 'ana.aldea@aquachile.cl',
+            "password" => bcrypt('F>:-kC3R')
+        ]);
 
-    $aqua = new App\Empresa;
-    $aqua->razon_social = 'Empresas Aquachile S.A';
-    $aqua->rut = '86247400-7';
-    $aqua->direccion = 'Cardonal s/n Lote B, Puerto Montt';
+        $empresa->centros()->createMany([
+            [
+                "nombre" => "Avellano",
+                "direccion" => "Arturo Prat 313, Puerto Cisnes",
+                "comuna" => "Puerto Cisnes",
+                "ciudad" => "Puerto Cisnes"
+            ],
+            [
+                "nombre" => "Cascada",
+                "direccion" => "Arturo Prat 313, Puerto Cisnes",
+                "comuna" => "Puerto Cisnes",
+                "ciudad" => "Puerto Cisnes"
+            ],
+            [
+                "nombre" => "Pangal 1",
+                "direccion" => "Arturo Prat 313, Puerto Cisnes",
+                "comuna" => "Puerto Cisnes",
+                "ciudad" => "Puerto Cisnes"
+            ],
+            [
+                "nombre" => "Pangal 2",
+                "direccion" => "Arturo Prat 313, Puerto Cisnes",
+                "comuna" => "Puerto Cisnes",
+                "ciudad" => "Puerto Cisnes"
+            ],
+            [
+                "nombre" => "Pangal 3",
+                "direccion" => "Arturo Prat 313, Puerto Cisnes",
+                "comuna" => "Puerto Cisnes",
+                "ciudad" => "Puerto Cisnes"
+            ],
+            [
+                "nombre" => "Punta Gonzalez",
+                "direccion" => "Arturo Prat 313, Puerto Cisnes",
+                "comuna" => "Puerto Cisnes",
+                "ciudad" => "Puerto Cisnes"
+            ],
+            [
+                "nombre" => "Avellano",
+                "direccion" => "Arturo Prat 313, Puerto Cisnes",
+                "comuna" => "Puerto Cisnes",
+                "ciudad" => "Puerto Cisnes"
+            ],
+            [
+                "nombre" => "Cascada",
+                "direccion" => "Arturo Prat 313, Puerto Cisnes",
+                "comuna" => "Puerto Cisnes",
+                "ciudad" => "Puerto Cisnes"
+            ],
+            [
+                "nombre" => "Pangal 1",
+                "direccion" => "Arturo Prat 313, Puerto Cisnes",
+                "comuna" => "Puerto Cisnes",
+                "ciudad" => "Puerto Cisnes"
+            ],
+            [
+                "nombre" => "Pangal 2",
+                "direccion" => "Arturo Prat 313, Puerto Cisnes",
+                "comuna" => "Puerto Cisnes",
+                "ciudad" => "Puerto Cisnes"
+            ],
+            [
+                "nombre" => "Pangal 3",
+                "direccion" => "Arturo Prat 313, Puerto Cisnes",
+                "comuna" => "Puerto Cisnes",
+                "ciudad" => "Puerto Cisnes"
+            ],
+            [
+                "nombre" => "Punta Gonzalez",
+                "direccion" => "Arturo Prat 313, Puerto Cisnes",
+                "comuna" => "Puerto Cisnes",
+                "ciudad" => "Puerto Cisnes"
+            ],
+            [
+                "nombre" => "Avellano",
+                "direccion" => "Arturo Prat 313, Puerto Cisnes",
+                "comuna" => "Puerto Cisnes",
+                "ciudad" => "Puerto Cisnes"
+            ],
+            [
+                "nombre" => "Cascada",
+                "direccion" => "Arturo Prat 313, Puerto Cisnes",
+                "comuna" => "Puerto Cisnes",
+                "ciudad" => "Puerto Cisnes"
+            ],
+            [
+                "nombre" => "Pangal 1",
+                "direccion" => "Arturo Prat 313, Puerto Cisnes",
+                "comuna" => "Puerto Cisnes",
+                "ciudad" => "Puerto Cisnes"
+            ],
+            [
+                "nombre" => "Pangal 2",
+                "direccion" => "Arturo Prat 313, Puerto Cisnes",
+                "comuna" => "Puerto Cisnes",
+                "ciudad" => "Puerto Cisnes"
+            ],
+            [
+                "nombre" => "Pangal 3",
+                "direccion" => "Arturo Prat 313, Puerto Cisnes",
+                "comuna" => "Puerto Cisnes",
+                "ciudad" => "Puerto Cisnes"
+            ],
+            [
+                "nombre" => "Punta Gonzalez",
+                "direccion" => "Arturo Prat 313, Puerto Cisnes",
+                "comuna" => "Puerto Cisnes",
+                "ciudad" => "Puerto Cisnes"
+            ],
+            [
+                "nombre" => "Avellano",
+                "direccion" => "Arturo Prat 313, Puerto Cisnes",
+                "comuna" => "Puerto Cisnes",
+                "ciudad" => "Puerto Cisnes"
+            ],
+            [
+                "nombre" => "Cascada",
+                "direccion" => "Arturo Prat 313, Puerto Cisnes",
+                "comuna" => "Puerto Cisnes",
+                "ciudad" => "Puerto Cisnes"
+            ]
+        ]);
 
-    $abastecimiento->empresas()->save($aqua);
+        $abastecimiento = Abastecimiento::create([
+            "nombre" => 'Muelle Frowuar'
+        ]);
 
-    $aqua->centros()->saveMany([
-      new App\Centro(['nombre' => 'Avellano']),
-      new App\Centro(['nombre' => 'Cascada']),
-      new App\Centro(['nombre' => 'Pangal 1']),
-      new App\Centro(['nombre' => 'Pangal 2']),
-      new App\Centro(['nombre' => 'Pangal 3']),
-      new App\Centro(['nombre' => 'Punta Gonzalez']),
-    ]);
-    $aqua->users()->save(factory(App\User::class)->make());
+        $abastecimiento = Abastecimiento::create([
+            "nombre" => 'Muelle Oxxean'
+        ]);
+        
+        $abastecimiento = Abastecimiento::create([
+            "nombre" => 'Puerto Cisnes'
+        ]);
 
-    $centros = App\Centro::all();
-    foreach ($centros as $centro) {
-      $centro->users()->save(factory(App\User::class)->make());
+        $abastecimiento = Abastecimiento::create([
+            "nombre" => 'Melinka'
+        ]);
+
     }
-  }
 }

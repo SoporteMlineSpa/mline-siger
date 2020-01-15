@@ -6,6 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class Empresa extends Model
 {
+    protected $fillable = ['razon_social', 'giro', 'direccion', 'rut'];
+
     /**
      * Los usuarios asociados a esa Empresa
      *
@@ -41,17 +43,7 @@ class Empresa extends Model
      */
     public function productos()
     {
-        return $this->belongsToMany('App\Producto');
-    }
-
-    /**
-     * El Punto de Abastecimiento asociado a esa Empresa
-     *
-     * @return App\Abastecimiento
-     */
-    public function abastecimiento()
-    {
-        return $this->belongsTo('App\Abastecimiento');
+        return $this->belongsToMany('App\Producto')->withPivot('precio');
     }
 
     /**
@@ -80,13 +72,18 @@ class Empresa extends Model
      *
      * @return App\Requerimiento
      */
-    public function getRequerimientoByEstado(String $estado)
+    public function getRequerimientoByEstado(String $estado, $date = null)
     {
         $requerimientos = collect([]);
         $centros = $this->centros()->get();
 
         foreach ($centros as $centro) {
-            $requerimientosCentro = $centro->requerimientos()->where('estado', $estado)->get();
+            $requerimientosCentro = $centro->requerimientos()->where('estado', $estado);
+            if ($date === null) {
+                $requerimientosCentro = $requerimientosCentro->whereYear('created_at', date("Y"))->whereMonth('created_at', date("m"))->get();
+            } else {
+                $requerimientosCentro = $requerimientosCentro->whereYear('created_at', $date->year)->whereMonth('created_at', $date->month)->get();
+            }
             if (count($requerimientosCentro) > 0) {
                 $requerimientos->push($requerimientosCentro);
             }
@@ -162,7 +159,8 @@ class Empresa extends Model
             if ($mesId !== null) {
                 $query = $query->whereMonth('fecha_gestion', $date->month);
             }
-            return (($query->get('monto')->first()->monto));
+            $monto = $query->get()->first()->monto ?? 0;
+            return $monto;
         })->reduce(function ($carry, $item) {
             return $carry + $item;
         });
@@ -181,18 +179,18 @@ class Empresa extends Model
         $date = \Carbon\Carbon::create($year ?? date("Y"), $mesId ?? date("m"));
 
         $gastoTotal = $this->centros()->get()
-                           ->map(function ($centro) use ($date) {
-                               return $centro->getTotalByMes($date->year);
-                           })
-                           ->filter(function($value) {
-                               return count($value) > 0;
-                           })
-                           ->filter(function($value) use($mesId) {
-                               return $value->has($mesId);
-                           })
-                           ->reduce(function($carry, $item) use($mesId) {
-                               return $carry + $item[$mesId][$mesId];
-                           });
+                                      ->map(function ($centro) use ($date) {
+                                          return $centro->getTotalByMes($date->year);
+                                      })
+                                      ->filter(function($value) {
+                                          return count($value) > 0;
+                                      })
+                                      ->filter(function($value) use($mesId) {
+                                          return $value->has($mesId);
+                                      })
+                                      ->reduce(function($carry, $item) use($mesId) {
+                                          return $carry + $item[$mesId][$mesId];
+                                      });
 
         return $gastoTotal ?? 0;
     }

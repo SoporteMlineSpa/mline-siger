@@ -16,7 +16,7 @@
                 <form action="{{route('productos.update', $producto)}}" method="POST" accept-charset="utf-8">
                     @csrf
                     @method('PUT')
-                    
+
                     <div class="form-group row">
                         <label class="col-sm-2" for="sku">SKU:</label>
                         <span class="col-sm-6">
@@ -32,30 +32,32 @@
                     </div>
 
                     <div class="form-group row">
-                        <label class="col-sm-2" for="precio">Precio:</label>
+                        <label class="col-sm-2" for="costo">Costo:</label>
                         <span class="col-sm-6">
-                            <input class="form-control" required type="text" name="precio" value="{{$producto->precio}}">
+                            <input class="form-control" required type="text" name="costo" value="{{$producto->costo}}">
                         </span>
                     </div>
 
-                    <div class="form-group row">
-                        <label class="col-sm-2" for="sku">Stock:</label>
-                        <span class="col-sm-6">
-                            <input class="form-control" required type="text" name="stock" value="{{$producto->stock}}">
-                        </span>
+                    <div class="row">
+                        <div class="container p-3">
+                            <div class="row border-bottom bg-dark text-light">
+                                <div class="col-md text-center">Empresa</div>
+                                <div class="col-md text-center">Costo ($)</div>
+                                <div class="col-md text-center">Porcentaje Ganancia (%)</div>
+                                <div class="col-md text-center">Precio Neto ($)</div>
+                                <div class="col-md text-center">Precio Venta ($)</div>
+                            </div>
+                            @foreach ($empresas as $index => $empresa)
+                                <producto-edit-precio
+                                    empresa-id="{{ $empresa->id }}"
+                                    precio-costo="{{ $producto->costo }}"
+                                    venta-actual="{{ $empresa->productos()->where('sku', $producto->sku)->first()->pivot->precio}}">
+                                    {{ $empresa->razon_social }}
+                                </producto-edit-precio>
+                            @endforeach
+                        </div>
                     </div>
-
-                    <div class="form-group row">
-                        <label class="col-sm-2" for="empresas">Empresas Asignadas:</label>
-                        <span class="col-sm-6">
-                            <select name="empresa[]" class="form-control" multiple>
-                                <option value="0" @if($selected->search(0) !== false) selected @endif>Todas las Empresas</option>
-                                @foreach ($empresas as $empresa)
-                                    <option value="{{$empresa->id}}"  @if($selected->search($empresa->id) !== false) selected @endif>{{$empresa->razon_social}}</option>
-                                @endforeach
-                            </select>
-                        </span>
-                    </div>
+                    <p class="text-danger">Si el valor de precio venta es igual a 0 entonces este producto no estara disponible para esa empresa</p>
 
                     <div class="form-group row">
                         <div class="col-sm-10">

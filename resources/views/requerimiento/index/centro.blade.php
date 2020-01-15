@@ -48,42 +48,42 @@
                 <th scope="row">{{ $loop->index }}</th>
                 <td>{{ $centro->nombre }}</td>
                 <td>
-                    <a href="{{ route('pedidos.centro', ['centro' => $centro->id, 'estado' => '0']) }}">
+                    <a href="{{ route('pedidos.centroIndex', ['centro' => $centro->id, 'estado' => '0']) }}">
                         {{ count($centro->requerimientos()->where('estado', 'ESPERANDO VALIDACION')->get()) }}
                     </a>
                 </td>
                 <td>
-                    <a href="{{ route('pedidos.centro', ['centro' => $centro->id, 'estado' => '1']) }}">
+                    <a href="{{ route('pedidos.centroIndex', ['centro' => $centro->id, 'estado' => '1']) }}">
                         {{ count($centro->requerimientos()->where('estado', 'VALIDADO')->get()) }}
                     </a>
                 </td>
                 <td>
-                    <a href="{{ route('pedidos.centro', ['centro' => $centro->id, 'estado' => '2']) }}">
+                    <a href="{{ route('pedidos.centroIndex', ['centro' => $centro->id, 'estado' => '2']) }}">
                         {{ count($centro->requerimientos()->where('estado', 'EN PROCESAMIENTO')->get()) }}
                     </a>
                 </td>
                 <td>
-                    <a href="{{ route('pedidos.centro', ['centro' => $centro->id, 'estado' => '3']) }}">
+                    <a href="{{ route('pedidos.centroIndex', ['centro' => $centro->id, 'estado' => '3']) }}">
                         {{ count($centro->requerimientos()->where('estado', 'EN BODEGA')->get()) }}
                     </a>
                 </td>
                 <td>
-                    <a href="{{ route('pedidos.centro', ['centro' => $centro->id, 'estado' => '4']) }}">
+                    <a href="{{ route('pedidos.centroIndex', ['centro' => $centro->id, 'estado' => '4']) }}">
                         {{ count($centro->requerimientos()->where('estado', 'DESPACHADO')->get()) }}
                     </a>
                 </td>
                 <td>
-                    <a href="{{ route('pedidos.centro', ['centro' => $centro->id, 'estado' => '5']) }}">
+                    <a href="{{ route('pedidos.centroIndex', ['centro' => $centro->id, 'estado' => '5']) }}">
                         {{ count($centro->requerimientos()->where('estado', 'ENTREGADO')->get()) }}
                     </a>
                 </td>
                 <td>
-                    <a href="{{ route('pedidos.centro', ['centro' => $centro->id, 'estado' => '6']) }}">
+                    <a href="{{ route('pedidos.centroIndex', ['centro' => $centro->id, 'estado' => '6']) }}">
                         {{ count($centro->requerimientos()->where('estado', 'RECHAZADO')->get()) }}
                     </a>
                 </td>
                 <td>
-                    <a href="{{ route('pedidos.centro', ['centro' => $centro->id, 'estado' => '7']) }}">
+                    <a href="{{ route('pedidos.centroIndex', ['centro' => $centro->id, 'estado' => '7']) }}">
                         Ver Todas
                     </a>
                 </td>

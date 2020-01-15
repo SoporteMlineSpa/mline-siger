@@ -55,9 +55,8 @@ class EmpresaController extends Controller
         } else {
             $holdings = [];
         }
-        $abastecimientos = \App\Abastecimiento::all();
 
-        return view('empresa.create')->with(compact('holdings', 'abastecimientos'));
+        return view('empresa.create')->with(compact('holdings'));
     }
 
     /**
@@ -72,8 +71,8 @@ class EmpresaController extends Controller
         $empresa->razon_social = $request->input('razon_social');
         $empresa->rut = $request->input('rut');
         $empresa->direccion = $request->input('direccion');
+        $empresa->giro = $request->input('giro');
 
-        ($empresa->abastecimiento()->associate(\App\Abastecimiento::find($request->input('abastecimiento'))));
         if ($request->has('holding')) {
             $empresa->holding()->associate(\App\Holding::find($request->input('holding')));
         }
@@ -93,7 +92,7 @@ class EmpresaController extends Controller
                 ],
                 'meta' => [
                     'title' => '¡Empresa guardada exitosamente!',
-                    'message' => 'Una nueva Empresa fue creada con los siguientes datos:<br /><b>Razon Social:</b>'.$empresa->razon_social.'<br/><b>RUT:</b>'.$empresa->rut.'<br/><b>Direccion:</b>'.$empresa->direccion.'<br/><b>Punto de Abastecimiento:</b>'.$empresa->abastecimiento()->get('nombre')->first()->nombre
+                    'msg' => 'Una nueva Empresa fue creada con los siguientes datos:<br /><b>Razon Social:</b>'.$empresa->razon_social.'<br/><b>RUT:</b>'.$empresa->rut.'<br/><b>Direccion:</b>'.$empresa->direccion.'<br/><b>Giro:</b>'.$empresa->giro
                 ]
             ];
             return redirect()->route('empresas.index')->with(compact('msg'));
@@ -126,9 +125,7 @@ class EmpresaController extends Controller
             $holdings = [];
         }
 
-        $abastecimientos = \App\Abastecimiento::all();
-
-        return view('empresa.edit')->with(compact('empresa', 'holdings', 'abastecimientos'));
+        return view('empresa.edit')->with(compact('empresa', 'holdings'));
     }
 
     /**
@@ -143,7 +140,8 @@ class EmpresaController extends Controller
         $empresa->razon_social = $request->input('razon_social');
         $empresa->rut = $request->input('rut');
         $empresa->direccion = $request->input('direccion');
-        $empresa->abastecimiento()->associate(\App\Abastecimiento::find($request->input('abastecimiento')));
+        $empresa->giro = $request->input('giro');
+
         if ($request->has('holding')) {
             $empresa->holding()->associate(Holding::find($request->input('holding')));
         }
@@ -163,7 +161,7 @@ class EmpresaController extends Controller
                 ],
                 'meta' => [
                     'title' => '¡Empresa guardada exitosamente!',
-                    'message' => 'La Empresa fue actualizada con los siguientes datos:<br /><b>Holding:</b>'.$empresa->holding()->get('nombre')->first()->nombre.'<br/><b>Razon Social:</b>'.$empresa->razon_social.'<br/><b>RUT:</b>'.$empresa->rut.'<br/><b>Direccion:</b>'.$empresa->direccion.'<br/><b>Punto de Abastecimiento:</b>'.$empresa->abastecimiento()->get('nombre')->first()->nombre
+                    'msg' => 'La Empresa fue actualizada con los siguientes datos:<br /><b>Holding:</b>'.$empresa->holding()->get('nombre')->first()->nombre.'<br/><b>Razon Social:</b>'.$empresa->razon_social.'<br/><b>RUT:</b>'.$empresa->rut.'<br/><b>Direccion:</b>'.$empresa->direccion.'<br/><b>Giro:</b>'.$empresa->giro
                 ]
             ];
             return redirect()->route('empresas.index')->with(compact('msg'));
@@ -191,7 +189,7 @@ class EmpresaController extends Controller
                 ],
                 'meta' => [
                     'title' => '¡Empresa eliminada exitosamente!',
-                    'message' => 'La Empresa <b>'.$empresa->nombre.'</b> ha sido borrada.<br />La pagina se recargara'
+                    'msg' => 'La Empresa <b>'.$empresa->razon_social.'</b> ha sido borrada.<br />La pagina se recargara'
                 ]
             ], 200);
         } catch (Exception $e) {

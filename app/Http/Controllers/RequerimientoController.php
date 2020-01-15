@@ -27,6 +27,81 @@ class RequerimientoController extends Controller
     }
 
     /**
+     * Muestra el control para las ordenes de pedido para un Centro
+     *
+     * @param \App\Centro $centroId
+     * @param Int year
+     * @return \Illuminate\Http\Response
+     */
+    public function centroIndex($centroId, $year = null)
+    {
+        $centro = \App\Centro::findOrFail($centroId);
+        $requerimientos = $centro->requerimientos();
+        if (!is_null($year)) {
+            $requerimientos = $requerimientos
+                ->whereYear('created_at', $year)
+                ->get();
+
+            $estados = $requerimientos
+                ->groupBy([function($query) {
+                    return \Carbon\Carbon::parse($query->created_at)->format('m');
+                }, 'estado']);
+
+            $requerimientos = $requerimientos
+                ->groupBy(function($query) {
+                    return \Carbon\Carbon::parse($query->created_at)->format('m');
+                });
+        } else {
+            $requerimientos = $requerimientos
+                ->whereYear('created_at', date("Y"))
+                ->get();
+
+            $estados = $requerimientos
+                ->groupBy([function($query) {
+                    return \Carbon\Carbon::parse($query->created_at)->format('m');
+                }, 'estado']);
+
+            $requerimientos = $requerimientos
+                ->groupBy(function($query) {
+                    return \Carbon\Carbon::parse($query->created_at)->format('m');
+                });
+        }
+
+        $counts = collect([]);
+        $products = collect([]);
+        $totals = collect([]);
+        for ($i = 1; $i < 13; $i++) {
+            $key = str_pad($i, 2, "0", STR_PAD_LEFT);
+            if ($requerimientos->has($key)) {
+                $counts->push(count($requerimientos[$key]));
+                $products->push($requerimientos[$key]->reduce(function($carry, $requerimiento) {
+                    return $carry + $requerimiento->productos->count();
+                }));
+                $totals->push($requerimientos[$key]->reduce(function($carry, $requerimiento) {
+                    return $carry + $requerimiento->getTotal();
+                }));
+            } else {
+                $counts->push(0);
+                $products->push(0);
+                $totals->push(0);
+            }
+        }
+
+        $counts->push($counts->reduce(function($carry, $item) {
+            return $carry + $item;
+        }));
+        $products->push($counts->reduce(function($carry, $item) {
+            return $carry + $item;
+        }));
+        $totals->push($totals->reduce(function($carry, $item) {
+            return $carry + $item;
+        }));
+
+        return view('requerimiento.index.index_mes')->with(compact('centro', 'counts', 'products', 'totals', 'estados'));
+    }
+    
+
+    /**
      * Muestra las ordenes de pedidos pendiente y permite validarlas
      *
      * @return void
@@ -49,9 +124,9 @@ class RequerimientoController extends Controller
      */
     public function aceptar(Request $request)
     {
-        $requerimientoId = json_decode($request->input('requerimiento'), true);
+        $requerimientoId = $request->input('requerimiento');
 
-        $requerimiento = Requerimiento::find($requerimientoId['id']);
+        $requerimiento = Requerimiento::find($requerimientoId);
         $requerimiento->estado = "VALIDADO";
         $requerimiento->save();
 
@@ -61,7 +136,7 @@ class RequerimientoController extends Controller
             $user->notify((new EstadoUpdated($requerimiento))->delay(\Carbon\Carbon::now()->addSeconds(60)));
         }
 
-        return back()->with(['msg' => ['title' => '¡Orden aceptada exitosamente!', 'text' => 'La Orden de Pedido fue aceptada']]);
+        return response()->json(['title' => '¡Orden aceptada exitosamente!', 'msg' => 'La Orden de Pedido fue aceptada']);
     }
 
 
@@ -72,19 +147,13 @@ class RequerimientoController extends Controller
      */
     public function rechazar(Request $request)
     {
-        $requerimientoId = json_decode($request->input('requerimiento'), true);
+        $requerimientoId = $request->input("requerimiento");
 
-        $requerimiento = Requerimiento::find($requerimientoId['id']);
+        $requerimiento = Requerimiento::find($requerimientoId);
         $requerimiento->estado = "RECHAZADO";
         $requerimiento->save();
 
-        $users = $requerimiento->getUserByRequerimiento();
-
-        foreach ($users as $user) {
-            $user->notify((new EstadoUpdated($requerimiento))->delay(\Carbon\Carbon::now()->addSeconds(60)));
-        }
-
-        return back()->with(['msg' => ['title' => '¡Orden rechazada exitosamente!', 'text' => 'La Orden de Pedido fue rechazada']]);;
+        return response()->json(['title' => '¡Orden rechazada exitosamente!', 'msg' => 'La Orden de Pedido fue rechazada']);;
     }
 
     /**
@@ -114,7 +183,7 @@ class RequerimientoController extends Controller
         }
 
         $msg = ['title' => '¡Ordenes aceptadas exitosamente!', 'text' => 'Todas las Ordenes fueron aceptadas'];
-        return back()->with(compact('msg'));
+        return response()->json($msg);
     }
 
 
@@ -128,7 +197,12 @@ class RequerimientoController extends Controller
         $empresa = Auth::user()->userable->empresa()->firstOrFail();
         $productos = $empresa->productos()->get();;
 
-        return view('requerimiento.create')->with(compact('productos'));
+        $nombre = date("Y-m-d") . ' '
+            .Auth::user()->userable->empresa->razon_social . ': '
+            .Auth::user()->userable->nombre . ':  '
+            .(is_null(\App\Requerimiento::latest()->first()) ? 0 : \App\Requerimiento::latest()->first()->id);
+
+        return view('requerimiento.create')->with(compact('productos', 'nombre'));
     }
 
     /**
@@ -141,17 +215,27 @@ class RequerimientoController extends Controller
     {
         $centro = Auth::user()->userable;
         $requerimiento = new Requerimiento;
-        $requerimiento->nombre = $request->input('nombre');
+        $requerimiento->nombre = date("Y-m-d") . ' '
+            .Auth::user()->userable->empresa->razon_social . ': '
+            .Auth::user()->userable->nombre . ': '
+            .(is_null(\App\Requerimiento::latest()->first()) ? 0 : \App\Requerimiento::latest()->first()->id);
         $centro->requerimientos()->save($requerimiento);
 
         foreach ($request->input('cantidad') as $key => $cantidad) {
             if ($cantidad > 0) {
-                $producto = $requerimiento->productos()->save(\App\Producto::where('id', $request->input('id')[$key])->firstOrFail());
-                $requerimiento->productos()->updateExistingPivot($producto->id, ['cantidad' => $cantidad]);
+                $producto = $centro->empresa->productos->where('id', $request->input('id')[$key])->first();
+                $requerimiento->productos()->attach($producto, ["cantidad" => $cantidad, 'precio' => $producto->pivot->precio]);
             }
         }
 
-        return back()->with(['msg' => 'Exito']);
+        $msg = [
+            'meta' => [
+                'title' => 'Orden de Pedido realizada exitosamente',
+                'msg' => 'Una nueva Orden de Pedido fue realizada'
+            ]
+        ];
+
+        return redirect()->route('pedidos.centro', Auth::user()->userable->id)->with(compact('msg'));
 
     }
 
@@ -197,7 +281,7 @@ class RequerimientoController extends Controller
         $msg = [
             'meta' => [
                 'title' => '¡Ordenes de Pedido enviados a Bodega!',
-                'message' => 'Las Ordenes de pedido fueron enviadas a los Usuarios de Bodega'
+                'msg' => 'Las Ordenes de pedido fueron enviadas a los Usuarios de Bodega'
             ]
         ];
 
@@ -213,7 +297,7 @@ class RequerimientoController extends Controller
     public function indexCajas()
     {
         $centros = \App\Centro::whereHas('requerimientos', function ($query) {
-            $query->where('estado', 'EN BODEGA');
+            $query->where('estado', 'EN BODEGA')->where('folio', null);
         })->get();
 
         return view('compass.cajas_index')->with(compact('centros'));
@@ -243,7 +327,12 @@ class RequerimientoController extends Controller
         $requerimiento = Requerimiento::findOrFail($requerimientoId);
         $productos = $requerimiento->productos()->get()->union($empresa->productos()->get());
 
-        return view('requerimiento.edit')->with(compact('requerimiento', 'productos'));
+        $nombre = date("Y-m-d") . ' '
+            .Auth::user()->userable->empresa->razon_social . ': '
+            .Auth::user()->userable->nombre . ': '
+            .\App\Requerimiento::latest()->first()->id;
+
+        return view('requerimiento.edit')->with(compact('requerimiento', 'productos', 'nombre'));
     }
 
     /**
@@ -253,10 +342,33 @@ class RequerimientoController extends Controller
      * @param \App\Requerimiento $requerimiento
      * @return \Illuminate\Http\Response
      */
-    public function despachar(Request $request, \App\Requerimiento $requerimiento)
+    public function armarCaja(Request $request, \App\Requerimiento $requerimiento)
     {
-        //TODO: Generar Guia de Despacho
 
+        $folio = \App\Folio::where('activo', true)->latest()->first();
+
+        $ultimoRequerimiento = \App\Requerimiento::where('estado', 'DESPACHADO')->orWhere('estado', 'ENTREGADO')->latest()->first();
+        $ultimo = (is_null($ultimoRequerimiento) ? $folio->desde : $ultimoRequerimiento->folio);
+
+        if ($ultimo >= $folio->hasta) {
+            $msg = [
+                'meta' => [
+                    'title' => '¡Sin Folios Disponibles!',
+                    'msg' => 'Se necesitan cargar Folios para poder generar la guia de despacho'
+                ]
+            ];
+
+            return redirect()->route('pedidos.indexEmpresa')->with(compact('msg'));
+        } else {
+            if ($ultimo + 1 == $folio->hasta) {
+                $folio->activo = false;
+                $folio->save;
+            }
+            $folio = $ultimo + 1;
+        }
+
+        $requerimiento = \App\Requerimiento::find($requerimiento->id);
+        $requerimiento->folio = $folio;
         $productos = collect($request->input('productos'));
         $reales = collect($request->input('real'));
         $observaciones = collect($request->input('observaciones'));
@@ -266,17 +378,16 @@ class RequerimientoController extends Controller
             $requerimiento->productos()->updateExistingPivot($producto['id'], ['real' => $reales[$index], 'observacion' => $observaciones[$index]]);
         });
 
-        $requerimiento->estado = "DESPACHADO";
-        if ($requerimiento->saveOrFail()) {
-            $msg = [
-                'meta' => [
-                    'title' => '¡Orden de Pedido Despachada!',
-                    'message' => 'La Orden de Pedido fue despachada sin problemas'
-                ]
-            ];
+        $requerimiento->save();
 
-            return redirect()->route('pedidos.indexEmpresa')->with(compact('msg'));
-        }
+        $msg = [
+            'meta' => [
+                'title' => '¡Orden de Pedido Armada!',
+                'msg' => 'La Orden de Pedido fue armada sin problemas'
+            ]
+        ];
+
+        return redirect()->route('compass.pedidos.cajasIndex')->with(compact('msg'));
     }
 
     /**
@@ -293,7 +404,7 @@ class RequerimientoController extends Controller
 
         return view('requerimiento.show')->with(compact('requerimiento', 'centro', 'empresa', 'productos'));
     }
-    
+
     /**
      * Cambia el estado de un Requerimiento a ENTREGADO
      *
@@ -307,7 +418,7 @@ class RequerimientoController extends Controller
             $msg = [
                 'meta' => [
                     'title' => '¡Orden de Pedido Recibida!',
-                    'message' => 'La Orden de Pedido fue Recibida sin problemas'
+                    'msg' => 'La Orden de Pedido fue Recibida sin problemas'
                 ]
             ];
 
@@ -316,13 +427,195 @@ class RequerimientoController extends Controller
             $msg = [
                 'meta' => [
                     'title' => '¡Error!',
-                    'message' => 'La Orden de Pedido no pudo ser actualizada al estado Recibida'
+                    'msg' => 'La Orden de Pedido no pudo ser actualizada al estado Recibida'
                 ]
             ];
 
             return back()->with(compact('msg'));
         }
     }
-    
+
+    /**
+     * Muestra el formulario para reemplzar un producto por otro
+     *
+     * @return Illuminate\Http\Response
+     */
+    public function cambiarProducto(\App\Requerimiento $requerimiento, \App\Producto $producto)
+    {
+        $empresa = \App\Empresa::findOrFail($requerimiento->centro->empresa->id);
+        $productos = $empresa->productos()->get();
+
+        return view('compass.cajas_reemplazar')->with(compact('productos', 'requerimiento', 'producto'));
+    }
+
+    /**
+     * Reemplazar un productos por otro en el Requerimiento
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function reemplazar(\App\Requerimiento $requerimiento, Request $request)
+    {
+
+        $productoReemplazado = $requerimiento->productos->where('id', $request->input('productoReemplazadoId'))->first();
+        $nuevoProducto = $requerimiento->centro->empresa->productos->where('id', $request->input('nuevoProducto'))->first();
+
+        if (!is_null($productoReemplazado) && !is_null($nuevoProducto)) {
+            $requerimiento->productos()->detach($productoReemplazado);
+            $requerimiento->productos()->attach($nuevoProducto, [
+                'cantidad' => $productoReemplazado->pivot->cantidad,
+                'precio' => $nuevoProducto->pivot->precio,
+                'observacion' => 'En reemplazo de '.$productoReemplazado->detalle]);
+
+            $requerimiento->save();
+            return redirect()->route('compass.pedidos.show', $requerimiento);
+        } else {
+            return redirect()->route('compass.pedidos.show', $requerimiento);
+        }
+    }
+
+    /**
+     * Muestra la pantalla para programar despachos
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function programarDespachoView()
+    {
+        $requerimientos = Requerimiento::doesntHave('transporte')->where('estado', 'EN BODEGA')->where('folio', '>', 0)->get();
+        $abastecimientos = \App\Abastecimiento::all();
+
+        return view('compass.programar_despachos')->with(compact('requerimientos', 'abastecimientos'));
+    }
+
+
+    /**
+     * Programa los requerimientos para ser Despachados
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function programarDespacho(Request $request)
+    {
+        $despacho = new \App\Transporte;
+        $despacho->nombre = $request->input('nombre');
+        $despacho->rut = $request->input('rut');
+        $despacho->contacto = $request->input('contacto');
+        $despacho->fecha_programada = \Carbon\Carbon::createFromFormat("Y-m-d", $request->input('fecha_despacho'));
+        $despacho->despachado = false;
+        $despacho->abastecimiento()->associate($request->input('destino'));
+        if ($despacho->saveOrFail()) {
+            foreach ($request->input('seleccionados') as $index => $seleccionado) {
+                if ($seleccionado) {
+                    $requerimiento = \App\Requerimiento::find($request->input('requerimientos')[$index]);
+                    $requerimiento->transporte()->associate($despacho);
+
+                    $requerimiento->save();
+                }
+            }
+        }
+
+        $msg = [
+            "meta" => [
+                "title" => "¡Despacho Programado Exitosamente!",
+                "msg" => "El Despacho ha sido programado exitosamente"
+            ]
+        ];
+
+        return back()->with(compact('msg'));
+    }
+
+    /**
+     * Muestra la pantalla para Despachar
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function despacharView()
+    {
+        $despachos = \App\Transporte::where('despachado', false)->get();
+
+        return view('compass.despachar')->with(compact('despachos'));
+    }
+
+    /**
+     * Elimina un despacho programado
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function eliminarDespacho($id)
+    {
+        $despacho = \App\Transporte::find($id);
+        $despacho->requerimientos()->get()->map(function($requerimiento) {
+            $requerimiento->transporte()->dissociate();
+            $requerimiento->save();
+        });
+
+        $despacho->delete();
+
+        $msg = [
+            "meta" => [
+                "title" => "Despacho programado eliminado",
+                "msg" => "El despacho fue eliminado exitosamente"
+            ]
+        ];
+
+        return response()->json($msg);
+    }
+
+
+    /**
+     * Realiza un despacho
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function despachar($id)
+    {
+        $despacho = \App\Transporte::find($id);
+        $exito = $despacho->requerimientos()->get()->map(function($requerimiento) {
+            $requerimiento->estado = "DESPACHADO";
+            return $requerimiento->saveOrFail();
+        });
+
+        $despacho->despachado = true;
+        $despacho->save();
+
+        $msg = [
+            "meta" => [
+                "title" => "Requerimientos despachados",
+                "msg" => "Los Requerimientos fueron despachados exitosamente"
+            ]
+        ];
+
+        return response()->json($msg);
+    }
+
+    /**
+     * Generar las guias de despacho para cada Requerimientos
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function generarGuia($id)
+    {
+        $despacho = \App\Transporte::find($id);
+
+        $exito = $despacho->requerimientos()->get()->map(function($requerimiento) {
+            return $requerimiento->generarGuiaDespacho();
+        });
+
+        if ($exito->contains(false)) {
+            $msg = [
+                "meta" => [
+                    "title" => "Guias de Despacho Electronica Generadas",
+                    "msg" => "No todas las guias de despachos pudieron ser generadas"
+                ]
+            ];
+        } else {
+            $msg = [
+                "meta" => [
+                    "title" => "Guias de Despacho Electronica Generadas",
+                    "msg" => "Todas las guias de despacho fueron generadas exitosamente"
+                ]
+            ];
+        }
+
+        return response()->json($msg);
+    }
 
 }

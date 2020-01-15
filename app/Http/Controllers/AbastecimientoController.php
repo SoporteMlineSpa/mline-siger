@@ -14,7 +14,9 @@ class AbastecimientoController extends Controller
      */
     public function index()
     {
-        //
+        $abastecimientos = \App\Abastecimiento::all();
+
+        return view('abastecimiento.index')->with(compact('abastecimientos'));
     }
 
     /**
@@ -24,7 +26,7 @@ class AbastecimientoController extends Controller
      */
     public function create()
     {
-        //
+        return view('abastecimiento.create');
     }
 
     /**
@@ -35,18 +37,28 @@ class AbastecimientoController extends Controller
      */
     public function store(Request $request)
     {
-        //
-    }
+        $abastecimiento = new Abastecimiento;
+        $abastecimiento->nombre = $request->input('nombre');
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Abastecimiento  $abastecimiento
-     * @return \Illuminate\Http\Response
-     */
-    public function show(Abastecimiento $abastecimiento)
-    {
-        //
+        if ($abastecimiento->saveOrFail()) {
+            $msg = [
+                "meta" => [
+                    "title" => '¡Punto de Abastecimiento creado exitosamente!',
+                    "msg" => 'Un nuevo punto de abastecimiento ha sido creado exitosamente'
+                ]
+            ];
+
+            return redirect()->route('abastecimientos.index')->with(compact('msg'));
+        } else {
+            $msg = [
+                "meta" => [
+                    "title" => '¡Error creando Punto de Abastecimiento!',
+                    "msg" => 'Ocurrio un error creando el punto de abastecimiento'
+                ]
+            ];
+
+            return redirect()->route('abastecimientos.index')->with(compact('msg'));
+        }
     }
 
     /**
@@ -57,7 +69,7 @@ class AbastecimientoController extends Controller
      */
     public function edit(Abastecimiento $abastecimiento)
     {
-        //
+        return view('abastecimiento.edit')->with(compact('abastecimiento'));
     }
 
     /**
@@ -69,7 +81,27 @@ class AbastecimientoController extends Controller
      */
     public function update(Request $request, Abastecimiento $abastecimiento)
     {
-        //
+        $abastecimiento->nombre = $request->input('nombre');
+
+        if ($abastecimiento->saveOrFail()) {
+            $msg = [
+                "meta" => [
+                    "title" => '¡Punto de Abastecimiento creado exitosamente!',
+                    "msg" => 'Un nuevo punto de abastecimiento ha sido creado exitosamente'
+                ]
+            ];
+
+            return redirect()->route('abastecimientos.index')->with(compact('msg'));
+        } else {
+            $msg = [
+                "meta" => [
+                    "title" => '¡Error creando Punto de Abastecimiento!',
+                    "msg" => 'Ocurrio un error creando el punto de abastecimiento'
+                ]
+            ];
+
+            return redirect()->route('abastecimientos.index')->with(compact('msg'));
+        }
     }
 
     /**
@@ -80,6 +112,31 @@ class AbastecimientoController extends Controller
      */
     public function destroy(Abastecimiento $abastecimiento)
     {
-        //
+        try {
+            $abastecimiento->delete();
+
+            return response()->json([
+                'data' => [
+                    'abastecimiento' => [
+                        'type' => 'Abastecimiento',
+                        'id' => $abastecimiento->id,
+                        'attributes' => $abastecimiento,
+                    ],
+                ],
+                'meta' => [
+                    'title' => '¡Punto de Abastecimiento eliminado exitosamente!',
+                    'msg' => 'El punto de abastecimiento <b>'.$abastecimiento->nombre.'</b> ha sido eliminado<br />La pagina se recargara'
+                ]
+            ], 200);
+        } catch (Exception $e) {
+            return response()->json([
+                'errors' => [
+                    'status' => '500',
+                    'title' => 'Error eliminando punto de abastecimiento',
+                    'detail' => 'Ocurrio un error eliminando el punto de abastecimiento',
+                    'source' => $e
+                ]
+            ], 500);
+        }
     }
 }

@@ -25,16 +25,16 @@
         <div id="app">
             <header class="navbar navbar-dark bg-dark flex-md-nowrap p-0 shadow">
                 @auth
-                <button
-                    class="btn btn-outline-light"
-                    type="button"
-                    data-toggle="collapse"
-                    data-target="#sidenav"
-                    aria-expanded="false"
-                    aria-controls="sidenav"
-                    id="sidenavBtn">
-                    <i class="fas fa-bars"></i>
-                </button>
+                    <button
+                        class="btn btn-outline-light"
+                        type="button"
+                        data-toggle="collapse"
+                        data-target="#sidenav"
+                        aria-expanded="false"
+                        aria-controls="sidenav"
+                        id="sidenavBtn">
+                        <i class="fas fa-bars"></i>
+                    </button>
                 @endif
                 <a class="navbar-brand" href="@yield('home-route')">
                     <div class="d-flex flex-row align-items-center h3">
@@ -44,35 +44,33 @@
                 </a>
 
                 @auth
-                <ul class="nav ml-auto text-light">
+                    <ul class="nav ml-auto text-light">
 
-                    <li class="nav-item">
-                        <a href="{{ route('notifications') }}" class="nav-link">
-                            <i class="fas fa-bell"></i>
-                            <span class="badge badge-danger">{{ count(Auth::user()->unreadNotifications) }}</span>
-                        </a>
-                    </li>
-                    <li class="nav-item dropdown">
-                        <a id="user-dropdown"
-                           href=""
-                           class="nav-link dropdown-toggle"
-                           role="button"
-                           data-toggle="dropdown"
-                           aria-haspopup="true"
-                           aria-expanded="false">
-                            Hola, {{ Auth::user()->name }}
-                        </a>
-                        <div class="dropdown-menu" aria-labelledby="user-dropdown">
-                            <a class="dropdown-item" href="#">Mi Cuenta</a>
-                            <div class="dropdown-divider"></div>
-                            <form action="{{ route('logout') }}" method="POST" accept-charset="utf-8">
-                                @csrf
+                        <li class="nav-item">
+                            <a href="{{ route('notifications') }}" class="nav-link">
+                                <i class="fas fa-bell"></i>
+                                <span class="badge badge-danger">{{ count(Auth::user()->unreadNotifications) }}</span>
+                            </a>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a id="user-dropdown"
+                               href=""
+                               class="nav-link dropdown-toggle"
+                               role="button"
+                               data-toggle="dropdown"
+                               aria-haspopup="true"
+                               aria-expanded="false">
+                                Hola, {{ Auth::user()->name }}
+                            </a>
+                            <div class="dropdown-menu" aria-labelledby="user-dropdown">
+                                <form action="{{ route('logout') }}" method="POST" accept-charset="utf-8">
+                                    @csrf
 
-                                <button class="dropdown-item" type="submit">Salir</button>
-                            </form>
-                        </div>
-                    </li>
-                </ul>
+                                    <button class="dropdown-item" type="submit">Salir</button>
+                                </form>
+                            </div>
+                        </li>
+                    </ul>
                 @endif
             </header>
 
@@ -113,5 +111,20 @@
         <script src="{{ asset('js/app.js') }}"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js" charset="utf-8"></script>
         @yield('js')
+
+        @if (\Session::has('msg'))
+            @php
+                $msg = \Session::get('msg');
+            @endphp
+                <script charset="utf-8">
+                    (Swal.fire({
+                title: '{{$msg['meta']['title']}}',
+                html: '{!! $msg['meta']['msg'] !!}',
+                icon: 'success'
+            }))();
+
+                </script>
+        @endif
     </body>
 </html>
+

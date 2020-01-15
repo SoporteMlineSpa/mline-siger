@@ -10,44 +10,45 @@
 
 @section('main')
     <div class="card">
-        <header class="card-header">
-            <h4 class="card-title h1">Nueva Orden de Pedido</h4>
-        </header>
+        <h3 class="card-header font-bold text-xl">{{ Auth::user()->userable->nombre }}: Nueva Orden de Pedido</h3>
         <form class="card-body" action="{{ route('requerimientos.store') }}" method="POST">
             @csrf
-      <div class="row align-items-end">
-          <div class="form-group mx-2">
-              <label for="nombre">Nombre:</label>
-              <input type="text" name="nombre" value="{{$requerimiento->nombre}}" class="form-control"/>
-          </div>
-          <div class="form-group">
-              <button class="btn btn-success">Guardar</button>
-          </div>
-          <div class="alert alert-info container table-responsive">
-            Esta Orden de Pedido incluye los siguientes productos:
-            <table class="table table-sm">
-                <thead>
-                    <tr>
-                        <th scope="col">SKU</th>
-                        <th scope="col">Detalle</th>
-                        <th scope="col">Cantidad</th>
-                    </tr>
-                </thead>
-                <tbody>
-            @foreach ($requerimiento->productos()->get() as $producto)
-                <tr>
-                    <td>{{$producto->sku}}</td>
-                    <td>{{$producto->detalle}}</td>
-                    <td>{{$producto->pivot->cantidad}}</td>
-                </tr>
-            @endforeach
-                </tbody>
-            </table>
-          </div>
-      </div>
+            <div class="form-group row align-items-end">
+                <label class="col-md-2 text-right" for="nombre">Identificador:</label>
+                <span class="col-md-6">
+                    <input class="form-control-plaintext" value="{{ $nombre }}"
+                    type="text" name="nombre">
+                </span>
+                <div class="col-md">
+                    <button class="btn btn-success" type="submit">Solicitar</button>
+                </div>
+            </div>
+            <div class="row align-items-end">
+                <div class="alert alert-info container table-responsive">
+                    Esta Orden de Pedido incluye los siguientes productos:
+                    <table class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th scope="col">SKU</th>
+                                <th scope="col">Detalle</th>
+                                <th scope="col">Cantidad</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach ($requerimiento->productos()->get() as $producto)
+                                <tr>
+                                    <td>{{$producto->sku}}</td>
+                                    <td>{{$producto->detalle}}</td>
+                                    <td>{{$producto->pivot->cantidad}}</td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+            </div>
             <div class="row">
                 <div class="container table-responsive">
-                    <table class="table" id="datatable">
+                    <table class="table" id="datatable-requerimiento">
                         <thead>
                             <tr>
                                 <th scope="col">SKU</th>
@@ -58,11 +59,12 @@
                         <tbody>
                             @foreach ($productos as $producto)
                                 <tr>
-                                    <td>{{$producto->sku}}</td>
+                                    <td>{{$producto->sku}}
+                                        <input type="hidden" value="{{$producto->id}}" name="id[]"/>
+                                    </td>
                                     <td>{{$producto->detalle}}</td>
                                     <td>
-                                        <input type="hidden" value="{{$producto->id}}" name="id[]"/>
-                                        <input type="text" name="cantidad[]" value="{{$producto->pivot->cantidad}}" class="form-control form-control-sm">
+                                        <input type="text" name="cantidad[]" maxlength="13" value="{{$producto->pivot->cantidad}}" class="border rounded p-1" style="width: 7rem;">
                                     </td>
                                 </tr>
                             @endforeach

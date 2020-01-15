@@ -16,6 +16,9 @@
 // Vue-Slim-tabs
 @import '~vue-slim-tabs/themes/default.css';
 
+// Vue Select
+@import "vue-select/src/scss/vue-select.scss";
+
 // Tailwind
 @tailwind base;
 @tailwind components;
@@ -75,3 +78,4 @@ body {
   font-size: .75rem;
   text-transform: uppercase;
 }
+

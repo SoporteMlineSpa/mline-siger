@@ -125,7 +125,6 @@ class PresupuestoController extends Controller
             return $empresa->getGastoByDate($i, date("Y"));
         });
 
-
         return view('presupuesto.index.cmi')->with(compact('cmi', 'totalPresupuesto', 'totalGasto'));
     }
 
@@ -150,6 +149,9 @@ class PresupuestoController extends Controller
                 return collect(['centro' => $centro, 'presupuesto' => $centro->presupuestos()->get()]);
             }));
             return view('presupuesto.create')->with(compact('centros'));
+            break;
+        default:
+            return redirect()->route('cliente.home');
             break;
         }
     }

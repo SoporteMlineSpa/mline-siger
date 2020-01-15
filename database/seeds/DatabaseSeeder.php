@@ -11,10 +11,5 @@ class DatabaseSeeder extends Seeder
    */
   public function run()
   {
-    $this->call(CompassRolesTableSeeder::class);
-    $this->call(ClientesSeeder::class);
-    $this->call(UsersTableSeeder::class);
-    $this->call(ProductosTableSeeder::class);
-    $this->call(EmpresaProductoTableSeeder::class);
   }
 }

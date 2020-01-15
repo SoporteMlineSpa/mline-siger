@@ -78,6 +78,10 @@ class CentroController extends Controller
     {
         $centro = new Centro;
         $centro->nombre = $request->input('nombre');
+        $centro->direccion = $request->input('direccion');
+        $centro->comuna = $request->input('comuna');
+        $centro->ciudad = $request->input('ciudad');
+
         $centro->empresa()->associate(\App\Empresa::find($request->input('empresa')));
 
         if ($centro->saveOrFail()) {
@@ -96,7 +100,7 @@ class CentroController extends Controller
                 ],
                 'meta' => [
                     'title' => '¡Centro guardado exitosamente!',
-                    'message' => 'Un nuevo Centro fue creado con los siguientes datos:<br /><b>Nombre:</b>'.$centro->nombre.'<br/><b>Empresa:</b>'.$centro->empresa()->get('razon_social')->first()->razon_social
+                    'msg' => 'Un nuevo Centro fue creado con los siguientes datos:<br /><b>Nombre:</b>'.$centro->nombre.'<br/><b>Empresa:</b>'.$centro->empresa()->get('razon_social')->first()->razon_social
                 ]
             ];
 
@@ -143,6 +147,9 @@ class CentroController extends Controller
     public function update(Request $request, Centro $centro)
     {
         $centro->nombre = $request->input('nombre');
+        $centro->direccion = $request->input('direccion');
+        $centro->comuna = $request->input('comuna');
+        $centro->ciudad = $request->input('ciudad');
         if ($request->has('empresa')) {
             $centro->empresa()->dissociate();
             $centro->empresa()->associate(\App\Empresa::find($request->input('empresa')));
@@ -164,7 +171,7 @@ class CentroController extends Controller
                 ],
                 'meta' => [
                     'title' => '¡Centro guardado exitosamente!',
-                    'message' => 'El Centro fue actualizado con los siguientes datos:<br /><b>Nombre:</b>'.$centro->nombre.'<br/><b>Empresa:</b>'.$centro->empresa()->get('razon_social')->first()->razon_social
+                    'msg' => 'El Centro fue actualizado con los siguientes datos:<br /><b>Nombre:</b>'.$centro->nombre.'<br/><b>Empresa:</b>'.$centro->empresa()->get('razon_social')->first()->razon_social
                 ]
             ];
             return redirect()->route('centros.index')->with(compact('msg'));
@@ -203,7 +210,7 @@ class CentroController extends Controller
                 ],
                 'meta' => [
                     'title' => '¡Centro eliminado exitosamente!',
-                    'message' => 'El Centro <b>'.$centro->nombre.'</b> ha sido borrado.<br />La pagina se recargara'
+                    'msg' => 'El Centro <b>'.$centro->nombre.'</b> ha sido borrado.<br />La pagina se recargara'
                 ]
             ], 200);
         } catch (Exception $e) {

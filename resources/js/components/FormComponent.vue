@@ -50,7 +50,7 @@ export default {
           var response = response.data;
           Swal.fire({
             title: response.meta.title,
-            html: response.meta.message,
+            html: response.meta.msg,
             icon: 'success'
           })
         })

@@ -56,7 +56,7 @@ class HoldingController extends Controller
                 ],
                 'meta' => [
                     'title' => '¡Holding guardado exitosamente!',
-                    'message' => 'Un nuevo Holding fue creado con los siguientes datos:<br /> <b>Nombre:</b>'.$holding->nombre
+                    'msg' => 'Un nuevo Holding fue creado con los siguientes datos:<br /> <b>Nombre:</b>'.$holding->nombre
                 ]
             ], 201);
         } else {
@@ -109,7 +109,7 @@ class HoldingController extends Controller
                 ],
                 'meta' => [
                     'title' => '¡Holding guardado exitosamente!',
-                    'message' => 'El Holding fue actualizado con los siguientes datos:<br /> <b>Nombre:</b>'.$holding->nombre
+                    'msg' => 'El Holding fue actualizado con los siguientes datos:<br /> <b>Nombre:</b>'.$holding->nombre
                 ]
             ];
             return redirect()->route('holdings.index')->with(compact('msg'));
@@ -148,7 +148,7 @@ class HoldingController extends Controller
                 ],
                 'meta' => [
                     'title' => '¡Holding eliminado exitosamente!',
-                    'message' => 'El Holding <b>'.$holding->nombre.'</b> ha sido borrado.<br />La pagina se recargara'
+                    'msg' => 'El Holding <b>'.$holding->nombre.'</b> ha sido borrado.<br />La pagina se recargara'
                 ]
             ], 200);
         } catch (Exception $e) {

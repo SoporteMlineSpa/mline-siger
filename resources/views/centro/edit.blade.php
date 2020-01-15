@@ -34,6 +34,30 @@
 
 
                     <div class="form-group row">
+                        <label class="col-sm-2" for="direccion">Direccion:</label>
+                        <span class="col-sm-6">
+                            <input class="form-control" required value="{{ $centro->direccion }}" type="text" name="direccion">
+                            <p class="text-muted">Obligatorio</p>
+                        </span>
+                    </div>
+
+                    <div class="form-group row">
+                        <label class="col-sm-2" for="comuna">Comuna:</label>
+                        <span class="col-sm-6">
+                            <input class="form-control" required type="text" value="{{ $centro->comuna }}" name="comuna">
+                            <p class="text-muted">Obligatorio</p>
+                        </span>
+                    </div>
+
+                    <div class="form-group row">
+                        <label class="col-sm-2" for="ciudad">Ciudad:</label>
+                        <span class="col-sm-6">
+                            <input class="form-control" required type="text" value="{{ $centro->ciudad }}" name="ciudad">
+                            <p class="text-muted">Obligatorio</p>
+                        </span>
+                    </div>
+
+                    <div class="form-group row">
                         <label class="col-sm-2" for="holding">Empresa Dueña:</label>
                         <span class="col-sm-6">
                             <select name="empresa" class="form-control">

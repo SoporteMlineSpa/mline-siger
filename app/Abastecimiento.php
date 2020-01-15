@@ -6,15 +6,15 @@ use Illuminate\Database\Eloquent\Model;
 
 class Abastecimiento extends Model
 {
-  /**
-   * Devuelve las empresas asociadas a ese Punto de Abastecimiento
-   *
-   * @return 
-   */
-  public function empresas()
-  {
-    return $this->hasMany('App\Empresa');
-  }
-  
-  
+    protected $fillable = ['nombre'];
+    /**
+     * Retorna los despachos hacia ese Abastecimiento
+     *
+     * @return \App\Transporte
+     */
+    public function transportes()
+    {
+        return $this->hasMany('App\Transporte');
+    }
+    
 }

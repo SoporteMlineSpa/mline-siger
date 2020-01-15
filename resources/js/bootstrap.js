@@ -15,6 +15,7 @@ try {
     require('datatables.net-bs4');
     require('datatables.net-buttons-bs4');
     require('datatables.net-buttons/js/buttons.html5.js');
+    require( 'datatables.net-fixedheader-dt' );
     require('datatables.net-responsive-bs4');
     require('datatables.net-scroller-bs4');
     window.Swal = require('sweetalert2');

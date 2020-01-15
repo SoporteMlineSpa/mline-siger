@@ -5,7 +5,7 @@
                 <label class="col-md-1 col-form-label text-md-right">Año:</label>
                 <div class="col-md-2">
                     <select class="form-control" v-model="year">
-                        <option v-for="(index) in 5" :value="getFullYear() + index">{{getFullYear() + index}}</option>
+                        <option v-for="(index) in 6" :value="getFullYear() + index - 1">{{ getFullYear() + index - 1}}</option>
                     </select>
                 </div>
                 <div class="col-md-2"><button class="btn btn-success" @click="submit">Guardar</button></div>
@@ -19,23 +19,29 @@
                 <tbody>
                     <tr v-for="(centro, index) in items">
                         <th scope="row">{{centro.nombre}}</th>
-                        <td  v-for="(mes) in 12">
-                            <input
-                                class="form-control form-control-sm"
-                                type="text"
+                        <td v-for="(mes) in 12">
+                            <currency-input-component
                                 v-model="presupuesto[index][mes]"
                                 @input="calcularTotales(index, mes)"
-                                :key="index"
-                                />
+                                :key="index">
+                            </currency-input-component>
                         </td>
                         <td scope="row">
-                            <input class="form-control form-control-sm" v-model="totalCentro[index]" :key="index" @input="totalPorCentro(index, $event)" type="text">
+                            <currency-input-component
+                                v-model="totalCentro[index]"
+                                @input="totalPorCentro(index, $event)"
+                                :key="index">
+                            </currency-input-component>
                         </td>
                     </tr>
                     <tr>
                         <th scope="row">Total</th>
                         <td  v-for="(index) in 12" scope="row">
-                            <input class="form-control form-control-sm" v-model="totalMes[index]"  :key="index" @input="totalPorMes(index, $event)" type="text">
+                            <currency-input-component
+                                v-model="totalMes[index]"
+                                @input="totalPorMes(index, $event)"
+                                :key="index">
+                            </currency-input-component>
                         </td>
                     </tr>
                 </tbody>
@@ -45,7 +51,12 @@
 
 </template>
 <script charset="utf-8">
+import InputComponent from './CurrencyInputComponent.vue';
+
 export default {
+    components: {
+        InputComponent: 'currency-input-component'
+    },
     props: {
         items: {
             type: Array,
@@ -84,14 +95,14 @@ export default {
             return date.toLocaleString('default', { month: 'long' });
         },
         totalPorCentro: function(centroId, evt) {
-            let total = evt.target.value;
+            let total = evt;
             let subtotal = total / 12;
             for (var i = 0; i < 13; i++) {
                 this.presupuesto[centroId][i] = Math.round(subtotal);
             }
         },
         totalPorMes: function(mesId, evt) {
-            let total = evt.target.value;
+            let total = evt;
             let subtotal = total / this.items.length;
             for (var i = 0; i < this.items.length; i++) {
                 this.presupuesto[i][mesId] = Math.round(subtotal);
@@ -120,10 +131,6 @@ export default {
                             year: self.year
                         })
                         .then(response => {
-                            console.log({response})
-                            if (!response.ok) {
-                                throw new Error(response.statusText)
-                            }
                             return response.data
                         })
                         .catch(error => {
@@ -134,12 +141,11 @@ export default {
                 },
                 allowOutsideClick: () => !Swal.isLoading()
             }).then((result) => {
-                if (result.meta) {
                     Swal.fire({
-                        title: result.meta.title,
-                        html: result.meta.msg
+                        icon: 'success',
+                        title: result.value.meta.title,
+                        html: result.value.meta.msg
                     })
-                }
             })
         }
     },

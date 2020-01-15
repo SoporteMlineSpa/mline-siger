@@ -11,7 +11,7 @@
 @section('main')
     <div class="container">
         <div class="card">
-            <h3 class="card-header font-bold text-xl">Cuenta Corriente</h3>
+            <h3 class="card-header font-bold text-xl">{{ Auth::user()->getNombreRelacionado() }}: Cuenta Corriente</h3>
             <div class="card-body">
                 <div class="container">
                     <div class="row">
@@ -42,16 +42,16 @@
                 </ul>
                 <div class="container mt-2">
                     <div class="table-responsive">
-                        <table id="datatable" class="table table-sm">
+                        <table id="datatable-presupuesto" class="table table-bordered table-sm">
                             <thead>
                                 <tr>
-                                    <th scope="col">Fecha</th>
-                                    <th scope="col">Concepto</th>
-                                    <th scope="col">Tipo</th>
-                                    <th scope="col">Id</th>
-                                    <th scope="col">Entrada ($)</th>
-                                    <th scope="col">Salida ($)</th>
-                                    <th scope="col">Saldo ($)</th>
+                                    <th scope="col" class="text-center">Fecha</th>
+                                    <th scope="col" class="text-center">Concepto</th>
+                                    <th scope="col" class="text-center">Tipo</th>
+                                    <th scope="col" class="text-center">Id</th>
+                                    <th scope="col" class="text-center">Entrada ($)</th>
+                                    <th scope="col" class="text-center">Salida ($)</th>
+                                    <th scope="col" class="text-center">Saldo ($)</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -59,10 +59,10 @@
                                     <td>{{ $date }}</td>
                                     <td>Presupuesto</td>
                                     <td>Carga Inicial</td>
-                                    <td>{{ __($date->year.$date->month) }}</td>
-                                    <td>{{ number_format($inicial / 100, 0) }}</td>
+                                    <td class="text-center">{{ __($date->year.$date->month) }}</td>
+                                    <td class="text-right">{{ number_format($inicial / 100, 0) }}</td>
                                     <td></td>
-                                    <td>{{ number_format($inicial / 100, 0)}}</td>
+                                    <td class="text-right">{{ number_format($inicial / 100, 0)}}</td>
                                 </tr>
                                 @php
                                     $saldo = ($inicial / 100);
@@ -73,22 +73,25 @@
                                             <td>{{$pedido->created_at}}</td>
                                             <td>
                                                 <a href="{{route('presupuesto.indexCentro', ['centroId' => $pedido->centro()->get()->first()->id])}}">
-                                                    {{ __($pedido->centro()->get('nombre')->first()->nombre . ": " . $pedido->nombre) }}
+                                                    {{ $pedido->nombre }}
                                                 </a>
                                             </td>
                                             <td>Orden de Pedido</td>
-                                            <td>
+                                            <td class="text-center">
                                                 <modal-btn-component
                                                     :button="false"
                                                     title="Orden de Pedido"
                                                     :message='[
                                                     { data: @json($pedido->centro), type: "Object", keys: ["nombre"]},
-                                                    { data: @json($pedido->productos), type: "Array", keys: ["sku", "detalle", "pivot"], pivot: "cantidad"}
+                                                    { data: @json($pedido->productos), type: "Array", keys: ["sku",
+                                                    "detalle", "precio",
+                                                    "pivot", "total"], pivot: "cantidad"},
+                                                    { data: @json(["total" => "$" . number_format($pedido->getTotal()) ]), type: "Object", keys: ["total"]}
                                                     ]'>{{$pedido->id}}</modal-btn-component>
                                             </td>
                                             <td></td>
-                                            <td>{{ number_format($pedido->getTotal(), 0) }}</td>
-                                            <td>{{ number_format(($saldo -= $pedido->getTotal()), 0) }}</td>
+                                            <td class="text-right">{{ number_format($pedido->getTotal(), 0) }}</td>
+                                            <td class="text-right">{{ number_format(($saldo -= $pedido->getTotal()), 0) }}</td>
                                         </tr>
                                     @endforeach
                                 @endforeach

@@ -15,6 +15,9 @@ class ShowNotification extends Controller
      */
     public function __invoke(Request $request)
     {
+        $year = $request->input('year');
+        $mes = $request->input('mes');
+
         $userNotifications = Auth::user()->unreadNotifications()->latest('created_at')->get();
 
         $notifications = [];
@@ -29,21 +32,13 @@ class ShowNotification extends Controller
         $menu = '';
 
         switch (get_class(Auth::user()->userable)) {
-            case 'App\Holding':
-                $home = route('cliente.home');
-                $menu = 'cliente.menu';
-                break;
-            case 'App\Empresa':
-                $home = route('cliente.home');
-                $menu = 'cliente.menu';
-                break;
-            case 'App\Centro':
-                $home = route('cliente.home');
-                $menu = 'cliente.menu';
-                break;
             case 'App\CompassRole':
                 $home = route('compass.home');
                 $menu = 'compass.menu';
+                break;
+            default:
+                $home = route('cliente.home');
+                $menu = 'cliente.menu';
                 break;
         }
 

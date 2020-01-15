@@ -13,10 +13,10 @@
         <div class="card">
             <h3 class="card-header font-bold text-xl">Armar Cajas</h3>
             <div class="card-body">
-                <form action="{{ route('compass.pedidos.despachar', $requerimiento) }}" method="POST" class="container mt-2">
+                <form action="{{ route('compass.pedidos.armarCaja', $requerimiento) }}" method="POST" class="container mt-2">
                     @csrf
 
-                    <div class="row mb-2 align-items-center">
+                    <div class="row">
                         <div class="col">
                             <div class="card">
                                 <div class="card-body">
@@ -40,12 +40,13 @@
                                         <div class="col text-right">Fecha de Creacion:</div>
                                         <div class="col font-bold">{{ $requerimiento->created_at }}</div>
                                     </div>
+                                    <div class="row">
+                                        <div class="col-md-2 mx-auto">
+                                            <button type="submit" class="btn btn-block btn-success">Despachar</button>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                        <div class="col-md-4">
-                            <button type="submit" class="btn btn-success">Despachar</button>
-                            <button type="button" class="btn btn-primary">Generar Formato para Bodega</button>
                         </div>
                     </div>
                     <table id="datatable-requerimiento" class="table">
@@ -56,6 +57,7 @@
                                 <th scope="col">Cantidad Solicitada</th>
                                 <th scope="col">Real</th>
                                 <th scope="col">Observaciones</th>
+                                <th scope="col">Acciones</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -66,7 +68,12 @@
                                     <td>{{$producto->detalle}}</td>
                                     <td>{{$producto->pivot->cantidad}}</td>
                                     <td><input class="form-control form-control-sm" name="real[]" value="{{$producto->pivot->cantidad}}" type="text"></td>
-                                    <td><input class="form-control form-control-sm" type="text" name="observaciones[]"></td>
+                                    <td><input class="form-control form-control-sm" type="text" name="observaciones[]" value="{{$producto->pivot->observacion}}"></td>
+                                    <td>
+                                        <a class="btn btn-primary" href="{{ route('cajas.cambiar', [$requerimiento, $producto]) }}">
+                                            <i class="fas fa-undo"></i>
+                                        </a>
+                                    </td>
                                 </tr>
                             @endforeach
                         </tbody>

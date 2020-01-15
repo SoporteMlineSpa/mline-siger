@@ -19,7 +19,7 @@
 @section('main')
     <div class="container">
         <div class="card">
-            <h3 class="card-header font-bold text-xl">Editar Empresa</h3>
+            <h3 class="card-header font-bold text-xl">{{ Auth::user()->getNombreRelacionado() }}: Editar Empresa</h3>
             <div class="card-body">
                 <form action="{{route('empresas.update', $empresa)}}" method="POST" accept-charset="utf-8">
                     @csrf
@@ -60,14 +60,11 @@
                     </div>
 
                     <div class="form-group row">
-                        <label class="col-sm-2" for="abastecimiento">Punto de Abastecimiento:</label>
-                        <div class="col-sm-6">
-                            <select name="abastecimiento" class="form-control">
-                                @foreach($abastecimientos as $abastecimiento)
-                                    <option value="{{$abastecimiento->id}}" @if($abastecimiento->id == $empresa->abastecimiento_id) {{_("selected")}} @endif>{{$abastecimiento->nombre}}</option>
-                                @endforeach
-                            </select>
-                        </div>
+                        <label class="col-sm-2" for="giro">Giro:</label>
+                        <span class="col-sm-6">
+                            <input class="form-control" required type="text" name="giro">
+                            <p class="text-muted">Obligatorio</p>
+                        </span>
                     </div>
 
                     <div class="form-group row">

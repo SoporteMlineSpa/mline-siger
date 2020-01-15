@@ -140,7 +140,7 @@ class UserController extends Controller
             $msg = [
                 'meta' => [
                     'title' => '¡Usuario asignado exitosamente!',
-                    'message' => "El Usuario $user->name fue asignado con exito a".($asignacion->nombre ?? $asignacion->name ?? $asignacion->razon_social)
+                    'msg' => "El Usuario $user->name fue asignado con exito a".($asignacion->nombre ?? $asignacion->name ?? $asignacion->razon_social)
                 ]
             ];
 
@@ -149,39 +149,102 @@ class UserController extends Controller
 
     }
 
-
-
     /**
-     * Show the form for editing the specified resource.
+     * Muestra la lista de Librerias de ese Usuario
      *
-     * @param  \App\User  $user
      * @return \Illuminate\Http\Response
      */
-    public function edit(User $user)
+    public function libreriaIndex()
     {
-        //
+        $requerimientos = Auth::user()->requerimientos()->get();
+        return view('requerimiento.libreria_index')->with(compact('requerimientos'));
+    }
+    
+
+    /**
+     * Agrega o Elimina un Requerimiento de la libreria del Usuario
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function libreriaEdit(\App\Requerimiento $requerimiento, Request $request)
+    {
+        if ($request->input("libreria")) {
+            Auth::user()->requerimientos()->save($requerimiento, ['nombre' => $request->input('nombre')]);
+            return response()->json([
+                "meta" => [
+                    "title" => "Agregado a la libreria",
+                    "msg" => "El Requerimiento fue agregado a la libreria exitosamente"
+                ]
+            ]);
+        } else {
+            Auth::user()->requerimientos()->detach($requerimiento->id);
+            return response()->json([
+                "meta" => [
+                    "title" => "Eliminado de la libreria",
+                    "msg" => "El Requerimiento fue eliminado de la libreria exitosamente"
+                ]
+            ]);
+        }
     }
 
     /**
-     * Update the specified resource in storage.
+     * Muestra el listado de usuarios de los centros de esa empresa
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\User  $user
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, User $user)
+    public function indexEmpresa()
     {
-        //
+        $centros = Auth::user()->userable->centros()->get();
+
+        $users = collect([]);
+        $centros->map(function($centro) use ($users) {
+            $usuarios = $centro->users()->get();
+            if ($usuarios->count() > 0) {
+                $users->push($usuarios);
+            }
+        });
+
+        $users = $users->flatten();
+        return view('usuario.index_empresa')->with(compact('users'));
+    }
+    
+    
+    /**
+     * Muestra el formulario de creacion de usuarios para un centro
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function create()
+    {
+        $centros = Auth::user()->userable->centros()->get();
+
+        return view('usuario.create')->with(compact('centros'));
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Crea un nuevo usuario para un centro
      *
-     * @param  \App\User  $user
      * @return \Illuminate\Http\Response
      */
-    public function destroy(User $user)
+    public function storeCentro(Request $request)
     {
-        //
+        $user = new User;
+        $user->name = $request->input('name');
+        $user->email = $request->input('email');
+        $user->password = bcrypt($request->input('password'));
+
+        $centro = \App\Centro::findOrFail($request->input('centro'));
+        $centro->users()->save($user);
+
+        $msg = [
+            "meta" => [
+                "title" => 'Nuevo Usuario creado exitosamente',
+                "msg" => 'El usuario: '.$user->name.' fue creado exitosamente para el centro: '.$centro->nombre
+            ]
+        ];
+
+        return redirect()->route('user.indexEmpresa')->with(compact('msg'));
     }
+    
+    
 }

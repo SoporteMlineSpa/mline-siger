@@ -12,18 +12,16 @@
     <div class="container">
 
         <div class="card">
-            <div class="card-header">
-                <div class="d-flex flex-row">
-                    <a class="btn btn-success mr-2" href="{{ route('cliente.home') }}">Volver</a>
-                    @if (count($centros) > 0)
-                    <form action="{{ route('pedidos.aceptarTodos')}}" method="POST" accept-charset="utf-8">
-                        @csrf
-
-                        <button class="btn btn-primary">Aceptar Todo</button>
-                    </form>
-                    @endif
+            @if (count($centros) > 0)
+                <div class="card-header">
+                    <div class="d-flex flex-row">
+                        <div class="btn-group" role="group" aria-label="Validar Pedidos">
+                            <validar-pedidos-component action="{{ route('pedidos.aceptarTodos') }}" :todos="true">Aceptar Todos</validar-pedidos-component>
+                            <validar-pedidos-component action="{{ route('pedidos.aceptarTodos') }}" :todos="true" :validacion="false">Rechazar Todos</validar-pedidos-component>
+                        </div>
+                    </div>
                 </div>
-            </div>
+            @endif
             <div class="card-body">
                 @if (count($centros) > 0)
                     <tabs>
@@ -34,7 +32,9 @@
                                 <tr>
                                     <th scope="col">Nombre</th>
                                     <th scope="col">Estado</th>
-                                    <th scope="col">Acciones</th>
+                                    <th scope="col">Ver</th>
+                                    <th scope="col">Aceptar</th>
+                                    <th scope="col">Rechazar</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -45,22 +45,25 @@
                                         <td class="d-flex flex-row">
                                             <modal-btn-component
                                                 title="Orden de Pedido"
-                                                class="mr-2"
                                                 :message='[
-                                                { data: @json($requerimiento->productos), type: "Array", keys: ["sku", "detalle", "pivot"], pivot: "cantidad"}
-                                                ]'>
-                                                Ver Orden de Pedido
+                                                { data:
+                                                @json($requerimiento->productos),
+                                                type: "Array", keys: ["sku",
+                                                "detalle", "precio",
+                                                "pivot", "total"], pivot: "cantidad"},
+                                                { data: @json(["total" => "$" . number_format($requerimiento->getTotal()) ]), type: "Object", keys: ["total"]}
+                                                ]'>Ver Orden de Pedido</modal-btn-component>
                                             </modal-btn-component>
-                                            <form action="{{ route('pedidos.aceptar') }}" method="POST" accept-charset="utf-8">
-                                                @csrf
-                                                <input type="hidden" value="{{ $requerimiento }}" name="requerimiento" id="requerimiento"/>
-                                                <button class="btn btn-primary mr-2">Aceptar</button>
-                                            </form>
-                                            <form action="{{ route('pedidos.rechazar') }}" method="POST" accept-charset="utf-8">
-                                                @csrf
-                                                <input type="hidden" value="{{ $requerimiento }}" name="requerimiento" id="requerimiento"/>
-                                                <button class="btn btn-danger">Rechazar</button>
-                                            </form>
+                                        </td>
+                                        <td>
+                                            <validar-pedidos-component
+                                                action="{{ route('pedidos.aceptar') }}"
+                                                :todos="false" :pedido='{{ $requerimiento->id }}'>Aceptar</validar-pedidos-component>
+                                        </td>
+                                        <td>
+                                            <validar-pedidos-component
+                                                action="{{ route('pedidos.rechazar') }}"
+                                                :todos="false" :validacion="false" :pedido='{{ $requerimiento->id }}'>Rechazar</validar-pedidos-component>
                                         </td>
                                     </tr>
                                 @endforeach

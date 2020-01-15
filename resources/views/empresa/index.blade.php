@@ -19,7 +19,7 @@
 @section('main')
     <div class="container">
         <div class="card">
-            <h3 class="card-header font-bold text-xl">Lista de Empresas</h3>
+            <h3 class="card-header font-bold text-xl">{{ Auth::user()->getNombreRelacionado() }}: Lista de Empresas</h3>
             <div class="card-body">
                 <div class="container mt-2">
                 <div class="table-responsive">
@@ -54,19 +54,3 @@
         </div>
     </div>
 @endsection
-
-@if (\Session::has('msg'))
-    @php
-        $msg = \Session::get('msg');
-    @endphp
-    @section('js')
-        <script charset="utf-8">
-            (Swal.fire({
-                title: '{{$msg['meta']['title']}}',
-                html: '{!! $msg['meta']['message'] !!}',
-                icon: 'success'
-            }))();
-
-        </script>
-    @endsection
-@endif

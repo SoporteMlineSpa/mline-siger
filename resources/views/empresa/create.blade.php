@@ -47,6 +47,14 @@
                             <p class="text-muted">Obligatorio</p>
                         </span>
                     </div>
+                    
+                    <div class="form-group row">
+                        <label class="col-sm-2" for="giro">Giro:</label>
+                        <span class="col-sm-6">
+                            <input class="form-control" required type="text" name="giro">
+                            <p class="text-muted">Obligatorio</p>
+                        </span>
+                    </div>
 
                     <div class="form-group row">
                         <label class="col-sm-2" for="holding">Holding Dueño:</label>
@@ -57,18 +65,6 @@
                                     <option value="{{$holding->id}}">{{$holding->nombre}}</option>
                                 @endforeach
                             </select>
-                        </span>
-                    </div>
-
-                    <div class="form-group row">
-                        <label class="col-sm-2" for="abastecimiento">Punto de Abastecimiento:</label>
-                        <span class="col-sm-6">
-                            <select required name="abastecimiento" class="form-control">
-                                @foreach ($abastecimientos as $abastecimiento)
-                                    <option value="{{$abastecimiento->id}}">{{$abastecimiento->nombre}}</option>
-                                @endforeach
-                            </select>
-                            <p class="text-muted">Obligatorio</p>
                         </span>
                     </div>
 

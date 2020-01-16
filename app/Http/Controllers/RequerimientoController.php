@@ -263,7 +263,7 @@ class RequerimientoController extends Controller
         }
 
 
-        return view('compass.verificar_index')->with(compact('productos'));
+        return view('compass.verificar_index')->with(compact('productos', 'requerimientos'));
     }
 
     /**

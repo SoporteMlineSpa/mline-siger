@@ -25,12 +25,28 @@
                                         <div class="col font-bold">{{ $requerimiento->centro->empresa->razon_social }}</div>
                                     </div>
                                     <div class="row">
+                                        <div class="col text-right">Giro:</div>
+                                        <div class="col font-bold">{{ $requerimiento->centro->empresa->giro }}</div>
+                                    </div>
+                                    <div class="row">
                                         <div class="col text-right">RUT Empresa:</div>
                                         <div class="col font-bold">{{ $requerimiento->centro->empresa->rut }}</div>
                                     </div>
                                     <div class="row">
                                         <div class="col text-right">Centro:</div>
                                         <div class="col font-bold">{{ $requerimiento->centro->nombre }}</div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col text-right">Comuna:</div>
+                                        <div class="col font-bold">{{ $requerimiento->centro->comuna }}</div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col text-right">Ciudad:</div>
+                                        <div class="col font-bold">{{ $requerimiento->centro->ciudad }}</div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col text-right">Direccion:</div>
+                                        <div class="col font-bold">{{ $requerimiento->centro->direccion }}</div>
                                     </div>
                                     <div class="row">
                                         <div class="col text-right">Nombre del Pedido:</div>
@@ -42,7 +58,7 @@
                                     </div>
                                     <div class="row">
                                         <div class="col-md-2 mx-auto">
-                                            <button type="submit" class="btn btn-block btn-success">Despachar</button>
+                                            <button type="submit" class="btn btn-block btn-success">Armar</button>
                                         </div>
                                     </div>
                                 </div>

@@ -52,7 +52,9 @@
                                     <tbody>
                                         @foreach ($centro->requerimientos()->where('estado', 'EN BODEGA')->get() as $requerimiento)
                                             <tr>
-                                                <td>{{$requerimiento->nombre}}</td>
+                                                <td>
+                                                    <a href="{{ route('pedidos.show', $requerimiento) }}">{{ $requerimiento->nombre }}</a>
+                                                </td>
 
                                                 <td>{{$requerimiento->estado}}</td>
 

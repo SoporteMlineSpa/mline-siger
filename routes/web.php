@@ -73,6 +73,7 @@ Route::group(['middleware' => 'auth'], function() {
                 Route::post('aceptar', 'RequerimientoController@aceptar')->name('pedidos.aceptar');
                 Route::post('rechazar', 'RequerimientoController@rechazar')->name('pedidos.rechazar');
                 Route::post('aceptar-todos', 'RequerimientoController@aceptarTodos')->name('pedidos.aceptarTodos');
+                Route::post('rechazar-todos', 'RequerimientoController@rechazarTodos')->name('pedidos.rechazarTodos');
             });
 
         });
@@ -86,6 +87,9 @@ Route::group(['middleware' => 'auth'], function() {
             Route::get('usuarios-centro/', 'UserController@indexEmpresa')->name('user.indexEmpresa');
             Route::get('usuarios-centro/create', 'UserController@create')->name('user.create');
             Route::post('usuarios-centro/create', 'UserController@storeCentro')->name('user.store');
+            Route::get('usuarios-centro/{usuario}', 'UserController@editCentro')->name('user.editCentro');
+            Route::put('usuarios-centro/{usuario}', 'UserController@updateCentro')->name('user.updateCentro');
+            Route::delete('usuarios-centro/{usuario}', 'UserController@destroy')->name('user.destroyCentro');
         });
 
         Route::get('presupuesto/centro/{centroId?}/{mes?}{year?}{acumulado?}', 'PresupuestoController@indexCentro')->name('presupuesto.indexCentro');
@@ -119,9 +123,9 @@ Route::group(['middleware' => 'auth'], function() {
         Route::get('asignar-usuarios', 'UserController@usuariosSinAsignar')->name('usuarios.asignar');
         Route::get('asignacion-usuario/{userId}/{tipo}', 'UserController@asignar')->name('usuario.asignar');
         Route::post('asignacion-usuario', 'UserController@asignacion')->name('usuario.asignacion');
-        Route::resource('usuarios', 'UserController')->only([
-            'edit', 'update', 'destroy'
-        ]);
+        Route::get('users/{usuario}', 'UserController@edit')->name('usuarios.edit');
+        Route::put('users/{usuario}', 'UserController@update')->name('usuarios.update');
+        Route::delete('users/{usuario}', 'UserController@destroy')->name('usuarios.destroy');
 
         Route::get('cargar-folios', 'FolioController@create')->name('cargarFolios');
         Route::post('cargar-folios', 'FolioController@store')->name('folios.store');

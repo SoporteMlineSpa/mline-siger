@@ -2,10 +2,10 @@
 
 @section('title', 'Crear Usuario | Mline SIGER')
 
-@section('home-route', route('compass.home'))
+@section('home-route', route('cliente.home'))
 
 @section('nav-menu')
-    @include('compass.menu')
+    @include('cliente.menu')
 @endsection
 
 @section('main')
@@ -37,7 +37,7 @@
                         <label for="password" class="col-md-4 col-form-label text-md-right">{{ __('Contraseña:') }}</label>
                     
                         <div class="col-md-6">
-                            <input type="text" class="form-control" name="password" required  autofocus>
+                            <input type="password" class="form-control" name="password" required  autofocus>
                         </div>
                     </div>
                     

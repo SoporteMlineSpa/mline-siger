@@ -64,7 +64,7 @@
                                             @json($requerimiento->productos),
                                             type: "Array", keys: ["sku",
                                             "detalle",
-                                            "pivot", "total"], pivot: "cantidad"},
+                                            "pivot"], pivot: "cantidad"},
                                             { data: @json(["total" => "$" . number_format($requerimiento->getTotal()) ]), type: "Object", keys: ["total"]}
                                             ]'>Ver Orden de Pedido</modal-btn-component>
                                         @if (Auth::user()->userable instanceof \App\Centro)
@@ -96,19 +96,3 @@
 
     </div>
 @endsection
-
-@if (\Session::has('msg'))
-    @php
-        $msg = \Session::get('msg');
-    @endphp
-    @section('js')
-        <script charset="utf-8">
-            (Swal.fire({
-                title: '{{$msg['meta']['title']}}',
-                html: '{!! $msg['meta']['msg'] !!}',
-                icon: 'success'
-            }))();
-
-        </script>
-    @endsection
-@endif

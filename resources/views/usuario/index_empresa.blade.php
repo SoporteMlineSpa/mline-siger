@@ -11,7 +11,7 @@
 @section('main')
     <div class="container">
         <div class="card">
-            <h3 class="card-header font-bold text-xl">Lista de Usuarios</h3>
+            <h3 class="card-header font-bold text-xl">{{ Auth::user()->getNombreRelacionado() }}: Lista de Usuarios</h3>
             <div class="card-body">
                 <table id="datatable" class="table">
                     <thead>
@@ -31,8 +31,8 @@
                                 <td>{{ $user->email }}</td>
                                 <td>{{ $user->userable->nombre }}</td>
                                 <td>
-                                    <a class="btn btn-primary" href=""><i class="fas fa-edit"></i></a>
-                                    <delete-btn-component action=""></delete-btn-component>
+                                    <a class="btn btn-primary" href="{{ route('user.editCentro', $user)}}"><i class="fas fa-edit"></i></a>
+                                    <delete-btn-component action="{{ route('user.destroyCentro', $user) }}"></delete-btn-component>
                                 </td>
                             </tr>
                         @endforeach
@@ -42,19 +42,3 @@
         </div>
     </div>
 @endsection
-
-@if (\Session::has('msg'))
-    @php
-        $msg = \Session::get('msg');
-    @endphp
-    @section('js')
-        <script charset="utf-8">
-            (Swal.fire({
-                title: '{{$msg['meta']['title']}}',
-                html: '{!! $msg['meta']['message'] !!}',
-                icon: 'success'
-            }))();
-
-        </script>
-    @endsection
-@endif

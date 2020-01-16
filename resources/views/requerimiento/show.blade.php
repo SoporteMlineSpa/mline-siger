@@ -29,7 +29,6 @@
                                     <b>Razon Social: </b>{{ $empresa->razon_social }}<b class="ml-3">RUT Empresa: </b>{{ $empresa->rut }} <br />
                                     <b>Giro: </b>{{ $empresa->giro }} <br />
                                     <b>Direccion: </b>{{ $empresa->direccion }} <br />
-                                    <b>Punto de Abastecimiento: </b>{{ $empresa->abastecimiento->nombre }}
                                 </div>
                             </div>
                             <div class="card col-md mx-2">
@@ -59,12 +58,12 @@
                                     <h4 class="card-title text-xl font-bold
                                         border-bottom">Datos de Transporte</h4>
                                     <b>Nombre Transportista: </b>
-                                    {{ $requerimiento->nombre_transportista ?? 'Sin Despachar' }} <br />
+                                    {{ $requerimiento->transporte->nombre ?? 'Sin Despachar' }} <br />
                                     <b>RUT Transportista: </b>
-                                    {{ $requerimiento->rut_transportista ??
+                                    {{ $requerimiento->transporte->rut ??
                                     'Sin Despachar'}} <br />
                                     <b>Contacto Transportista: </b>
-                                    {{ $requerimiento->contacto_transportista
+                                    {{ $requerimiento->transporte->contacto
                                     ?? 'Sin Despachar' }} <br />
                                 </div>
                             </div>
@@ -88,10 +87,10 @@
                                             <tr>
                                                 <td>{{ $producto->sku }}</td>
                                                 <td>{{ $producto->detalle }}</td>
-                                                <td>{{ number_format($producto->precio) }}</td>
+                                                <td>{{ number_format($producto->pivot->precio) }}</td>
                                                 <td>{{ $producto->pivot->cantidad ?? 0 }}</td>
                                                 <td>{{ $producto->pivot->real ?? 'Sin Despachar' }}</td>
-                                                <td>{{ number_format($producto->precio * ($producto->pivot->real ?? $producto->pivot->cantidad)) }}</td>
+                                                <td>{{ number_format($producto->pivot->precio * ($producto->pivot->real ?? $producto->pivot->cantidad)) }}</td>
                                                 <td>{{ $producto->pivot->observacion ?? 'Sin Observaciones' }}</td>
                                             </tr>
                                         @endforeach

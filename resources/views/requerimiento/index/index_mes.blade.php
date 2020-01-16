@@ -62,7 +62,7 @@
                             @php
                                 $total = 0;
                             @endphp
-                            @for ($i = 0; $i < 12; $i++)
+                            @for ($i = 1; $i < 13; $i++)
                                 @if ($estados->has(str_pad($i, 2, "0", STR_PAD_LEFT)) && $estados[str_pad($i, 2, "0", STR_PAD_LEFT)]->has('ESPERANDO VALIDACION'))
                                     <td>
                                         <a href="{{ route('pedidos.centroIndex', ['centro' => $centro->id, 'estado' => '0']) }}">
@@ -84,7 +84,7 @@
                             @php
                                 $total = 0;
                             @endphp
-                            @for ($i = 0; $i < 12; $i++)
+                            @for ($i = 1; $i < 13; $i++)
                                 @if ($estados->has(str_pad($i, 2, "0", STR_PAD_LEFT)) && $estados[str_pad($i, 2, "0", STR_PAD_LEFT)]->has('VALIDADO'))
                                     <td>
                                         <a href="{{ route('pedidos.centroIndex', ['centro' => $centro->id, 'estado' => '1']) }}">
@@ -103,7 +103,7 @@
                         </tr>
                         <tr>
                             <th scope="row">En Procesamiento</th>
-                            @for ($i = 0; $i < 12; $i++)
+                            @for ($i = 1; $i < 13; $i++)
                                 @if ($estados->has(str_pad($i, 2, "0", STR_PAD_LEFT)) && $estados[str_pad($i, 2, "0", STR_PAD_LEFT)]->has('EN PROCESAMIENTO'))
                                     <td>
                                         <a href="{{ route('pedidos.centroIndex', ['centro' => $centro->id, 'estado' => '2']) }}">
@@ -125,7 +125,7 @@
                             @php
                                 $total = 0;
                             @endphp
-                            @for ($i = 0; $i < 12; $i++)
+                            @for ($i = 1; $i < 13; $i++)
                                 @if ($estados->has(str_pad($i, 2, "0", STR_PAD_LEFT)) && $estados[str_pad($i, 2, "0", STR_PAD_LEFT)]->has('EN BODEGA'))
                                     <td>
                                         <a href="{{ route('pedidos.centroIndex', ['centro' => $centro->id, 'estado' => '3']) }}">
@@ -147,7 +147,7 @@
                             @php
                                 $total = 0;
                             @endphp
-                            @for ($i = 0; $i < 12; $i++)
+                            @for ($i = 1; $i < 13; $i++)
                                 @if ($estados->has(str_pad($i, 2, "0", STR_PAD_LEFT)) && $estados[str_pad($i, 2, "0", STR_PAD_LEFT)]->has('DESPACHADO'))
                                     <td>
                                         <a href="{{ route('pedidos.centroIndex', ['centro' => $centro->id, 'estado' => '4']) }}">
@@ -169,7 +169,7 @@
                             @php
                                 $total = 0;
                             @endphp
-                            @for ($i = 0; $i < 12; $i++)
+                            @for ($i = 1; $i < 13; $i++)
                                 @if ($estados->has(str_pad($i, 2, "0", STR_PAD_LEFT)) && $estados[str_pad($i, 2, "0", STR_PAD_LEFT)]->has('ENTREGADO'))
                                     <td>
                                         <a href="{{ route('pedidos.centroIndex', ['centro' => $centro->id, 'estado' => '5']) }}">
@@ -191,7 +191,7 @@
                             @php
                                 $total = 0;
                             @endphp
-                            @for ($i = 0; $i < 12; $i++)
+                            @for ($i = 1; $i < 13; $i++)
                                 @if ($estados->has(str_pad($i, 2, "0", STR_PAD_LEFT)) && $estados[str_pad($i, 2, "0", STR_PAD_LEFT)]->has('RECHAZADO'))
                                     <td>
                                         <a href="{{ route('pedidos.centroIndex', ['centro' => $centro->id, 'estado' => '6']) }}">

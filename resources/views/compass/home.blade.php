@@ -18,7 +18,7 @@
                     <div class="card-body">
                         <h3 class="font-bold text-md border-bottom mb-3"><i class="fas fa-tachometer-alt"></i> Accesos Directo:</h3>
                         <div class="d-flex flex-row justify-content-around align-items-end">
-                            @if (Auth::user()->userable->nombre === 'Compras')
+                            @if (Auth::user()->userable->name == 'Compras')
                                 <a class="btn btn-outline-primary" href="{{ route('compass.pedidos.verificar')}}">
                                     <i class="fas fa-tasks"></i>
                                     Verificar Ordenes de Pedido
@@ -32,15 +32,15 @@
                                     Lista de Usuarios
                                 </a>
                             @else
-                                <a class="btn btn-outline-primary" href="{{ route('compass.pedidos.verificar')}}">
+                                <a class="btn btn-outline-primary" href="{{ route('compass.pedidos.cajasIndex')}}">
                                     <i class="fas fa-tasks"></i>
                                     Armar Cajas
                                 </a>
-                                <a class="btn btn-outline-primary" href="{{ route('cargarFolios') }}">
+                                <a class="btn btn-outline-primary" href="{{ route('compass.pedidos.programarDespachos') }}">
                                     <i class="fas fa-tasks"></i>
                                     Programar Despachos
                                 </a>
-                                <a class="btn btn-outline-primary" href="{{ route('usuarios.index') }}">
+                                <a class="btn btn-outline-primary" href="{{ route('compass.pedidos.despachar') }}">
                                     <i class="fas fa-tasks"></i>
                                     Despachar
                                 </a>

@@ -17,7 +17,7 @@
                     <div class="d-flex flex-row">
                         <div class="btn-group" role="group" aria-label="Validar Pedidos">
                             <validar-pedidos-component action="{{ route('pedidos.aceptarTodos') }}" :todos="true">Aceptar Todos</validar-pedidos-component>
-                            <validar-pedidos-component action="{{ route('pedidos.aceptarTodos') }}" :todos="true" :validacion="false">Rechazar Todos</validar-pedidos-component>
+                            <validar-pedidos-component action="{{ route('pedidos.rechazarTodos') }}" :todos="true" :validacion="false">Rechazar Todos</validar-pedidos-component>
                         </div>
                     </div>
                 </div>
@@ -49,8 +49,8 @@
                                                 { data:
                                                 @json($requerimiento->productos),
                                                 type: "Array", keys: ["sku",
-                                                "detalle", "precio",
-                                                "pivot", "total"], pivot: "cantidad"},
+                                                "detalle",
+                                                "pivot"], pivot: "cantidad"},
                                                 { data: @json(["total" => "$" . number_format($requerimiento->getTotal()) ]), type: "Object", keys: ["total"]}
                                                 ]'>Ver Orden de Pedido</modal-btn-component>
                                             </modal-btn-component>

@@ -246,5 +246,97 @@ class UserController extends Controller
         return redirect()->route('user.indexEmpresa')->with(compact('msg'));
     }
     
+    /**
+     * Muestra el formulario para editar un usuario
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function edit($user)
+    {
+        $user = User::find($user);
+        return view('usuario.edit')->with(compact('user'));
+    }
     
+    /**
+     * Actualiza la informacion del Usuario
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function update($user, Request $request)
+    {
+        $user = User::find($user);
+        $user->name = $request->input('name');
+        $user->email = $request->input('email');
+        $user->password = bcrypt($request->input('password'));
+
+        if ($user->saveOrFail()) {
+            $msg = [
+                "meta" => [
+                    "title" => 'Usuario actualizado exitosamente',
+                    "msg" => 'El Usuario '.$user->name.' fue actualizado exitosamente'
+                ]
+            ];
+
+            return redirect()->route('usuarios.index')->with(compact('msg'));
+        } else {
+            $msg = [
+                "meta" => [
+                    "title" => 'Usuario no pudo ser actualizado',
+                    "msg" => 'El Usuario '.$user->name.' no pudo ser actualizado'
+                ]
+            ];
+
+            return redirect()->route('usuarios.index')->with(compact('msg'));
+        }
+    }
+    
+    /**
+     * Muestra el formulario para editar un usuario para centros
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function editCentro($user)
+    {
+        $user = User::find($user);
+        $centros = Auth::user()->userable->centros()->get();
+        return view('usuario.edit_centro')->with(compact('user', 'centros'));
+    }
+    
+    /**
+     * Actualiza la informacion del Usuario
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function updateCentro($user, Request $request)
+    {
+        $user = User::find($user);
+        $user->name = $request->input('name');
+        $user->email = $request->input('email');
+        $user->password = bcrypt($request->input('password'));
+
+        $user->userable()->dissociate();
+
+        $centro = \App\Centro::findOrFail($request->input('centro'));
+        $centro->users()->save($user);
+
+        if ($user->saveOrFail()) {
+            $msg = [
+                "meta" => [
+                    "title" => 'Usuario actualizado exitosamente',
+                    "msg" => 'El Usuario '.$user->name.' fue actualizado exitosamente'
+                ]
+            ];
+
+            return redirect()->route('user.indexEmpresa')->with(compact('msg'));
+        } else {
+            $msg = [
+                "meta" => [
+                    "title" => 'Usuario no pudo ser actualizado',
+                    "msg" => 'El Usuario '.$user->name.' no pudo ser actualizado'
+                ]
+            ];
+
+            return redirect()->route('user.indexEmpresa')->with(compact('msg'));
+        }
+    }
 }

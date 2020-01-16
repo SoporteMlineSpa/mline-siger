@@ -40,8 +40,8 @@
                                 { data:
                                 @json($requerimiento->productos),
                                 type: "Array", keys: ["sku",
-                                "detalle", "precio",
-                                "pivot", "total"], pivot: "cantidad"},
+                                "detalle",
+                                "pivot"], pivot: "cantidad"},
                                 { data: @json(["total" => "$" . number_format($requerimiento->getTotal()) ]), type: "Object", keys: ["total"]}
                                 ]'>Ver Orden de Pedido</modal-btn-component>
                             @if (Auth::user()->userable instanceof \App\Centro)
@@ -54,9 +54,9 @@
                                     title="Orden de Pedido"
                                     :message='[
                                     { data: @json([
-                                    "nombre" => $requerimiento->nombre_transportista,
-                                    "rut" => $requerimiento->rut_transportista,
-                                    "contacto" => $requerimiento->contacto_transportista
+                                    "nombre" => $requerimiento->transporte->nombre,
+                                    "rut" => $requerimiento->transporte->rut,
+                                    "contacto" => $requerimiento->transporte->contacto
                                     ])
                                     , type: "Object", keys: ["nombre",
                                     "rut", "contacto"]}

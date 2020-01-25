@@ -57,7 +57,17 @@
                                         <div class="col font-bold">{{ $requerimiento->created_at }}</div>
                                     </div>
                                     <div class="row">
-                                        <div class="col-md-2 mx-auto">
+                                        <div class="col text-right">Bodeguero Responsable:</div>
+                                        <div class="col font-bold">
+                                            <select class="form-control form-control-sm w-50" name="bodeguero">
+                                                @foreach ($bodegueros as $bodeguero)
+                                                    <option value="{{ $bodeguero->id }}">{{ $bodeguero->nombre }}</option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-2 mx-auto mt-4">
                                             <button type="submit" class="btn btn-block btn-success">Armar</button>
                                         </div>
                                     </div>
@@ -71,7 +81,8 @@
                                 <th scope="col">SKU</th>
                                 <th scope="col">Detalle</th>
                                 <th scope="col">Cantidad Solicitada</th>
-                                <th scope="col">Real</th>
+                                <th scope="col">Cantidad a despachar</th>
+                                <th scope="col">Fecha de Vencimiento</th>
                                 <th scope="col">Observaciones</th>
                                 <th scope="col">Acciones</th>
                             </tr>
@@ -84,6 +95,7 @@
                                     <td>{{$producto->detalle}}</td>
                                     <td>{{$producto->pivot->cantidad}}</td>
                                     <td><input class="form-control form-control-sm" name="real[]" value="{{$producto->pivot->cantidad}}" type="text"></td>
+                                    <td><input type="date" class="form-control form-control-sm" name="vencimiento[]" min="{{ \Carbon\Carbon::now()->addDays(10) }}"></td>
                                     <td><input class="form-control form-control-sm" type="text" name="observaciones[]" value="{{$producto->pivot->observacion}}"></td>
                                     <td>
                                         <a class="btn btn-primary" href="{{ route('cajas.cambiar', [$requerimiento, $producto]) }}">

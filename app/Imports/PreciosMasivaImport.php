@@ -32,5 +32,6 @@ class PreciosMasivaImport implements ToCollection, WithHeadingRow, WithCalculate
                 $this->empresa->productos()->attach($producto->id, ["precio" => $row['precio_venta']]);
             }
         });
+        $this->empresa->saveOrFail();
     }
 }

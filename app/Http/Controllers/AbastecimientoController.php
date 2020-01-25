@@ -39,6 +39,8 @@ class AbastecimientoController extends Controller
     {
         $abastecimiento = new Abastecimiento;
         $abastecimiento->nombre = $request->input('nombre');
+        $abastecimiento->comuna = $request->input('comuna');
+        $abastecimiento->ciudad = $request->input('ciudad');
 
         if ($abastecimiento->saveOrFail()) {
             $msg = [
@@ -82,6 +84,8 @@ class AbastecimientoController extends Controller
     public function update(Request $request, Abastecimiento $abastecimiento)
     {
         $abastecimiento->nombre = $request->input('nombre');
+        $abastecimiento->comuna = $request->input('comuna');
+        $abastecimiento->ciudad = $request->input('ciudad');
 
         if ($abastecimiento->saveOrFail()) {
             $msg = [

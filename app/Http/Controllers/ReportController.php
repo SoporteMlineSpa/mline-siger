@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\FormatoRebaja;
 use Illuminate\Http\Request;
+use Maatwebsite\Excel\Facades\Excel;
 
 class ReportController extends Controller
 {
@@ -34,6 +36,54 @@ class ReportController extends Controller
         });
 
         return view('reporte.productos_mes')->with(compact('report'));
+    }
+    
+    /**
+     * Muestra la pantalla para generacion de Packs
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function packs()
+    {
+        $empresas = \App\Empresa::all();
+
+        return view('reporte.packs')->with(compact('empresas'));
+    }
+
+    /**
+     * Genera el pack de esa semana para la Empresa seleccionada
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function generarPack(Request $request)
+    {
+        $empresa = \App\Empresa::find($request->input('empresa'));
+
+        return Excel::download(new FormatoPack($empresa, $request->input('inicio'), $request->input('fin')), "pack-$empresa->razon_social.xlsx");
+    }
+
+    /**
+     * Muestra la pantalla para la generacion de rebajas de Productos
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function productos()
+    {
+        $productos = \App\Producto::all();
+
+        return view('reporte.productos')->with(compact('productos'));
+    }
+
+    /**
+     * Generar las rebajas de Producto segun producto y rango de tiempo
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function generarRebajas(Request $request)
+    {
+        $producto = \App\Producto::find($request->input('nuevoProducto'));
+
+        return Excel::download(new FormatoRebaja($producto, $request->input('inicio'), $request->input('fin')), "rebaja-$producto->detalle.xlsx");
     }
     
 }

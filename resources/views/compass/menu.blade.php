@@ -45,6 +45,16 @@
         </div>
     </li>
     <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" href="#" role="button" id="dropdownCentros" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <i class="fas fa-address-card mr-2"></i>
+            Bodegueros
+        </a>
+        <div class="dropdown-menu">
+            <a class="dropdown-item" href="{{route('bodegueros.index')}}">Lista</a>
+            <a class="dropdown-item" href="{{route('bodegueros.create')}}">Nuevo</a>
+        </div>
+    </li>
+    <li class="nav-item dropdown">
         <a class="nav-link dropdown-toggle" href="#" role="button" id="dropdownHoldings" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
             <i class="fas fa-building mr-2"></i>
             Holdings
@@ -64,6 +74,9 @@
             <a class="dropdown-item" href="{{route('empresas.index')}}">Lista</a>
             <a class="dropdown-item" href="{{route('empresas.create')}}">Nuevo</a>
             <a class="dropdown-item" href="{{route('usuarios.index', 'e')}}">Usuarios</a>
+            <div class="dropdown-divider"></div>
+            <a class="dropdown-item"
+                href="{{route('horarios.create')}}">Asignar Horarios</a>
         </div>
     </li>
     <li class="nav-item dropdown">
@@ -97,6 +110,8 @@
         </a>
         <div class="dropdown-menu">
             <a class="dropdown-item" href="{{route('reportes.productosCantidad')}}">Productos Por Cantidad</a>
+            <a class="dropdown-item" href="{{route('reportes.packs')}}">Generar Packs</a>
+            <a class="dropdown-item" href="{{route('reportes.productos')}}">Rebaja de Productos</a>
         </div>
     </li>
     <li class="nav-item">

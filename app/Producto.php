@@ -14,7 +14,7 @@ class Producto extends Model
      */
     public function requerimientos()
     {
-        return $this->belongsToMany('App\Requerimiento')->withPivot('cantidad', 'real', 'observacion');
+        return $this->belongsToMany('App\Requerimiento')->withPivot('cantidad', 'precio', 'real', 'observacion', 'fecha_vencimiento');
     }
 
     /**

@@ -35,6 +35,7 @@ Vue.component('despachar-component', require('./components/DespacharComponent.vu
 Vue.component('filterable-select-component', require('./components/FilterableSelectComponent.vue').default);
 Vue.component('currency-input-component', require('./components/CurrencyInputComponent.vue').default)
 Vue.component('producto-edit-precio', require('./components/ProductoEditPrecio.vue').default)
+Vue.component('crear-requerimiento-component', require('./components/CrearRequerimientoComponent.vue').default)
 
 Vue.use(Tabs)
 

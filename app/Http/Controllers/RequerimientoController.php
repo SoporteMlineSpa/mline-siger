@@ -195,14 +195,16 @@ class RequerimientoController extends Controller
     public function create()
     {
         $empresa = Auth::user()->userable->empresa()->firstOrFail();
+        $centro = Auth::user()->userable;
         $productos = $empresa->productos()->get();;
+        $presupuesto = $centro->getTotalPresupuestoByDate(date("m"), date("Y"))->monto;
 
         $nombre = date("Y-m-d") . ' '
             .Auth::user()->userable->empresa->razon_social . ': '
             .Auth::user()->userable->nombre . ':  '
             .(is_null(\App\Requerimiento::latest()->first()) ? 0 : \App\Requerimiento::latest()->first()->id);
 
-        return view('requerimiento.create')->with(compact('productos', 'nombre'));
+        return view('requerimiento.create')->with(compact('empresa', 'presupuesto', 'centro', 'productos', 'nombre'));
     }
 
     /**
@@ -297,7 +299,7 @@ class RequerimientoController extends Controller
     public function indexCajas()
     {
         $centros = \App\Centro::whereHas('requerimientos', function ($query) {
-            $query->where('estado', 'EN BODEGA')->where('folio', null);
+            $query->where('estado', 'EN BODEGA')->where('folio', null)->where('transporte_id', null);
         })->get();
 
         return view('compass.cajas_index')->with(compact('centros'));
@@ -311,8 +313,9 @@ class RequerimientoController extends Controller
     public function showCaja($requerimientoId)
     {
         $requerimiento = Requerimiento::findOrFail($requerimientoId);
+        $bodegueros = \App\Bodeguero::all();
 
-        return view('compass.cajas_show')->with(compact('requerimiento'));
+        return view('compass.cajas_show')->with(compact('requerimiento', 'bodegueros'));
     }
 
     /**
@@ -324,15 +327,30 @@ class RequerimientoController extends Controller
     public function edit($requerimientoId)
     {
         $empresa = Auth::user()->userable->empresa()->firstOrFail();
+        $centro = Auth::user()->userable;
+        $presupuesto = $centro->getTotalPresupuestoByDate(date("m"), date("Y"))->monto;
         $requerimiento = Requerimiento::findOrFail($requerimientoId);
-        $productos = $requerimiento->productos()->get()->union($empresa->productos()->get());
+        $productos = $empresa->productos()->get();
+        $productosLibreria = $requerimiento->productos()->get()->map(function($producto) use ($productos) {
+            $precio = ($productos->first(function($item) use ($producto) {
+                return $item->id == $producto->id;
+            }))->pivot->precio;
 
+            return [
+                "id" => $producto->id,
+                "sku" => $producto->sku,
+                "detalle" => $producto->detalle,
+                "cantidad" => $producto->pivot->cantidad,
+                "precio" => $precio,
+                "subtotal" => $producto->pivot->cantidad * $precio
+            ];
+        });
         $nombre = date("Y-m-d") . ' '
             .Auth::user()->userable->empresa->razon_social . ': '
             .Auth::user()->userable->nombre . ': '
             .\App\Requerimiento::latest()->first()->id;
 
-        return view('requerimiento.edit')->with(compact('requerimiento', 'productos', 'nombre'));
+        return view('requerimiento.edit')->with(compact('empresa', 'presupuesto', 'centro', 'productos', 'productosLibreria', 'nombre'));
     }
 
     /**
@@ -371,11 +389,12 @@ class RequerimientoController extends Controller
         $requerimiento->folio = $folio;
         $productos = collect($request->input('productos'));
         $reales = collect($request->input('real'));
+        $vencimientos = collect($request->input('vencimiento'));
         $observaciones = collect($request->input('observaciones'));
 
-        $productos->map(function($item, $index) use ($requerimiento, $reales, $observaciones) {
+        $productos->map(function($item, $index) use ($requerimiento, $reales, $observaciones, $vencimientos) {
             $producto = json_decode($item, true);
-            $requerimiento->productos()->updateExistingPivot($producto['id'], ['real' => $reales[$index], 'observacion' => $observaciones[$index]]);
+            $requerimiento->productos()->updateExistingPivot($producto['id'], ['real' => $reales[$index], 'fecha_vencimiento' => $vencimientos[$index], 'observacion' => $observaciones[$index]]);
         });
 
         $requerimiento->save();

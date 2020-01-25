@@ -64,6 +64,8 @@ class Kernel extends HttpKernel
         'compass' => \App\Http\Middleware\CheckCompass::class,
         'cliente' => \App\Http\Middleware\CheckCliente::class,
         'type' => \App\Http\Middleware\CheckClienteType::class,
+        'create' => \App\Http\Middleware\checkHorarioCrear::class,
+        'validar' => \App\Http\Middleware\checkHorarioValidar::class
     ];
 
     /**

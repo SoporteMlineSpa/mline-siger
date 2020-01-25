@@ -9,10 +9,6 @@
 
         <title>@yield('title')</title>
 
-
-        <!-- FontAwesome -->
-        <script src="https://kit.fontawesome.com/8ca19da716.js" crossorigin="anonymous"></script>
-
         <!-- Fonts -->
         <link rel="dns-prefetch" href="//fonts.gstatic.com">
         <link href="https://fonts.googleapis.com/css?family=Nunito" rel="stylesheet">

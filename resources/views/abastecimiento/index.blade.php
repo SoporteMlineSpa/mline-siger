@@ -20,6 +20,8 @@
                                 <tr>
                                     <th scope="col">#</th>
                                     <th scope="col">Nombre</th>
+                                    <th scope="col">Comuna</th>
+                                    <th scope="col">Ciudad</th>
                                     <th scope="col">Acciones</th>
                                 </tr>
                             </thead>
@@ -28,6 +30,8 @@
                                     <tr>
                                         <th scope="row">{{ $loop->index }}</th>
                                         <td>{{ $abastecimiento->nombre }}</td>
+                                        <td>{{ $abastecimiento->comuna }}</td>
+                                        <td>{{ $abastecimiento->ciudad }}</td>
                                         <td>
                                             <a class="btn btn-primary" href="{{route('abastecimientos.edit', $abastecimiento)}}"><i class="fas fa-edit"></i></a>
                                             <delete-btn-component action="{{ route('abastecimientos.destroy', $abastecimiento) }}"></delete-btn-component>

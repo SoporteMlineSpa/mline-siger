@@ -96,18 +96,3 @@
         </div>
     </div>
 @endsection
-@if (\Session::has('msg'))
-    @php
-        $msg = \Session::get('msg');
-    @endphp
-    @section('js')
-        <script charset="utf-8">
-            (Swal.fire({
-                title: '{{$msg['meta']['title']}}',
-                html: '{!! $msg['meta']['message'] !!}',
-                icon: 'success'
-            }))();
-
-        </script>
-    @endsection
-@endif

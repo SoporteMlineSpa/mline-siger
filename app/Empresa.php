@@ -57,6 +57,27 @@ class Empresa extends Model
     }
 
     /**
+     * Retorna las Programaciones de Precios de esa Empresa
+     *
+     * @return App\ProgramacionPrecio
+     */
+    public function programaciones()
+    {
+        return $this->hasMany('App\ProgramacionPrecio');
+    }
+
+    /**
+     * Retorna el Horario de esa Empresa
+     *
+     * @return \App\Horario
+     */
+    public function horario()
+    {
+        return $this->hasOne('App\Horario');
+    }
+
+
+    /**
      * Retorna true si la Empresa tiene un Presupuesto creado
      *
      * @return bool
@@ -92,6 +113,21 @@ class Empresa extends Model
         return $requerimientos;
 
     }
+
+    /**
+     * Retorna los Requerimientos segun Centros de esa Empresa
+     *
+     * @return Collection
+     */
+    public function getRequerimientos($dateStart = null, $dateEnd = null, $estadoId = null)
+    {
+        $requerimientos = $this->centros()->get()->map(function ($centro) {
+            return $centro->requerimientos()->whereDate('created_at', '>=', $dateStart)->whereDate('created_at', '<=', $dateEnd)->get();
+        });
+
+        return $requerimientos->flatten();
+    }
+    
 
     /**
      * Retorna los Centros de esta Empresa segun el estado
@@ -195,5 +231,63 @@ class Empresa extends Model
         return $gastoTotal ?? 0;
     }
 
+    /**
+     * Retorna True si la Empresa esta habilitada para crear segun su Horario
+     *
+     * @return Boolean
+     */
+    public function puedeCrear()
+    {
+        $horario = $this->horario()->get()->first();
+        $horaInicio = \Carbon\Carbon::parse(date("Y-m-d ") . $horario->hora_creacion_inicio);
+        $horaFin = \Carbon\Carbon::parse(date("Y-m-d ") . $horario->hora_creacion_fin);
+        $ahora = \Carbon\Carbon::now('America/Santiago');
 
+        if ($horario->fecha_creacion_fin < $horario->fecha_creacion_inicio) {
+            if ($horario->fecha_creacion_inicio >= $ahora->dayOfWeekIso && $ahora->dayOfWeekIso >= $horario->fecha_creacion_fin) {
+                if ($horaInicio->lessThanOrEqualTo($ahora) && $ahora->lessThanOrEqualTo($horaFin)) {
+                    return true;
+                }
+            }
+
+        } else {
+            if ($horario->fecha_creacion_inicio <= $ahora->dayOfWeekIso && $ahora->dayOfWeekIso <= $horario->fecha_creacion_fin) {
+                if ($horaInicio->lessThanOrEqualTo($ahora) && $ahora->lessThanOrEqualTo($horaFin)) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Retorna True si la Empresa esta habilitada para validar segun su Horario
+     *
+     * @return Boolean
+     */
+    public function puedeValidar()
+    {
+        $horario = $this->horario()->get();
+        $horaInicio = \Carbon\Carbon::parse(date("Y-m-d ") . $horario->hora_validacion_inicio);
+        $horaFin = \Carbon\Carbon::parse(date("Y-m-d ") . $horario->hora_validacion_fin);
+        $ahora = \Carbon\Carbon::now();
+
+        if ($horario->fecha_validacion_fin < $horario->fecha_validacion_inicio) {
+            if ($horario->fecha_validacion_inicio >= $ahora->dayOfWeekIso && $ahora->dayOfWeekIso >= $horario->fecha_validacion_fin) {
+                if ($horaInicio->lessThanOrEqualTo($ahora) && $ahora->lessThanOrEqualTo($horaFin)) {
+                    return true;
+                }
+            }
+
+        } else {
+            if ($horario->fecha_validacion_inicio <= $ahora->dayOfWeekIso && $ahora->dayOfWeekIso <= $horario->fecha_validacion_fin) {
+                if ($horaInicio->lessThanOrEqualTo($ahora) && $ahora->lessThanOrEqualTo($horaFin)) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
 }

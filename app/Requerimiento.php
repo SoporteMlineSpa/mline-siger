@@ -26,7 +26,7 @@ class Requerimiento extends Model
      */
     public function productos()
     {
-        return $this->belongsToMany('App\Producto')->withPivot('cantidad', 'precio', 'real', 'observacion');
+        return $this->belongsToMany('App\Producto')->withPivot('cantidad', 'precio', 'real', 'observacion', 'fecha_vencimiento');
     }
 
     /**
@@ -48,7 +48,18 @@ class Requerimiento extends Model
     {
         return $this->belongsTo('App\Transporte');
     }
+
+    /**
+     * Retorna el Bodeguero encargado de ese Requerimiento
+     *
+     * @return \App\Bodeguero
+     */
+    public function bodeguero()
+    {
+        return $this->belongsTo('App\Bodeguero');
+    }
     
+
 
     /**
      * Retorna los Usuarios con este Requerimiento en su libreria
@@ -59,7 +70,7 @@ class Requerimiento extends Model
     {
         return $this->belongsToMany('App\Requerimiento')->withPivot('nombre');
     }
-    
+
 
     /**
      * Retornar lista de Usuarios relacionados a ese Requerimiento
@@ -118,15 +129,19 @@ class Requerimiento extends Model
     {
 
         $folio = str_pad($this->folio, 10, "0", STR_PAD_LEFT);
-        $fecha = date("Ymd");
-        $rutReceptor = str_pad(str_replace(["-", "."], "", $this->centro->empresa->rut), 9, STR_PAD_LEFT);
-        $razonSocialReceptor = str_pad($this->centro->empresa->razon_social, 100);
-        $giroReceptor = str_pad($this->centro->empresa->giro, 40);
-        $direccionReceptor = str_pad($this->centro->direccion, 60);
-        $comunaReceptor = str_pad($this->centro->comuna, 20);
-        $ciudadReceptor = str_pad($this->centro->ciudad, 15);
-        $direccionDestino = str_pad($this->transporte->abastecimiento->nombre, 60);
-        $transporteRut = str_replace([".", "-"], "", $this->transporte->rut);
+        $fecha = date("Y-m-d");
+        $rutReceptor = str_replace(".", "", $this->centro->empresa->rut);
+        $razonSocialReceptor = $this->centro->empresa->razon_social;
+        $giroReceptor = $this->centro->empresa->giro;
+        $direccionReceptor = $this->centro->direccion;
+        $comunaReceptor = $this->centro->comuna;
+        $ciudadReceptor = $this->centro->ciudad;
+        $direccionDestino = $this->transporte->abastecimiento->nombre;
+        $comunaDestino = $this->transporte->abastecimiento->comuna;
+        $ciudadDestino = $this->transporte->abastecimiento->ciudad;
+        $transporteRut = str_replace(".", "", $this->transporte->rut);
+        $transporteNombre = $this->transporte->nombre;
+        $montoTotal = $this->getTotal();
         // $folio debe tener un largo de 10 caracteres (rellenar al inicio)
         // $fecha debe tener un largo de 8 caracteres en el formato aaaammdd
         // $rutReceptor debe tener un largo de 9 caracteres incluyendo el
@@ -135,8 +150,158 @@ class Requerimiento extends Model
         // $direccionReceptor debe tener un largo de 60 caracteres
         // $comunaReceptor debe tener un largo de 20 caracteres
         // $ciudadReceptor debe tener un largo de 15 caracteres
-        $txt = "E052" . $folio . $fecha . "035000000000000000000000000000      0000000000096651910K000062COMPASS  CATERING SA                                                                                Servicios de alimentacion                                                       00000291C                          000000000291C                                                        LOS ANGELES         LOS ANGELES    152138377                                                   00000000 " . $rutReceptor . "291C                " . $razonSocialReceptor . $giroReceptor . "5500274579                                                                      " . $direccionReceptor . $comunaReceptor . $ciudadReceptor . "                                                                                               00000000         " . $transporteRut . $direccionDestino . "                                   00000000000000000000000000000000000000000000000000000001900000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000COMPRAS   15213837-7          GUIADESPACHO      000000000000000001                  1A100000000000000000000000000000000000000552090                     \r\n";
 
+        $txt = "
+XXX INICIO DOCUMENTO\n
+========== AREA IDENTIFICACION DEL DOCUMENTO\n
+Tipo Documento Tributario Electronico            : 52\n
+Folio Documento                                  : $folio\n
+Fecha de Emision                                 : $fecha\n
+Indicador No rebaja                              :\n
+Tipo de Despacho                                 : 2\n
+Indicador de Traslado                            : 6\n
+Tipo Impresion                                   :\n
+Indicador de servicio                            :\n
+Indicador de Montos Brutos                       :\n
+Indicador de Montos Netos                        :\n
+Forma de Pago                                    :\n
+Forma de Pago Exportacion                        :\n
+Fecha de Cancelacion                             :\n
+Monto Cancelado                                  :\n
+Saldo Insoluto                                   :\n
+Fecha de Pago                                    :\n
+Fecha de Pago                                    :\n
+Fecha de Pago                                    :\n
+Fecha de Pago                                    :\n
+Periodo Desde                                    :\n
+Periodo Hasta                                    :\n
+Medio de Pago                                    :\n
+Tipo de Cuenta de Pago                           :\n
+Numero de Cuenta de Pago                         :\n
+Banco de Pago                                    :\n
+Codigo Terminos de Pago                          :\n
+Glosa del Termino de Pago                        :\n
+Dias del Termino de Pago                         :\n
+Fecha de Vencimiento                             :\n
+========== AREA EMISOR\n
+Rut Emisor                                       : 96652910-k\n
+Razon Social Emisor                              : COMPASS CATERING SA\n
+Giro del Emisor                                  : Servicios de Alimentacion\n
+Telefono                                         : 225910600\n
+Correo Emisor                                    :\n
+ACTECO                                           : 602300\n
+Codigo Emisor Traslado Excepcional               :\n
+Folio Autorizacion                               :\n
+Fecha Autorizacion                               :\n
+Direccion de Origen Emisor                       : AV. DEL VALLE N° 787, OF. 501\n
+Comuna de Origen Emisor                          : HUECHARUBA\n
+Ciudad de Origen Emisor                          : SANTIAGO\n
+Nombre Sucursal                                  :\n
+Codigo Sucursal                                  : \n
+Codigo Adicional Sucursal                        :\n
+Codigo Vendedor                                  :\n
+Identificador Adicional del Emisor               :\n
+RUT Mandante                                     :\n
+========== AREA RECEPTOR\n
+Rut Receptor                                     : $rutReceptor\n
+Codigo Interno Receptor                          : \n
+Nombre o Razon Social Receptor                   : $razonSocialReceptor\n
+Numero Identificador Receptor Extranjero         :\n
+Nacionalidad del Receptor Extranjero             :\n
+Identificador Adicional Receptor Extranjero      :\n
+Giro del negocio del Receptor                    : $giroReceptor\n
+Contacto                                         : \n
+Correo Receptor                                  :\n
+Direccion Receptor                               : $direccionReceptor\n
+Comuna Receptor                                  : $comunaReceptor\n
+Ciudad Receptor                                  : $ciudadReceptor\n
+Direccion Postal Receptor                        :\n
+Comuna Postal Receptor                           :\n
+Ciudad Postal Receptor                           :\n
+Rut Solicitante de Factura                       :\n
+========== AREA TRANSPORTES\n
+Patente                                          : \n
+RUT Transportista                                :\n
+Rut Chofer                                       : $transporteRut\n
+Nombre del Chofer                                : $transporteNombre\n
+Direccion Destino                                : $direccionDestino\n
+Comuna Destino                                   : $comunaDestino\n
+Ciudad Destino                                   : $ciudadDestino\n
+Modalidad De Ventas                              :\n
+Clausula de Venta Exportacion                    :\n
+Total Clausula de Venta Exportacion              :\n
+Via de Transporte                                :\n
+Nombre del Medio de Transporte                   :\n
+RUT Compania de Transporte                       :\n
+Nombre Compania de Transporte                    :\n
+Identificacion Adicional Compania de Transporte  :\n
+Booking                                          :\n
+Operador                                         :\n
+Puerto de Embarque                               :\n
+Identificador Adicional Puerto de Embarque       :\n
+Puerto Desembarque                               :\n
+Identificador Adicional Puerto de Desembarque    :\n
+Tara                                             :\n
+Unidad de Medida Tara                            :\n
+Total Peso Bruto                                 :\n
+Unidad de Peso Bruto                             :\n
+Total Peso Neto                                  :\n
+Unidad de Peso Neto                              :\n
+Total Items                                      :\n
+Total Bultos                                     :\n
+Codigo Tipo de Bulto                             :\n
+Codigo Tipo de Bulto                             :\n
+Codigo Tipo de Bulto                             :\n
+Codigo Tipo de Bulto                             :\n
+Flete                                            :\n
+Seguro                                           :\n
+Codigo Pais Receptor                             :\n
+Codigo Pais Destino                              :\n
+========== AREA TOTALES\n
+Tipo Moneda Transaccion                          :\n
+Monto Neto                                       : 0\n
+Monto Exento                                     : 0\n
+Monto Base Faenamiento de Carne                  :\n
+Monto Base de Margen de  Comercializacion        :\n
+Tasa IVA                                         : 0\n
+IVA                                              : 19\n
+IVA Propio                                       :\n
+IVA Terceros                                     :\n
+Impuesto Adicional                               :\n
+Impuesto Adicional                               :\n
+Impuesto Adicional                               :\n
+Impuesto Adicional                               :\n
+Impuesto Adicional                               :\n
+Impuesto Adicional                               :\n
+IVA no Retenido                                  :\n
+Credito Especial Emp. Constructoras              :\n
+Garantia Deposito Envases                        :\n
+Valor Neto Comisiones                            :\n
+Valor Exento Comisiones                          :\n
+IVA Comisiones                                   :\n
+Monto Total                                      : $montoTotal\n
+Monto No Facturable                              :\n
+Monto Periodo                                    :\n
+Saldo Anterior                                   :\n
+Valor a Pagar                                    :\n
+========== AREA OTRA MONEDA\n
+Tipo Moneda                                      :\n
+Tipo Cambio                                      :\n
+Monto Neto Otra Moneda                           :\n
+Monto Exento Otra Moneda                         :\n
+Monto Base Faenamiento de Carne Otra Moneda      :\n
+Monto Margen Comerc. Otra Moneda                 :\n
+IVA Otra Moneda                                  :\n
+IVA Propio                                       :\n
+Tasa Imp. Otra Moneda                            :\n
+Valor Imp. Otra Moneda                           :\n
+IVA No Retenido Otra Moneda                      :\n
+Monto Total Otra Moneda                          :\n
+";
+
+        $txt .= "
+========== DETALLE DE PRODUCTOS Y SERVICIOS\n
+";
         $lineasProductos = $this->productos()->get()->map(function ($producto, $index) {
             // $numLinea debe tener un largo de 4 caracteres
             // $numLineaSII debe tener un largo de 4 caracteres
@@ -147,22 +312,166 @@ class Requerimiento extends Model
             // $precio debe tener un largo de 18 caracteres: 12 enteros y 4
             // decimales
             // $total debe tener un largo de 18 caracteres: 12 enteres y 4 decimales
-            $numLinea = str_pad($index + 2, 4, "0", STR_PAD_LEFT);
-            $numLineaSII = str_pad($index + 2, 4, "0", STR_PAD_LEFT);
             $sku = str_pad($producto->sku, 35);
             $detalle = str_pad($producto->detalle, 80);
             $real = explode(".", $producto->pivot->real);
-            $cantidad = str_pad($real[0], 12, "0", STR_PAD_LEFT) . str_pad(isset($real[1]) ? $real[1] : '0', 6, "0");
-            $precio = str_pad($producto->pivot->precio, 12, "0", STR_PAD_LEFT) . str_pad("0", 6, "0");
-            $total = str_pad($producto->pivot->precio * $producto->pivot->real, 18, "0", STR_PAD_LEFT);
-            return "D" . $numLinea . $numLineaSII . "INTERN" . $sku . "                                                                                                                                                                    0" . $detalle . $cantidad ."UN  000000000000000000" . $cantidad . "000000000000000000                                   000000000000000000                                   000000000000000000                                   000000000000000000                                   000000000000000000                                   0000000000000000UN  " . $precio . "000000000000000000                  000000000000000000000000000000000 000000000000000000 000000000000000000 000000000000000000 000000000000000000 00000000000000000000000000000000000000000 000000000000000000 000000000000000000 000000000000000000 000000000000000000 000000000000000000      " . $total . "                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           000000000000000000000000000000000000000000000000000000                                                  000000\r\n";
+            $cantidad = str_pad($real[0], 12, "0", STR_PAD_LEFT) .
+                '.' .
+                str_pad((isset($real[1]) ? $real[1] : "0"), 5, "0");
+            $precio = str_pad($producto->pivot->precio, 18, "0", STR_PAD_LEFT);
+            $monto = explode(".", strval($producto->pivot->precio * $producto->pivot->real));
+            $total = str_pad($monto[0], 12, "0", STR_PAD_LEFT) .
+                '.' .
+                str_pad((isset($monto[1]) ? $monto[1] : "0"), 5, "0");
+            $vencimiento = '2020-10-29';
+
+            return "
+                                                 INTERNO   $sku                                                                                                                                                                                                                                                                                                                                                         $detalle                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                $cantidad                                                                                                                                                                                                                                                                                                                           $precio          $vencimiento                                                                                                                                                                                                                                                                                                                                                                                                                                      $total
+";
         });
 
         foreach ($lineasProductos as $lineas) {
             $txt .= $lineas;
         }
 
-        $txt .= "T" . $folio . $folio . "0000000001                                       \r\n";
+        $txt .= "
+========== FIN DETALLE\n
+========== SUB TOTALES INFORMATIVO\n
+\n
+\n
+\n
+\n
+\n
+\n
+\n
+\n
+\n
+\n
+\n
+\n
+\n
+\n
+\n
+\n
+\n
+\n
+\n
+\n
+========== DESCUENTOS Y RECARGOS\n
+\n
+\n
+\n
+\n
+\n
+\n
+\n
+\n
+\n
+\n
+\n
+\n
+\n
+\n
+\n
+\n
+\n
+\n
+\n
+\n
+\n
+\n
+\n
+\n
+\n
+\n
+\n
+\n
+\n
+\n
+\n
+\n
+\n
+\n
+\n
+\n
+\n
+\n
+\n
+\n
+\n
+\n
+\n
+\n
+\n
+\n
+\n
+\n
+\n
+\n
+\n
+\n
+\n
+\n
+\n
+\n
+\n
+========== COMISIONES Y OTROS CARGOS\n
+\n
+\n
+\n
+\n
+\n
+\n
+\n
+\n
+\n
+\n
+\n
+\n
+\n
+\n
+\n
+\n
+\n
+\n
+\n
+\n
+========== CAMPOS PERSONALIZADOS\n
+COLUMNAS_DETALLE                                 : 5\n
+COLUMNA_DETALLE_1                                : Cantidad\n
+ANCHO_COLUMNA_1                                  : 3.0cm\n
+DATO_COLUMNA_1                                   : D30\n
+ALINEACION_COLUMNA_1                             : C\n
+COLUMNA_DETALLE_2                                : DESCRIPCION ITEM\n
+ANCHO_COLUMNA_2                                  : 8.0cm\n
+DATO_COLUMNA_2                                   : D26\n
+ALINEACION_COLUMNA_2                             : L\n
+COLUMNA_DETALLE_3                                : Unidad de Medida\n
+ANCHO_COLUMNA_3                                  : 2.5cm\n
+DATO_COLUMNA_3                                   : D49\n
+ALINEACION_COLUMNA_3                             : C\n
+COLUMNA_DETALLE_4                                : PRECIO UNITARIO\n
+ANCHO_COLUMNA_4                                  : 3.0cm\n
+DATO_COLUMNA_4                                   : D46\n
+ALINEACION_COLUMNA_4                             : R\n
+COLUMNA_DETALLE_5                                : MONTO ITEM\n
+ANCHO_COLUMNA_5                                  : 4.1cm\n
+DATO_COLUMNA_5                                   : D88\n
+ALINEACION_COLUMNA_5                             : R\n
+ID_INTERNO                                       : 80618498\n
+CARRO                                            : JF4286\n
+IMPRESORA                                        : ZPTO\n
+SEIMPRIME(1_SI_-2_NO)                            : 1\n
+ORIGEN_DESTINO                                   : ASIAN VISION-PTO. SAN ANTONIO\n
+NAVE                                             :\n
+PUERTO                                           :\n
+DESTINO                                          :\n
+TEXTO_VARIABLE                                   :\n
+CopiaNormal                                      : 2\n
+CopiaCedible                                     : C\n
+CopiaCedible                                     : C\n
+XXX FIN DOCUMENTO\n
+";
 
         $filename = "POR" . date("Ymd") . $this->folio . $this->centro->id . ".txt";
         return Storage::put($filename, $txt);

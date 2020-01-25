@@ -100,7 +100,7 @@ class Centro extends Model
             $query = $query->whereMonth('fecha_gestion', $date->month);
         }
 
-        return $query->get();
+        return $query->get()->first();
     }
 
     /**

@@ -60,14 +60,14 @@ Route::group(['middleware' => 'auth'], function() {
 
         Route::group(['prefix' => 'pedidos'], function() {
 
-            Route::group(['middleware' => ['type:\App\Centro']], function() {
+            Route::group(['middleware' => ['type:\App\Centro', 'create']], function() {
                 Route::get('crear', 'RequerimientoController@create')->name('requerimientos.create');
                 Route::post('store', 'RequerimientoController@store')->name('requerimientos.store');
                 Route::get('editar/{requerimiento}', 'RequerimientoController@edit')->name('requerimientos.edit');
                 Route::get('recibida/{requerimiento}', 'RequerimientoController@entregado')->name('pedidos.entregado');
             });
 
-            Route::group(['middleware' => ['type:\App\Empresa']], function() {
+            Route::group(['middleware' => ['type:\App\Empresa', 'validar']], function() {
                 Route::get('validar-pedidos', 'RequerimientoController@validarPedidos')->name('pedidos.validar');
 
                 Route::post('aceptar', 'RequerimientoController@aceptar')->name('pedidos.aceptar');
@@ -103,9 +103,9 @@ Route::group(['middleware' => 'auth'], function() {
         Route::get('index-empresa/{empresa?}', 'ProductoController@indexEmpresa')->name('productos.indexEmpresa');
         Route::resource('productos', 'ProductoController');
 
-        Route::get('asignacion-masiva', 'ProductoController@asignacionMasivaPreciosView')->name('productos.asignacionMasivaView');
-        Route::get('formato-precio', 'ProductoController@formatoExcel')->name('productos.formato');
-        Route::post('formato-precio', 'ProductoController@asignacionMasivaPrecios')->name('productos.asignacionMasiva');
+        Route::get('asignacion-masiva', 'ProgramacionPrecioController@show')->name('productos.asignacionMasivaView');
+        Route::get('formato-precio', 'ProgramacionPrecioController@formato')->name('productos.formato');
+        Route::post('formato-precio', 'ProgramacionPrecioController@crearProgramacion')->name('productos.asignacionMasiva');
 
         Route::get('carga-masiva', 'ProductoController@cargaMasivaView')->name('productos.cargaMasivaView');
         Route::get('formato-productos', 'ProductoController@formatoProductos')->name('productos.formatoProductos');
@@ -117,6 +117,14 @@ Route::group(['middleware' => 'auth'], function() {
 
         Route::resource('abastecimientos', 'AbastecimientoController')->except([
             'show'
+        ]);
+
+        Route::resource('bodegueros', 'BodegueroController')->except([
+            'show'
+        ]);
+
+        Route::resource('horarios', 'HorarioController')->except([
+            'index'
         ]);
 
         Route::get('usuarios/{tipo?}', 'UserController@index')->name('usuarios.index');
@@ -154,6 +162,11 @@ Route::group(['middleware' => 'auth'], function() {
 
         Route::group(['prefix' => 'reportes'], function() {
             Route::get('productos_cantidad/{year?}', 'ReportController@productosPorCantidad')->name('reportes.productosCantidad');
+            Route::get('packs', 'ReportController@packs')->name('reportes.packs');
+            Route::post('packs', 'ReportController@generarPack')->name('reportes.packs.generar');
+
+            Route::get('productos', 'ReportController@productos')->name('reportes.productos');
+            Route::post('productos', 'ReportController@generarRebajas')->name('reportes.productos.generar');
         });
     });
 });

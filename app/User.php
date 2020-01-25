@@ -72,7 +72,7 @@ class User extends Authenticatable
             return $this->userable->empresa->razon_social . " " . $this->userable->nombre;
             break;
         case 'App\CompassRole':
-            return __('Compass ' . $this->userable->name);
+            return __('Compass');
             break;
         default:
             return '';

@@ -214,35 +214,6 @@ class ProductoController extends Controller
         return Excel::download(new FormatoAsignacionPrecios, 'formato.xlsx');
     }
 
-    /**
-     * Realiza la asignacion masiva de precios segun el formato de Excel
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function asignacionMasivaPreciosView()
-    {
-        $empresas = \App\Empresa::all();
-        return view('compass.producto.asignacion_masiva')->with(compact('empresas'));
-    }
-
-    /**
-     * Realiza la asignacion masiva de precios segun el formato de Excel
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function asignacionMasivaPrecios(Request $request)
-    {
-        Excel::import(new PreciosMasivaImport($request->input('empresa')), $request->file('formato'));
-
-        $msg = [
-            "meta" => [
-                "title" => "Asignacion Masiva Exitosa",
-                "msg" => "La asignacion masiva se realizo correctamente"
-            ]
-        ];
-
-        return back()->with(compact('msg'));
-    }
 
     /**
      * Descargar formato de Excel para carga masiva de Productos

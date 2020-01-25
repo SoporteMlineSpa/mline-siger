@@ -96,6 +96,10 @@
                                     <label for="formato">Ingrese el archivo modificado:</label>
                                     <input type="file" class="form-control-file" name="formato">
                                 </div>
+                                <div class="form-group col-md">
+                                    <label for="fecha">Ingrese la Fecha cuando se aplicaran los cambios:</label>
+                                    <input type="date" class="form-control" name="fecha">
+                                </div>
                             </div>
                             <div class="col-md">
                                 <button class="btn btn-primary" type="submit">Guardar</button>

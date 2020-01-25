@@ -76,6 +76,7 @@
                                             <th scope="col">SKU</th>
                                             <th scope="col">Detalle</th>
                                             <th scope="col">Precio Unitario ($)</th>
+                                            <th scope="col">Fecha de Vencimiento</th>
                                             <th scope="col">Cantidad Solicitada</th>
                                             <th scope="col">Cantidad Despachada</th>
                                             <th scope="col">Subtotal ($)</th>
@@ -88,6 +89,7 @@
                                                 <td>{{ $producto->sku }}</td>
                                                 <td>{{ $producto->detalle }}</td>
                                                 <td>{{ number_format($producto->pivot->precio) }}</td>
+                                                <td>{{ $producto->pivot->fecha_vencimiento ?? 'N/A'}}</td>
                                                 <td>{{ $producto->pivot->cantidad ?? 0 }}</td>
                                                 <td>{{ $producto->pivot->real ?? 'Sin Despachar' }}</td>
                                                 <td>{{ number_format($producto->pivot->precio * ($producto->pivot->real ?? $producto->pivot->cantidad)) }}</td>

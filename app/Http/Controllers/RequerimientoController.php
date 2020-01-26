@@ -362,13 +362,17 @@ class RequerimientoController extends Controller
      */
     public function armarCaja(Request $request, \App\Requerimiento $requerimiento)
     {
+        $requerimiento = \App\Requerimiento::find($requerimiento->id);
+        $productos = collect($request->input('productos'));
+        $reales = collect($request->input('real'));
+        $vencimientos = collect($request->input('vencimiento'));
+        $observaciones = collect($request->input('observaciones'));
 
+        $noFolios = ceil($productos->count() / 29);
         $folio = \App\Folio::where('activo', true)->latest()->first();
+        $folioActual = $folio->ultimo + $noFolios;
 
-        $ultimoRequerimiento = \App\Requerimiento::where('estado', 'DESPACHADO')->orWhere('estado', 'ENTREGADO')->latest()->first();
-        $ultimo = (is_null($ultimoRequerimiento) ? $folio->desde : $ultimoRequerimiento->folio);
-
-        if ($ultimo >= $folio->hasta) {
+        if (($folio->ultimo >= $folio->hasta) || ($folioActual >= $folio->hasta)) {
             $msg = [
                 'meta' => [
                     'title' => '¡Sin Folios Disponibles!',
@@ -376,28 +380,29 @@ class RequerimientoController extends Controller
                 ]
             ];
 
-            return redirect()->route('pedidos.indexEmpresa')->with(compact('msg'));
+            $folio->activo = false;
+            $folio->saveOrFail();
+            return redirect()->route('cargarFolios')->with(compact('msg'));
         } else {
-            if ($ultimo + 1 == $folio->hasta) {
+            if ($folioActual == $folio->hasta) {
                 $folio->activo = false;
-                $folio->save;
             }
-            $folio = $ultimo + 1;
+            $folios = collect([]);
+            for ($i = $folio->ultimo; $i < ($folio->ultimo + $noFolios); $i++) {
+                $folios->push($i);
+            }
+            $folio->ultimo = $folioActual;
+            $folio->saveOrFail();
         }
 
-        $requerimiento = \App\Requerimiento::find($requerimiento->id);
-        $requerimiento->folio = $folio;
-        $productos = collect($request->input('productos'));
-        $reales = collect($request->input('real'));
-        $vencimientos = collect($request->input('vencimiento'));
-        $observaciones = collect($request->input('observaciones'));
+        $requerimiento->folio = $folios;
 
         $productos->map(function($item, $index) use ($requerimiento, $reales, $observaciones, $vencimientos) {
             $producto = json_decode($item, true);
             $requerimiento->productos()->updateExistingPivot($producto['id'], ['real' => $reales[$index], 'fecha_vencimiento' => $vencimientos[$index], 'observacion' => $observaciones[$index]]);
         });
 
-        $requerimiento->save();
+        $requerimiento->saveOrFail();
 
         $msg = [
             'meta' => [

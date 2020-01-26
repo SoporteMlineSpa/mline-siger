@@ -8,6 +8,9 @@ use Illuminate\Support\Facades\Storage;
 
 class Requerimiento extends Model
 {
+    protected $cast = [
+        'folio' => 'array'
+    ];
 
     protected static function boot()
     {
@@ -19,18 +22,6 @@ class Requerimiento extends Model
             });
         });
     }
-
-    /**
-     * Retorna el folio del Requerimiento
-     *
-     * @param string $value
-     * @return Collection
-     */
-    public function getFolioAttribute($value)
-    {
-        return collect(explode(",", str_replace(["[", "]"], "", $value)));
-    }
-    
 
     /**
      * Retorna los productos relacionados a ese Requerimietno
@@ -141,9 +132,10 @@ class Requerimiento extends Model
     public function generarGuiaDespacho()
     {
         $folios = $this->folio;
+        dd($folios);
         $productos = $this->productos()->get()->chunk(29);
 
-        $assert = $folios->map(function($folio, $index) use ($productos) {
+        $folios->map(function($folio, $index) use ($productos) {
             $folio = str_pad($folio, 10, "0", STR_PAD_LEFT);
             $fecha = date("Y-m-d");
             $rutReceptor = str_replace(".", "", $this->centro->empresa->rut);
@@ -475,12 +467,10 @@ CopiaCedible                                     : C
 XXX FIN DOCUMENTO
 ";
 
-            $filename = "POR" . date("Ymd") . $folio . $this->centro->id . ".txt";
+            $filename = "POR" . date("Ymd") . $this->folio . $this->centro->id . ".txt";
             return Storage::put($filename, $txt);
 
         });
-
-        return !$assert->contains(false);
     }
 
 }

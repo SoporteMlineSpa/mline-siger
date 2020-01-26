@@ -48,6 +48,7 @@ class FolioController extends Controller
     {
         $desde = $request->input('desde');
         $hasta = $request->input('hasta');
+        $ultimo = $desde;
 
         $ultimoFolio = \App\Folio::latest()->first();
         $ultimoFolio->activo = false;
@@ -56,6 +57,7 @@ class FolioController extends Controller
         $folio = new Folio;
         $folio->desde = $desde;
         $folio->hasta = $hasta;
+        $folio->ultimo = $ultimo;
         $folio->activo = true;
         
         if ($folio->saveOrFail()) {

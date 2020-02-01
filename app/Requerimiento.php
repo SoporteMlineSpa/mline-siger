@@ -146,7 +146,7 @@ class Requerimiento extends Model
         $assert = $folios->map(function($folio, $index) use ($productos) {
             $folio = str_pad($folio, 10, "0", STR_PAD_LEFT);
             $fecha = date("Y-m-d");
-            $rutReceptor = str_replace(".", "", $this->centro->empresa->rut);
+            $rutReceptor = str_replace(".", "", strtoupper($this->centro->empresa->rut));
             $razonSocialReceptor = $this->centro->empresa->razon_social;
             $giroReceptor = $this->centro->empresa->giro;
             $direccionReceptor = $this->centro->direccion;
@@ -158,6 +158,10 @@ class Requerimiento extends Model
             $transporteRut = str_replace(".", "", $this->transporte->rut);
             $transporteNombre = $this->transporte->nombre;
             $montoTotal = $this->getTotal();
+            $tasaIva = 19.00;
+            $iva = round($montoTotal * ($tasaIva / 100));
+            $neto = round($montoTotal - ($montoTotal * ($tasaIva / 100)));
+            $exento = 1;
             // $folio debe tener un largo de 10 caracteres (rellenar al inicio)
             // $fecha debe tener un largo de 8 caracteres en el formato aaaammdd
             // $rutReceptor debe tener un largo de 9 caracteres incluyendo el
@@ -167,8 +171,7 @@ class Requerimiento extends Model
             // $comunaReceptor debe tener un largo de 20 caracteres
             // $ciudadReceptor debe tener un largo de 15 caracteres
 
-            $txt = "
-XXX INICIO DOCUMENTO
+            $txt = "XXX INICIO DOCUMENTO
 ========== AREA IDENTIFICACION DEL DOCUMENTO
 Tipo Documento Tributario Electronico            : 52
 Folio Documento                                  : $folio
@@ -200,7 +203,7 @@ Glosa del Termino de Pago                        :
 Dias del Termino de Pago                         :
 Fecha de Vencimiento                             :
 ========== AREA EMISOR
-Rut Emisor                                       : 96652910-k
+Rut Emisor                                       : 96651910-K
 Razon Social Emisor                              : COMPASS CATERING SA
 Giro del Emisor                                  : Servicios de Alimentacion
 Telefono                                         : 225910600
@@ -275,12 +278,12 @@ Codigo Pais Receptor                             :
 Codigo Pais Destino                              :
 ========== AREA TOTALES
 Tipo Moneda Transaccion                          :
-Monto Neto                                       : 0
-Monto Exento                                     : 0
+Monto Neto                                       : $neto
+Monto Exento                                     : $exento
 Monto Base Faenamiento de Carne                  :
 Monto Base de Margen de  Comercializacion        :
-Tasa IVA                                         : 0
-IVA                                              : 19
+Tasa IVA                                         : $tasaIva
+IVA                                              : $iva
 IVA Propio                                       :
 IVA Terceros                                     :
 Impuesto Adicional                               :
@@ -313,9 +316,6 @@ Tasa Imp. Otra Moneda                            :
 Valor Imp. Otra Moneda                           :
 IVA No Retenido Otra Moneda                      :
 Monto Total Otra Moneda                          :
-";
-
-            $txt .= "
 ========== DETALLE DE PRODUCTOS Y SERVICIOS
 ";
             $lineasProductos = $productos->get($index)->map(function ($producto, $index) {
@@ -330,115 +330,60 @@ Monto Total Otra Moneda                          :
                 // $total debe tener un largo de 18 caracteres: 12 enteres y 4 decimales
                 $sku = str_pad($producto->sku, 35);
                 $detalle = str_pad($producto->detalle, 80);
-                $real = explode(".", $producto->pivot->real);
-                $cantidad = str_pad($real[0], 12, "0", STR_PAD_LEFT) .
-                    '.' .
-                    str_pad((isset($real[1]) ? $real[1] : "0"), 5, "0");
-                $precio = str_pad($producto->pivot->precio, 18, "0", STR_PAD_LEFT);
-                $monto = explode(".", strval($producto->pivot->precio * $producto->pivot->real));
-                $total = str_pad($monto[0], 12, "0", STR_PAD_LEFT) .
-                    '.' .
-                    str_pad((isset($monto[1]) ? $monto[1] : "0"), 5, "0");
-                $vencimiento = '2020-10-29';
+                $cantidad = str_pad($producto->pivot->real, 18);
+                $precio = str_pad($producto->pivot->precio, 18);
+                $total = str_pad(strval($producto->pivot->precio * $producto->pivot->real), 18);
+                $vencimiento = isset($producto->pivot->vencimiento) ? $producto->pivot->vencimiento : '          ';
 
-                return "
-                                                 INTERNO   $sku                                                                                                                                                                                                                                                                                                                                                         $detalle                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                $cantidad                                                                                                                                                                                                                                                                                                                           $precio          $vencimiento                                                                                                                                                                                                                                                                                                                                                                                                                                      $total
+                return "                                                 INTERNO   $sku                                                                                                                                                                                                                                                                                                                                                         $detalle                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                $cantidad                                                                                                                                                                                                                                                                                                                           $precio          $vencimiento                                                                                                                                                                                                                                                                                                                                                                                                                                      $total
 ";
             });
 
             foreach ($lineasProductos as $lineas) {
                 $txt .= $lineas;
             }
-
-            $txt .= "
-========== FIN DETALLE
-========== SUB TOTALES INFORMATIVO
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-========== DESCUENTOS Y RECARGOS
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-========== COMISIONES Y OTROS CARGOS
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-========== CAMPOS PERSONALIZADOS
+            $lineaActual = substr_count( $txt, "\n" );
+            for ($i = $lineaActual; $i < 176; $i++) {
+                $txt .= "
+";
+            }
+            $txt .= "========== FIN DETALLE
+========== SUB TOTALES INFORMATIVO";
+
+            $lineaActual = substr_count( $txt, "\n" );
+            for ($i = $lineaActual; $i < 198; $i++) {
+                $txt .= "
+";
+            }
+
+            $txt .= "========== DESCUENTOS Y RECARGOS
+";
+
+            $lineaActual = substr_count( $txt, "\n" );
+            for ($i = $lineaActual; $i < 219; $i++) {
+                $txt .= "
+";
+            }
+
+            $txt .= '========== INFORMACION DE REFERENCIA
+';
+
+            $lineaActual = substr_count( $txt, "\n" );
+            for ($i = $lineaActual; $i < 260; $i++) {
+                $txt .= "
+";
+            }
+
+            $txt .= '========== COMISIONES Y OTROS CARGOS
+';
+
+            $lineaActual = substr_count( $txt, "\n" );
+            for ($i = $lineaActual; $i < 281; $i++) {
+                $txt .= "
+";
+            }
+
+$txt .= '========== CAMPOS PERSONALIZADOS
 COLUMNAS_DETALLE                                 : 5
 COLUMNA_DETALLE_1                                : Cantidad
 ANCHO_COLUMNA_1                                  : 3.0cm
@@ -471,16 +416,46 @@ DESTINO                                          :
 TEXTO_VARIABLE                                   :
 CopiaNormal                                      : 2
 CopiaCedible                                     : C
-CopiaCedible                                     : C
-XXX FIN DOCUMENTO
+CopiaCedible                                     : C';
+
+            $lineaActual = substr_count( $txt, "\n" );
+            for ($i = $lineaActual; $i < 347; $i++) {
+                $txt .= "
 ";
+            }
+
+$txt .= 'XXX FIN DOCUMENTO';
 
             $filename = "POR" . date("Ymd") . $folio . $this->centro->id . ".txt";
-            return Storage::put($filename, $txt);
+            return Storage::disk('public')->put("INTXT/$filename", $txt);
 
         });
 
         return !$assert->contains(false);
     }
 
+    /**
+     * Retorna el enlace a la Guia de Despacho o en su defecto el error
+     *
+     * @return String
+     */
+    public function getGuiaAttribute()
+    {
+        $rut = '96651910-K';
+        $tipo = '52';
+        $folios = $this->folio;
+
+        $guias = collect([]);
+        foreach ($folios as $folio) {
+            $path = (public_path()."/storage/OUTPDF/*$rut*$tipo*$folio*");
+            foreach (glob($path) as $file) {
+                if (isset($file)) {
+                    $guias->push(['folio' => $folio, 'url' => $file]);
+                }
+            };
+        }
+
+        return $guias;
+    }
+    
 }

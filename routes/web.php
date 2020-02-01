@@ -45,12 +45,14 @@ Route::group(['middleware' => 'auth'], function() {
         Route::get('empresa/{empresa?}/{estado?}', 'CentroController@indexRequerimientos')->name('pedidos.indexCentro');
         Route::get('centro/{centro}/{year?}', 'RequerimientoController@centroIndex')->name('pedidos.centro');
         Route::get('lista/{centro}/{estado?}', 'RequerimientoController@showCentro')->name('pedidos.centroIndex');
+        Route::get('descargar/{requerimiento}', 'RequerimientoController@descargarGuia')->name('pedidos.descargar');
         Route::get('{requerimiento}', 'RequerimientoController@show')->name('pedidos.show');
 
         Route::group(['prefix' => 'liberia', 'middleware' => ['type:\App\Centro']], function() {
             Route::get('index', 'UserController@libreriaIndex')->name('libreria.index');
             Route::put('{requerimiento}', 'UserController@libreriaEdit')->name('libreria.editar');
         });
+
     });
 
     // Rutas del Cliente
@@ -126,6 +128,11 @@ Route::group(['middleware' => 'auth'], function() {
         Route::resource('horarios', 'HorarioController')->except([
             'index'
         ]);
+
+        Route::get('estado/empresa/{empresa}', 'EmpresaController@habilitarForm')->name('empresas.habilitar.get');
+        Route::get('estado/centro/{centro}', 'CentroController@habilitarForm')->name('centro.habilitar.get');
+        Route::post('habilitar/empresa/{empresa}', 'EmpresaController@habilitar')->name('empresas.habilitar');
+        Route::post('habilitar/centro/{centro}', 'CentroController@habilitar')->name('centro.habilitar');
 
         Route::get('usuarios/{tipo?}', 'UserController@index')->name('usuarios.index');
         Route::get('asignar-usuarios', 'UserController@usuariosSinAsignar')->name('usuarios.asignar');

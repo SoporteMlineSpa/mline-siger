@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Exports\FormatoRebaja;
+use App\Exports\FormatoPack;
 use Illuminate\Http\Request;
 use Maatwebsite\Excel\Facades\Excel;
 
@@ -58,8 +59,9 @@ class ReportController extends Controller
     public function generarPack(Request $request)
     {
         $empresa = \App\Empresa::find($request->input('empresa'));
+        $razon = $empresa->razon_social;
 
-        return Excel::download(new FormatoPack($empresa, $request->input('inicio'), $request->input('fin')), "pack-$empresa->razon_social.xlsx");
+        return Excel::download(new FormatoPack($empresa, $request->input('inicio'), $request->input('fin')), "pack-$razon.xlsx");
     }
 
     /**

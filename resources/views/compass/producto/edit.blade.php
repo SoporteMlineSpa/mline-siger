@@ -51,7 +51,7 @@
                                 <producto-edit-precio
                                     empresa-id="{{ $empresa->id }}"
                                     precio-costo="{{ $producto->costo }}"
-                                    venta-actual="{{ $empresa->productos()->where('sku', $producto->sku)->first()->pivot->precio}}">
+                                    venta-actual="{{ $precios[$index] }}">
                                     {{ $empresa->razon_social }}
                                 </producto-edit-precio>
                             @endforeach

@@ -16,7 +16,7 @@ class checkHorarioCrear
     public function handle($request, Closure $next)
     {
         $centro = $request->user()->userable;
-        if (!$centro->empresa->puedeCrear()) {
+        if (!$centro->empresa->puedeCrear($centro)) {
             $msg = [
                 "meta" => [
                     "title" => "Fuera de Horario",

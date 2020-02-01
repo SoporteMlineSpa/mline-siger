@@ -223,11 +223,9 @@ class RequerimientoController extends Controller
             .(is_null(\App\Requerimiento::latest()->first()) ? 0 : \App\Requerimiento::latest()->first()->id);
         $centro->requerimientos()->save($requerimiento);
 
-        foreach ($request->input('cantidad') as $key => $cantidad) {
-            if ($cantidad > 0) {
-                $producto = $centro->empresa->productos->where('id', $request->input('id')[$key])->first();
-                $requerimiento->productos()->attach($producto, ["cantidad" => $cantidad, 'precio' => $producto->pivot->precio]);
-            }
+        foreach ($request->input('pedido') as $pedido) {
+            $producto = $centro->empresa->productos->where('id', $pedido['id'])->first();
+            $requerimiento->productos()->attach($producto, ["cantidad" => $pedido['cantidad'], "precio" => $producto->pivot->precio]);
         }
 
         $msg = [
@@ -237,7 +235,7 @@ class RequerimientoController extends Controller
             ]
         ];
 
-        return redirect()->route('pedidos.centro', Auth::user()->userable->id)->with(compact('msg'));
+        return response()->json($msg);
 
     }
 
@@ -640,6 +638,28 @@ class RequerimientoController extends Controller
         }
 
         return response()->json($msg);
+    }
+
+    
+    /**
+     * Descarga todas las guias de despacho de ese Requerimiento
+     *
+     * @return Download
+     */
+    public function descargarGuia(\App\Requerimiento $requerimiento)
+    {
+        $file = public_path()."/storage/OUTZIP/$requerimiento->nombre.zip";
+        $zip = new \ZipArchive();
+        if ($zip->open($file, \ZipArchive::CREATE | \ZipArchive::OVERWRITE)) {
+            foreach($requerimiento->guia as $guia){
+                $relativeName = basename($guia['url']);
+                $zip->addFile($guia['url'], $relativeName);
+            };
+
+            $zip->close();
+        }
+
+        return response()->download($file);
     }
 
 }

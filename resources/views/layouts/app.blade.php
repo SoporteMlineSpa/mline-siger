@@ -33,9 +33,9 @@
                     </button>
                 @endif
                 <a class="navbar-brand" href="@yield('home-route')">
-                    <div class="d-flex flex-row align-items-center h3">
-                        <img src="{{ asset('img/logo-mline.png')}}" class="w-24 h-auto" alt="Logo de MLine"/>
-                        SIGER
+                    <div class="d-flex flex-row align-items-baseline justify-content-center h3">
+                        <img src="{{ asset('img/logocompassc1.png')}}" class="w-64 img-fluid" alt="Logo de MLine"/>
+                        <span class="h1 text-primary ml-2 mb-1">SIGER</span>
                     </div>
                 </a>
 
@@ -99,7 +99,11 @@
 
         <!-- Footer -->
         <footer class="row border-top bg-light mt-5 p-5 align-items-center justify-content-center">
-            <span><b>Mline</b><i class="fas fa-copyright"></i> SIGER . Todos los derechos reservados. {{date("Y")}}</span>
+          <a href="https://www.mline.cl/web/" target="_blank" class="d-flex flex-row align-items-center">
+            <img alt="Logo de Mline SPA" src="{{ asset('img/logo-mline.png') }}" class="w-32 img-fluid" />
+            <i class="fas fa-copyright"></i>
+            Todos los derechos reservados. {{date("Y")}}
+          </a>
         </footer>
         <!-- /Footer -->
 
@@ -114,9 +118,8 @@
             @endphp
                 <script charset="utf-8">
                     (Swal.fire({
-                title: '{{$msg['meta']['title']}}',
-                html: '{!! $msg['meta']['msg'] !!}',
-                icon: 'success'
+                            title: '{{ isset($msg["meta"]["title"]) ? $msg["meta"]["title"] : "Accion Realizada" }}',
+                      html: '{!! isset($msg["meta"]["msg"]) ? $msg["meta"]["msg"] : "Todo listo" !!}'
             }))();
 
                 </script>

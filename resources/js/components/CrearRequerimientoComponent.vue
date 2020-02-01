@@ -56,7 +56,7 @@
                             <div class="col">{{ nombre }}</div>
                         </div>
                         <div class="row my-2">
-                            <button class="mx-auto btn btn-success">Solicitar</button>
+                            <button @click="solicitar" class="mx-auto btn btn-success">Solicitar</button>
                         </div>
                     </div>
                 </div>
@@ -141,7 +141,7 @@
 </template>
 <script>
 export default {
-    props: ['indexProductos', 'presupuesto', 'empresa', 'centro', 'nombre', 'libreria'],
+    props: ['indexProductos', 'presupuesto', 'empresa', 'centro', 'nombre', 'libreria', 'action'],
     data() {
         return {
             selected: null,
@@ -184,7 +184,7 @@ export default {
     },
     methods: {
         formatCurrency: function(value) {
-              return Math.round(parseFloat(value)).toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')
+            return Math.round(parseFloat(value)).toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')
         },
         agregarProducto: function() {
             let self = this;
@@ -286,6 +286,38 @@ export default {
                         '¡Producto Eliminado!'
                     )
                 }
+            })
+        },
+        solicitar: function() {
+            let noProductos = this.nroProductos;
+            let total = this.formatCurrency(this.total);
+            let action = this.action;
+            let data = this.productos;
+            Swal.fire({
+                title: '¿Desea enviar este pedido?',
+                text: `Hay ${noProductos} productos, por un total de $ ${total}`,
+                showCancelButton: true,
+                confirmButtonText: 'Enviar',
+                cancelButtonText: 'Cancelar',
+                showLoaderOnConfirm: true,
+                preConfirm: () => {
+                    return axios.post(this.action, { pedido: data})
+                        .then(response => {
+                            return response.data;
+                        })
+                        .catch(error => {
+                            Swal.showValidationMessage(
+                                `Ocurrio un error: ${error}`
+                            )
+                        })
+                },
+                allowOutsideClick: () => !Swal.isLoading()
+            }).then((result) => {
+                Swal.fire(
+                    result.value.meta.title,
+                    result.value.meta.msg,
+                    'success'
+                );
             })
         }
     },

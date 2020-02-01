@@ -218,10 +218,42 @@ class CentroController extends Controller
                 'errors' => [
                     'status' => '500',
                     'title' => 'Error eliminando Centro',
-                    'detail' => 'Ocurrio un error eliminando el Centro',
+                    'msg' => 'Ocurrio un error eliminando el Centro',
                     'source' => $e
                 ]
             ], 500);
+        }
+    }
+
+    public function habilitarForm(\App\Centro $centro)
+    {
+        return view('centro.estado')->with(compact('centro'));
+    }
+
+    public function habilitar(\App\Centro $centro, Request $request)
+    {
+        if ("null" !== $request->input('estado')) {
+            $estado = ($request->input('estado') == 'true') ? true : false;
+        } else {
+            $estado = null;
+        }
+        $centro->habilitado = $estado;
+        if ($centro->saveOrFail()) {
+            $msg = [
+                'meta' => [
+                    'title' => 'Accion realizada exitosamente',
+                    'msg' => 'El estado del la centro fue actualizado exitosamente'
+                ]
+            ];
+            return redirect()->route('centros.index')->with(compact('msg'));
+        } else {
+            $msg = [
+                'meta' => [
+                    'title' => 'Error actualizando centro',
+                    'msg' => 'No se pudo modificar el estado del centro, intente nuevamente mas tarde'
+                ]
+            ];
+            return redirect()->route('centros.index')->with(compact('msg'));
         }
     }
 }

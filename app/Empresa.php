@@ -215,18 +215,18 @@ class Empresa extends Model
         $date = \Carbon\Carbon::create($year ?? date("Y"), $mesId ?? date("m"));
 
         $gastoTotal = $this->centros()->get()
-                                      ->map(function ($centro) use ($date) {
-                                          return $centro->getTotalByMes($date->year);
-                                      })
-                                      ->filter(function($value) {
-                                          return count($value) > 0;
-                                      })
-                                      ->filter(function($value) use($mesId) {
-                                          return $value->has($mesId);
-                                      })
-                                      ->reduce(function($carry, $item) use($mesId) {
-                                          return $carry + $item[$mesId][$mesId];
-                                      });
+                           ->map(function ($centro) use ($date) {
+                               return $centro->getTotalByMes($date->year);
+                           })
+                           ->filter(function($value) {
+                               return count($value) > 0;
+                           })
+                           ->filter(function($value) use($mesId) {
+                               return $value->has($mesId);
+                           })
+                           ->reduce(function($carry, $item) use($mesId) {
+                               return $carry + $item[$mesId][$mesId];
+                           });
 
         return $gastoTotal ?? 0;
     }
@@ -236,29 +236,33 @@ class Empresa extends Model
      *
      * @return Boolean
      */
-    public function puedeCrear()
+    public function puedeCrear(\App\Centro $centro = null)
     {
-        $horario = $this->horario()->get()->first();
-        $horaInicio = \Carbon\Carbon::parse(date("Y-m-d ") . $horario->hora_creacion_inicio);
-        $horaFin = \Carbon\Carbon::parse(date("Y-m-d ") . $horario->hora_creacion_fin);
-        $ahora = \Carbon\Carbon::now('America/Santiago');
-
-        if ($horario->fecha_creacion_fin < $horario->fecha_creacion_inicio) {
-            if ($horario->fecha_creacion_inicio >= $ahora->dayOfWeekIso && $ahora->dayOfWeekIso >= $horario->fecha_creacion_fin) {
-                if ($horaInicio->lessThanOrEqualTo($ahora) && $ahora->lessThanOrEqualTo($horaFin)) {
-                    return true;
-                }
-            }
-
+        if (isset($centro) && isset($centro->habilitado)) {
+            return $this->habilitado;
         } else {
-            if ($horario->fecha_creacion_inicio <= $ahora->dayOfWeekIso && $ahora->dayOfWeekIso <= $horario->fecha_creacion_fin) {
-                if ($horaInicio->lessThanOrEqualTo($ahora) && $ahora->lessThanOrEqualTo($horaFin)) {
-                    return true;
+            $horario = $this->horario()->get()->first();
+            $horaInicio = \Carbon\Carbon::parse(date("Y-m-d ") . $horario->hora_creacion_inicio);
+            $horaFin = \Carbon\Carbon::parse(date("Y-m-d ") . $horario->hora_creacion_fin);
+            $ahora = \Carbon\Carbon::now('America/Santiago');
+
+            if ($horario->fecha_creacion_fin < $horario->fecha_creacion_inicio) {
+                if ($horario->fecha_creacion_inicio >= $ahora->dayOfWeekIso && $ahora->dayOfWeekIso >= $horario->fecha_creacion_fin) {
+                    if ($horaInicio->lessThanOrEqualTo($ahora) && $ahora->lessThanOrEqualTo($horaFin)) {
+                        return true;
+                    }
+                }
+
+            } else {
+                if ($horario->fecha_creacion_inicio <= $ahora->dayOfWeekIso && $ahora->dayOfWeekIso <= $horario->fecha_creacion_fin) {
+                    if ($horaInicio->lessThanOrEqualTo($ahora) && $ahora->lessThanOrEqualTo($horaFin)) {
+                        return true;
+                    }
                 }
             }
-        }
 
-        return false;
+            return false;
+        }
     }
 
     /**
@@ -268,26 +272,30 @@ class Empresa extends Model
      */
     public function puedeValidar()
     {
-        $horario = $this->horario()->get();
-        $horaInicio = \Carbon\Carbon::parse(date("Y-m-d ") . $horario->hora_validacion_inicio);
-        $horaFin = \Carbon\Carbon::parse(date("Y-m-d ") . $horario->hora_validacion_fin);
-        $ahora = \Carbon\Carbon::now();
-
-        if ($horario->fecha_validacion_fin < $horario->fecha_validacion_inicio) {
-            if ($horario->fecha_validacion_inicio >= $ahora->dayOfWeekIso && $ahora->dayOfWeekIso >= $horario->fecha_validacion_fin) {
-                if ($horaInicio->lessThanOrEqualTo($ahora) && $ahora->lessThanOrEqualTo($horaFin)) {
-                    return true;
-                }
-            }
-
+        if (isset($this->habilitado)) {
+            return $this->habilitado;
         } else {
-            if ($horario->fecha_validacion_inicio <= $ahora->dayOfWeekIso && $ahora->dayOfWeekIso <= $horario->fecha_validacion_fin) {
-                if ($horaInicio->lessThanOrEqualTo($ahora) && $ahora->lessThanOrEqualTo($horaFin)) {
-                    return true;
+            $horario = $this->horario()->get();
+            $horaInicio = \Carbon\Carbon::parse(date("Y-m-d ") . $horario->hora_validacion_inicio);
+            $horaFin = \Carbon\Carbon::parse(date("Y-m-d ") . $horario->hora_validacion_fin);
+            $ahora = \Carbon\Carbon::now();
+
+            if ($horario->fecha_validacion_fin < $horario->fecha_validacion_inicio) {
+                if ($horario->fecha_validacion_inicio >= $ahora->dayOfWeekIso && $ahora->dayOfWeekIso >= $horario->fecha_validacion_fin) {
+                    if ($horaInicio->lessThanOrEqualTo($ahora) && $ahora->lessThanOrEqualTo($horaFin)) {
+                        return true;
+                    }
+                }
+
+            } else {
+                if ($horario->fecha_validacion_inicio <= $ahora->dayOfWeekIso && $ahora->dayOfWeekIso <= $horario->fecha_validacion_fin) {
+                    if ($horaInicio->lessThanOrEqualTo($ahora) && $ahora->lessThanOrEqualTo($horaFin)) {
+                        return true;
+                    }
                 }
             }
-        }
 
-        return false;
+            return false;
+        }
     }
 }

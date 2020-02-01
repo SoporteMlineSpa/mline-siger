@@ -194,13 +194,45 @@ class EmpresaController extends Controller
             ], 200);
         } catch (Exception $e) {
             return response()->json([
-                'errors' => [
+                'meta' => [
                     'status' => '500',
                     'title' => 'Error eliminando empresa',
-                    'detail' => 'Ocurrio un error eliminando la empresa',
+                    'msg' => 'Ocurrio un error eliminando la empresa',
                     'source' => $e
                 ]
             ], 500);
+        }
+    }
+
+    public function habilitarForm(\App\Empresa $empresa)
+    {
+        return view('empresa.estado')->with(compact('empresa'));
+    }
+
+    public function habilitar(\App\Empresa $empresa, Request $request)
+    {
+        if ("null" !== $request->input('estado')) {
+            $estado = ($request->input('estado') == 'true') ? true : false;
+        } else {
+            $estado = null;
+        }
+        $empresa->habilitado = $estado;
+        if ($empresa->saveOrFail()) {
+            $msg = [
+                'meta' => [
+                    'title' => 'Accion realizada exitosamente',
+                    'msg' => 'El estado de la empresa fue actualizada exitosamente'
+                ]
+            ];
+            return redirect()->route('empresas.index')->with(compact('msg'));
+        } else {
+            $msg = [
+                'meta' => [
+                    'title' => 'Error actualizando empresa',
+                    'msg' => 'No se pudo modificar el estado de la empresa, intente nuevamente mas tarde'
+                ]
+            ];
+            return redirect()->route('empresas.index')->with(compact('msg'));
         }
     }
 }

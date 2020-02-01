@@ -62,6 +62,13 @@
                                     "rut", "contacto"]}
                                     ]'>Ver Transporte</modal-btn-component>
                                 @endif
+                                @if ($requerimiento->guia->count() > 0)
+                                    <a
+                                        class="btn btn-primary"
+                                        href="{{ route('pedidos.descargar', $requerimiento)}}">
+                                        Descargar Guia de Despacho
+                                    </a>
+                                @endif
                         </div>
                     </td>
                 </tr>

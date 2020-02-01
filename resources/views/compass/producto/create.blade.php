@@ -33,35 +33,25 @@
                     </div>
 
                     <div class="row">
-                        <div class="container table-responsive">
-                            <table  class="table table-sm table-striped">
-                                <thead>
-                                    <tr>
-                                        <th scope="col">Empresa</th>
-                                        <th scope="col">Precio</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach ($empresas as $empresa)
-                                        <tr>
-                                            <td>{{ $empresa->razon_social }}</td>
-                                            <td>
-                                                <input type="hidden"
-                                                name="empresas[]"
-                                                value="{{$empresa->id}}">
-                                                <input class="form-control"type="text" name="precios[]">
-                                            </td>
-                                        </tr>
-                                    @endforeach
-                                </tbody>
-                                <tfoot>
-                                    <p class="text-danger">Si el precio se deja
-                                    vacio, o en 0, entonces ese producto no
-                                    estara disponible para esa Empresa</p>
-                                </tfoot>
-                            </table>
+                        <div class="container p-3">
+                            <div class="row border-bottom bg-dark text-light">
+                                <div class="col-md text-center">Empresa</div>
+                                <div class="col-md text-center">Costo ($)</div>
+                                <div class="col-md text-center">Porcentaje Ganancia (%)</div>
+                                <div class="col-md text-center">Precio Neto ($)</div>
+                                <div class="col-md text-center">Precio Venta ($)</div>
+                            </div>
+                            @foreach ($empresas as $index => $empresa)
+                                <producto-edit-precio
+                                    empresa-id="{{ $empresa->id }}"
+                                    precio-costo="{{ $producto->costo }}"
+                                    venta-actual="{{ $precios[$index] }}">
+                                    {{ $empresa->razon_social }}
+                                </producto-edit-precio>
+                            @endforeach
                         </div>
                     </div>
+                    <p class="text-danger">Si el valor de precio venta es igual a 0 entonces este producto no estara disponible para esa empresa</p>
 
                     <div class="form-group row">
                         <div class="col-sm-10">

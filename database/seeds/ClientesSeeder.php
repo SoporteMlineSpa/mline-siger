@@ -608,19 +608,27 @@ class ClientesSeeder extends Seeder
         ]);
 
         $abastecimiento = Abastecimiento::create([
-            "nombre" => 'Muelle Frowuar'
+            "nombre" => 'Muelle Frowuar',
+            "comuna" => 'Calbuco',
+            "ciudad" => 'San Jose'
         ]);
 
         $abastecimiento = Abastecimiento::create([
-            "nombre" => 'Muelle Oxxean'
+            "nombre" => 'Muelle Oxxean',
+            "comuna" => 'Puerto Montt',
+            "ciudad" => 'Chinquihue'
         ]);
         
         $abastecimiento = Abastecimiento::create([
-            "nombre" => 'Puerto Cisnes'
+            "nombre" => 'Puerto Cisnes',
+            "comuna" => 'Cisnes',
+            "ciudad" => 'Puerto Cisnes'
         ]);
 
         $abastecimiento = Abastecimiento::create([
-            "nombre" => 'Melinka'
+            "nombre" => 'Melinka',
+            "comuna" => 'Guaitecas',
+            "ciudad" => 'Melinka'
         ]);
 
     }

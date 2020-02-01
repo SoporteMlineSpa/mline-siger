@@ -18,6 +18,7 @@
             :centro='@json($centro)'
             nombre="{{ $nombre }}"
             :libreria="null"
+            action="{{ route('requerimientos.store') }}"
             ></crear-requerimiento-component>
         <form class="card-body" action="{{ route('requerimientos.store') }}" method="POST"></form>
     </div>

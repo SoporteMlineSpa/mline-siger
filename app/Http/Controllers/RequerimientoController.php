@@ -148,10 +148,16 @@ class RequerimientoController extends Controller
     public function rechazar(Request $request)
     {
         $requerimientoId = $request->input("requerimiento");
+        if ($request->has('observaciones')) {
+            $observaciones = $request->input('observaciones');
+        } else {
+            $observaciones = null;
+        }
 
         $requerimiento = Requerimiento::find($requerimientoId);
         $requerimiento->estado = "RECHAZADO";
-        $requerimiento->save();
+        $requerimiento->observaciones = $observaciones;
+        $requerimiento->saveOrFail();
 
         return response()->json(['title' => '¡Orden rechazada exitosamente!', 'msg' => 'La Orden de Pedido fue rechazada']);;
     }

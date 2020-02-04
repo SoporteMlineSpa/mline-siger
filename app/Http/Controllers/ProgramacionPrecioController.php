@@ -4,6 +4,11 @@ namespace App\Http\Controllers;
 
 use App\ProgramacionPrecio;
 use Illuminate\Http\Request;
+use App\Exports\FormatoAsignacionPrecios;
+use App\Exports\FormatoProductos;
+use App\Imports\PreciosMasivaImport;
+use App\Imports\ProductosMasiva;
+use Maatwebsite\Excel\Facades\Excel;
 
 class ProgramacionPrecioController extends Controller
 {

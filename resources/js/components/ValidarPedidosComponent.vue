@@ -176,7 +176,7 @@ export default {
                 },
                 showLoaderOnConfirm: true,
                 preConfirm: (value) => {
-                    return axios.post(self.action, {requerimiento: self.pedido, motivo: value})
+                    return axios.post(self.action, {requerimiento: self.pedido, observaciones: value})
                         .then(response => {
                             return response.data
                         })

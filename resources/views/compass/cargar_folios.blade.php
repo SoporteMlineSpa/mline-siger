@@ -53,11 +53,15 @@
                             </thead>
                             <tbody>
                                 <tr>
-                                    <td>{{ $folio->desde }}</td>
-                                    <td>{{ $hasta = $folio->hasta }}</td>
-                                    <td>{{ $ultimoFolio }}</td>
-                                    <td>{{ $hasta - $ultimoFolio }}</td>
-                                    <td>{{ $folio->created_at }}</td>
+                                    @if (isset($folio))
+                                        <td>{{ $folio->desde }}</td>
+                                        <td>{{ $hasta = $folio->hasta }}</td>
+                                        <td>{{ $folio->ultimo }}</td>
+                                        <td>{{ $hasta - $folio->ultimo }}</td>
+                                        <td>{{ $folio->created_at }}</td>
+                                    @else
+                                        <div class="alert alert-dark">No hay folios cargados</div>
+                                    @endif
                                 </tr>
                             </tbody>
                         </table>

@@ -45,7 +45,6 @@
                                 <div class="col-md text-center">Costo ($)</div>
                                 <div class="col-md text-center">Porcentaje Ganancia (%)</div>
                                 <div class="col-md text-center">Precio Neto ($)</div>
-                                <div class="col-md text-center">Precio Venta ($)</div>
                             </div>
                             @foreach ($empresas as $index => $empresa)
                                 <producto-edit-precio

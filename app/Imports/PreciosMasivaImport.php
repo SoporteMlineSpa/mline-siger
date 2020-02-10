@@ -29,7 +29,7 @@ class PreciosMasivaImport implements ToCollection, WithHeadingRow, WithCalculate
         $collection->map(function($row) {
             if (!is_null($row['precio_venta']) && ($row['precio_venta'] > 0)) {
                 $producto = \App\Producto::where('sku', $row['sku'])->first();
-                $this->empresa->productos()->attach($producto->id, ["precio" => $row['precio_venta']]);
+                $this->empresa->productos()->attach($producto->id, ["precio" => $row['neto']]);
             }
         });
         $this->empresa->saveOrFail();

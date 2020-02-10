@@ -32,26 +32,13 @@
                         </span>
                     </div>
 
-                    <div class="row">
-                        <div class="container p-3">
-                            <div class="row border-bottom bg-dark text-light">
-                                <div class="col-md text-center">Empresa</div>
-                                <div class="col-md text-center">Costo ($)</div>
-                                <div class="col-md text-center">Porcentaje Ganancia (%)</div>
-                                <div class="col-md text-center">Precio Neto ($)</div>
-                                <div class="col-md text-center">Precio Venta ($)</div>
-                            </div>
-                            @foreach ($empresas as $index => $empresa)
-                                <producto-edit-precio
-                                    empresa-id="{{ $empresa->id }}"
-                                    precio-costo="{{ $producto->costo }}"
-                                    venta-actual="{{ $precios[$index] }}">
-                                    {{ $empresa->razon_social }}
-                                </producto-edit-precio>
-                            @endforeach
-                        </div>
+                    <div class="form-group row">
+                        <label class="col-sm-2" for="costo">Precio Costo:</label>
+                        <span class="col-sm-6">
+                            <input class="form-control" required type="text" name="costo">
+                            <p class="text-muted">Obligatorio</p>
+                        </span>
                     </div>
-                    <p class="text-danger">Si el valor de precio venta es igual a 0 entonces este producto no estara disponible para esa empresa</p>
 
                     <div class="form-group row">
                         <div class="col-sm-10">

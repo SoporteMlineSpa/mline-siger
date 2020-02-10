@@ -27,6 +27,11 @@ Route::get('/', function() {
     }
 });
 
+Route::get('/generar-guia/', function(){
+    $txt = file_get_contents(storage_path('app/POR2020012800000000012.txt'));
+    return (Storage::disk('ftp')->put("INTXT/POR2020012800000000012.txt", $txt));
+});
+
 Route::group(['middleware' => 'auth'], function() {
 
     // Notificaciones
@@ -159,6 +164,7 @@ Route::group(['middleware' => 'auth'], function() {
 
             Route::get('programar-despacho', 'RequerimientoController@programarDespachoView')->name('compass.pedidos.programarDespachos');
             Route::get('despachar', 'RequerimientoController@despacharView')->name('compass.pedidos.despachar');
+            Route::get('generar-formatos-despacho/{transporte}', 'TransporteController@generarFormatosDespacho')->name('compass.pedidos.formatosDespacho');
 
             Route::post('programar-despacho', 'RequerimientoController@programarDespacho')->name('compass.pedidos.programarDespachos.post');
 

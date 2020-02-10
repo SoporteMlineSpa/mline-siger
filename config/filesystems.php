@@ -11,7 +11,7 @@ return [
     | by the framework. The "local" disk, as well as a variety of cloud
     | based disks are available to your application. Just store away!
     |
-    */
+     */
 
     'default' => env('FILESYSTEM_DRIVER', 'local'),
 
@@ -24,7 +24,7 @@ return [
     | reason, you may specify a default "cloud" driver here. This driver
     | will be bound as the Cloud disk implementation in the container.
     |
-    */
+     */
 
     'cloud' => env('FILESYSTEM_CLOUD', 's3'),
 
@@ -39,7 +39,7 @@ return [
     |
     | Supported Drivers: "local", "ftp", "sftp", "s3"
     |
-    */
+     */
 
     'disks' => [
 
@@ -64,6 +64,19 @@ return [
             'url' => env('AWS_URL'),
         ],
 
+        'ftp' => [
+            'driver' => 'ftp',
+            'host' => '52.202.97.212/febos',
+            'username' => 'FTP_mline',
+            'password' => 'fEBOSservicesQWER123--',
+        
+            // Optional FTP Settings...
+            // 'port' => 21,
+            // 'root' => '',
+            // 'passive' => true,
+            // 'ssl' => true,
+            // 'timeout' => 30,
+        ],
     ],
 
 ];

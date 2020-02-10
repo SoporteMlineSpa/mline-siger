@@ -26,16 +26,8 @@ class FolioController extends Controller
     {
         $folio = new Folio;
         $folio = \App\Folio::where('activo', true)->latest()->first();
-        $ultimoFolio = \App\Requerimiento::where('estado', 'DESPACHADO')
-            ->orWhere('estado', 'ENTREGADO')
-            ->orWhere(function($query) {
-                $query->where('estado', 'EN BODEGA')->where('transporte_id', '>', 0);
-            })
-            ->latest()
-            ->get()
-            ->max('folio');
 
-        return view('compass.cargar_folios')->with(compact("folio", "ultimoFolio"));
+        return view('compass.cargar_folios')->with(compact("folio"));
     }
 
     /**

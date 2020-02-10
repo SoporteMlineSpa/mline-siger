@@ -339,4 +339,23 @@ class UserController extends Controller
             return redirect()->route('user.indexEmpresa')->with(compact('msg'));
         }
     }
+
+    /**
+     * undocumented function
+     *
+     * @return void
+     */
+    public function destroy(\App\User $user)
+    {
+        $user->destroy();
+
+        $msg = [
+            'meta' => [
+                "title" => 'Usuario Eliminado',
+                "msg" => 'El usuario fue eliminado exitosamente'
+            ]
+        ];
+
+        return response()->withJson($msg);
+    }
 }

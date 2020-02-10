@@ -46,9 +46,10 @@
                                         action-guia="{{ route('compass.generarGuia', $despacho) }}"
                                         action-despachar="{{ route('compass.despachar', $despacho) }}"
                                         action-eliminar="{{
-                                        route('compass.eliminarDespacho',
-                                    $despacho)}}"
-                                    ></despachar-component>
+                                            route('compass.eliminarDespacho',
+                                        $despacho)}}"
+                                        ></despachar-component>
+                                        <a class="btn btn-info" href="{{ route('compass.pedidos.formatosDespacho', $despacho)}}">Generar Formatos para Despacho</a>
                                 </td>
                             </tr>
                         @endforeach

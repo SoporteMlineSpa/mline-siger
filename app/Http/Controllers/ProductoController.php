@@ -63,16 +63,9 @@ class ProductoController extends Controller
         $producto = new Producto;
         $producto->sku = $request->input('sku');
         $producto->detalle = $request->input('detalle');
+        $producto->costo = $request->input('costo');
 
         if ($producto->saveOrFail()) {
-
-            $empresas = $request->input('empresas');
-
-            foreach ($empresas as $index => $id) {
-                if (is_int($request->input('precios')[$index]) && $request->input('precios')[$index] > 0) {
-                    $producto->empresas()->attach($id, ['precio' => $request->input('precios')[$index]]);
-                }
-            }
 
             $msg = [
                 'meta' => [

@@ -22,9 +22,13 @@ class PhpRedisConnector implements Connector
      */
     public function connect(array $config, array $options)
     {
-        return new PhpRedisConnection($this->createClient(array_merge(
-            $config, $options, Arr::pull($config, 'options', [])
-        )));
+        $connector = function () use ($config, $options) {
+            return $this->createClient(array_merge(
+                $config, $options, Arr::pull($config, 'options', [])
+            ));
+        };
+
+        return new PhpRedisConnection($connector(), $connector);
     }
 
     /**
@@ -70,7 +74,9 @@ class PhpRedisConnector implements Connector
         return tap(new Redis, function ($client) use ($config) {
             if ($client instanceof RedisFacade) {
                 throw new LogicException(
-                    'Please remove or rename the Redis facade alias in your "app" configuration file in order to avoid collision with the PHP Redis extension.'
+                        extension_loaded('redis')
+                                ? 'Please remove or rename the Redis facade alias in your "app" configuration file in order to avoid collision with the PHP Redis extension.'
+                                : 'Please make sure the PHP Redis extension is installed and enabled.'
                 );
             }
 
@@ -90,6 +96,14 @@ class PhpRedisConnector implements Connector
 
             if (! empty($config['read_timeout'])) {
                 $client->setOption(Redis::OPT_READ_TIMEOUT, $config['read_timeout']);
+            }
+
+            if (! empty($options['serializer'])) {
+                $client->setOption(Redis::OPT_SERIALIZER, $options['serializer']);
+            }
+
+            if (! empty($config['scan'])) {
+                $client->setOption(Redis::OPT_SCAN, $config['scan']);
             }
         });
     }
@@ -144,6 +158,18 @@ class PhpRedisConnector implements Connector
         return tap(new RedisCluster(...$parameters), function ($client) use ($options) {
             if (! empty($options['prefix'])) {
                 $client->setOption(RedisCluster::OPT_PREFIX, $options['prefix']);
+            }
+
+            if (! empty($options['serializer'])) {
+                $client->setOption(RedisCluster::OPT_SERIALIZER, $options['serializer']);
+            }
+
+            if (! empty($config['scan'])) {
+                $client->setOption(RedisCluster::OPT_SCAN, $config['scan']);
+            }
+
+            if (! empty($config['failover'])) {
+                $client->setOption(RedisCluster::OPT_SLAVE_FAILOVER, $config['failover']);
             }
         });
     }

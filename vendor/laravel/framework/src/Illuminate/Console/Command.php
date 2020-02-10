@@ -8,18 +8,16 @@ use Illuminate\Support\Traits\Macroable;
 use Symfony\Component\Console\Command\Command as SymfonyCommand;
 use Symfony\Component\Console\Formatter\OutputFormatterStyle;
 use Symfony\Component\Console\Helper\Table;
-use Symfony\Component\Console\Input\ArrayInput;
-use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\InputOption;
-use Symfony\Component\Console\Output\NullOutput;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\ChoiceQuestion;
 use Symfony\Component\Console\Question\Question;
 
 class Command extends SymfonyCommand
 {
-    use Macroable;
+    use Concerns\CallsCommands,
+        Concerns\HasParameters,
+        Macroable;
 
     /**
      * The Laravel application instance.
@@ -59,14 +57,14 @@ class Command extends SymfonyCommand
     /**
      * The console command description.
      *
-     * @var string
+     * @var string|null
      */
     protected $description;
 
     /**
      * The console command help text.
      *
-     * @var string
+     * @var string|null
      */
     protected $help;
 
@@ -116,9 +114,9 @@ class Command extends SymfonyCommand
         // Once we have constructed the command, we'll set the description and other
         // related properties of the command. If a signature wasn't used to build
         // the command we'll set the arguments and the options on this command.
-        $this->setDescription($this->description);
+        $this->setDescription((string) $this->description);
 
-        $this->setHelp($this->help);
+        $this->setHelp((string) $this->help);
 
         $this->setHidden($this->isHidden());
 
@@ -143,33 +141,6 @@ class Command extends SymfonyCommand
         // instances of these "InputArgument" and "InputOption" Symfony classes.
         $this->getDefinition()->addArguments($arguments);
         $this->getDefinition()->addOptions($options);
-    }
-
-    /**
-     * Specify the arguments and options on the command.
-     *
-     * @return void
-     */
-    protected function specifyParameters()
-    {
-        // We will loop through all of the arguments and options for the command and
-        // set them all on the base command instance. This specifies what can get
-        // passed into these commands as "parameters" to control the execution.
-        foreach ($this->getArguments() as $arguments) {
-            if ($arguments instanceof InputArgument) {
-                $this->getDefinition()->addArgument($arguments);
-            } else {
-                call_user_func_array([$this, 'addArgument'], $arguments);
-            }
-        }
-
-        foreach ($this->getOptions() as $options) {
-            if ($options instanceof InputOption) {
-                $this->getDefinition()->addOption($options);
-            } else {
-                call_user_func_array([$this, 'addOption'], $options);
-            }
-        }
     }
 
     /**
@@ -203,47 +174,6 @@ class Command extends SymfonyCommand
     }
 
     /**
-     * Call another console command.
-     *
-     * @param  \Symfony\Component\Console\Command\Command|string  $command
-     * @param  array  $arguments
-     * @return int
-     */
-    public function call($command, array $arguments = [])
-    {
-        return $this->runCommand($command, $arguments, $this->output);
-    }
-
-    /**
-     * Call another console command silently.
-     *
-     * @param  \Symfony\Component\Console\Command\Command|string  $command
-     * @param  array  $arguments
-     * @return int
-     */
-    public function callSilent($command, array $arguments = [])
-    {
-        return $this->runCommand($command, $arguments, new NullOutput);
-    }
-
-    /**
-     * Run the given the console command.
-     *
-     * @param  \Symfony\Component\Console\Command\Command|string $command
-     * @param  array  $arguments
-     * @param  \Symfony\Component\Console\Output\OutputInterface  $output
-     * @return int
-     */
-    protected function runCommand($command, array $arguments, OutputInterface $output)
-    {
-        $arguments['command'] = $command;
-
-        return $this->resolveCommand($command)->run(
-            $this->createInputFromArguments($arguments), $output
-        );
-    }
-
-    /**
      * Resolve the console command instance for the given command.
      *
      * @param  \Symfony\Component\Console\Command\Command|string  $command
@@ -266,39 +196,6 @@ class Command extends SymfonyCommand
         }
 
         return $command;
-    }
-
-    /**
-     * Create an input instance from the given arguments.
-     *
-     * @param  array  $arguments
-     * @return \Symfony\Component\Console\Input\ArrayInput
-     */
-    protected function createInputFromArguments(array $arguments)
-    {
-        return tap(new ArrayInput(array_merge($this->context(), $arguments)), function ($input) {
-            if ($input->hasParameterOption(['--no-interaction'], true)) {
-                $input->setInteractive(false);
-            }
-        });
-    }
-
-    /**
-     * Get all of the context passed to the command.
-     *
-     * @return array
-     */
-    protected function context()
-    {
-        return collect($this->option())->only([
-            'ansi',
-            'no-ansi',
-            'no-interaction',
-            'quiet',
-            'verbose',
-        ])->filter()->mapWithKeys(function ($value, $key) {
-            return ["--{$key}" => $value];
-        })->all();
     }
 
     /**
@@ -377,7 +274,7 @@ class Command extends SymfonyCommand
      * Confirm a question with the user.
      *
      * @param  string  $question
-     * @param  bool    $default
+     * @param  bool  $default
      * @return bool
      */
     public function confirm($question, $default = false)
@@ -414,7 +311,7 @@ class Command extends SymfonyCommand
      * Prompt the user for input with auto completion.
      *
      * @param  string  $question
-     * @param  array|callable $choices
+     * @param  array|callable  $choices
      * @param  string|null  $default
      * @return mixed
      */
@@ -433,7 +330,7 @@ class Command extends SymfonyCommand
      * Prompt the user for input but hide the answer from the console.
      *
      * @param  string  $question
-     * @param  bool    $fallback
+     * @param  bool  $fallback
      * @return mixed
      */
     public function secret($question, $fallback = true)
@@ -449,10 +346,10 @@ class Command extends SymfonyCommand
      * Give the user a single choice from an array of answers.
      *
      * @param  string  $question
-     * @param  array   $choices
+     * @param  array  $choices
      * @param  string|null  $default
-     * @param  mixed|null   $attempts
-     * @param  bool|null    $multiple
+     * @param  mixed|null  $attempts
+     * @param  bool|null  $multiple
      * @return string
      */
     public function choice($question, array $choices, $default = null, $attempts = null, $multiple = null)
@@ -467,10 +364,10 @@ class Command extends SymfonyCommand
     /**
      * Format input to textual table.
      *
-     * @param  array   $headers
+     * @param  array  $headers
      * @param  \Illuminate\Contracts\Support\Arrayable|array  $rows
      * @param  string  $tableStyle
-     * @param  array   $columnStyles
+     * @param  array  $columnStyles
      * @return void
      */
     public function table($headers, $rows, $tableStyle = 'default', array $columnStyles = [])
@@ -589,6 +486,28 @@ class Command extends SymfonyCommand
     }
 
     /**
+     * Set the input interface implementation.
+     *
+     * @param  \Symfony\Component\Console\Input\InputInterface  $input
+     * @return void
+     */
+    public function setInput(InputInterface $input)
+    {
+        $this->input = $input;
+    }
+
+    /**
+     * Set the output interface implementation.
+     *
+     * @param  \Illuminate\Console\OutputStyle  $output
+     * @return void
+     */
+    public function setOutput(OutputStyle $output)
+    {
+        $this->output = $output;
+    }
+
+    /**
      * Set the verbosity level.
      *
      * @param  string|int  $level
@@ -632,26 +551,6 @@ class Command extends SymfonyCommand
         parent::setHidden($this->hidden = $hidden);
 
         return $this;
-    }
-
-    /**
-     * Get the console command arguments.
-     *
-     * @return array
-     */
-    protected function getArguments()
-    {
-        return [];
-    }
-
-    /**
-     * Get the console command options.
-     *
-     * @return array
-     */
-    protected function getOptions()
-    {
-        return [];
     }
 
     /**

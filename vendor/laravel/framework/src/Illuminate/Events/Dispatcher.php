@@ -11,10 +11,13 @@ use Illuminate\Contracts\Events\Dispatcher as DispatcherContract;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
+use Illuminate\Support\Traits\Macroable;
 use ReflectionClass;
 
 class Dispatcher implements DispatcherContract
 {
+    use Macroable;
+
     /**
      * The IoC container instance.
      *
@@ -502,6 +505,7 @@ class Dispatcher implements DispatcherContract
     {
         return tap($job, function ($job) use ($listener) {
             $job->tries = $listener->tries ?? null;
+            $job->retryAfter = $listener->retryAfter ?? null;
             $job->timeout = $listener->timeout ?? null;
             $job->timeoutAt = method_exists($listener, 'retryUntil')
                                 ? $listener->retryUntil() : null;
@@ -520,6 +524,12 @@ class Dispatcher implements DispatcherContract
             unset($this->wildcards[$event]);
         } else {
             unset($this->listeners[$event]);
+        }
+
+        foreach ($this->wildcardsCache as $key => $listeners) {
+            if (Str::is($event, $key)) {
+                unset($this->wildcardsCache[$key]);
+            }
         }
     }
 

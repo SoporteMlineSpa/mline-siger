@@ -8,78 +8,32 @@ use Illuminate\Http\Request;
 class TransporteController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Genera los PDFs de guias para despachar
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function generarFormatosDespacho(\App\Transporte $transporte)
     {
-        //
-    }
+        $requerimientos = $transporte->requerimientos()->get();
+        
+        $pdfs = $requerimientos->map(function($requerimiento) {
+            return $requerimiento->generarPdf();
+        });
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
+        $file = public_path("/storage/OUTZIP/$transporte->id.zip");
+        $zip = new \ZipArchive();
+        if ($zip->open($file, \ZipArchive::CREATE | \ZipArchive::OVERWRITE)) {
+            foreach($pdfs as $requerimiento){
+                foreach ($requerimiento as $guia) {
+                    $relativeName = basename($guia);
+                    $zip->addFile($guia, $relativeName);
+                }
+            };
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
-    {
-        //
-    }
+            $zip->close();
+        }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Transporte  $transporte
-     * @return \Illuminate\Http\Response
-     */
-    public function show(Transporte $transporte)
-    {
-        //
+        return response()->download($file);
     }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Transporte  $transporte
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Transporte $transporte)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Transporte  $transporte
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, Transporte $transporte)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Transporte  $transporte
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(Transporte $transporte)
-    {
-        //
-    }
+    
 }

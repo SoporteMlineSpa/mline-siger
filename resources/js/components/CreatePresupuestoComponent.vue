@@ -117,6 +117,7 @@ export default {
         },
         submit: function() {
             let self = this;
+            console.log(self.data);
             Swal.fire({
                 title: 'Guardando Presupuesto',
                 text: '¿Deseas guardar este Presupuesto?',

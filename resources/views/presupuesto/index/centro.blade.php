@@ -59,7 +59,7 @@
                                     if(array_key_exists($date->month, $inicial)) {
                                         $saldo = ($inicial[$date->month]->monto / 100);
                                     } else {
-                                        $saldo = 0;
+                                        $saldo = $inicial->monto ?? 0;
                                     }
                                 @endphp
                                 <tr>

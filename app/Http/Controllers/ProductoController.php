@@ -117,6 +117,7 @@ class ProductoController extends Controller
      */
     public function update(Request $request, Producto $producto)
     {
+        $producto = \App\Producto::find($producto->id);
         $producto->sku = $request->input('sku');
         $producto->detalle = $request->input('detalle');
         $producto->costo = $request->input('costo');
@@ -126,8 +127,9 @@ class ProductoController extends Controller
             $empresas = $request->input('empresas');
 
             foreach ($empresas as $index => $id) {
-                if (is_int($request->input('precios')[$index]) && $request->input('precios')[$index] > 0) {
-                    $producto->empresas()->attach($id, ['precio' => $request->input('precios')[$index]]);
+                $precio = intval(($request->input('precios')[$index]));
+                if (is_int($precio) && $precio > 0) {
+                    \App\Empresa::find($id)->productos()->attach($producto->id, ['precio' => $request->input('precios')[$index]]);
                 }
             }
 
@@ -141,7 +143,7 @@ class ProductoController extends Controller
                 ],
                 'meta' => [
                     'title' => '¡Producto guardado exitosamente!',
-                    'msg' => 'Un nuevo producto fue creado con los siguientes datos:<br /><b>SKU:</b>'.$producto->sku.'<br /><b>Detalle:</b>'.$producto->detalle
+                    'msg' => 'El Producto fue actualizado sin problemas'
                 ]
             ];
             return redirect()->route('productos.index')->with(compact('msg'));
@@ -198,24 +200,14 @@ class ProductoController extends Controller
     }
 
     /**
-     * Descargar formato de Excel para carga masiva de Precios
-     *
-     * @return Excel
-     */
-    public function formatoExcel()
-    {
-        return Excel::download(new FormatoAsignacionPrecios, 'formato.xlsx');
-    }
-
-
-    /**
      * Descargar formato de Excel para carga masiva de Productos
      *
      * @return Excel
      */
     public function formatoProductos()
     {
-        return Excel::download(new FormatoProductos, 'productos.xlsx');
+        return response()->download(storage_path('app/productos.xlsx'));
+        
     }
 
     /**

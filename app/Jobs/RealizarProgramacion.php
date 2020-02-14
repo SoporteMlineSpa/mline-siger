@@ -32,7 +32,7 @@ class RealizarProgramacion implements ShouldQueue
     {
         if ($this->programacion->count() > 0) {
             $this->programacion->map(function ($asignacion) {
-                Excel::import(new PreciosMasivaImport($asignacion->empresa()->get()), $asignacion->precios);
+                Excel::import(new PreciosMasivaImport($asignacion->empresa()->get()), storage_path($asignacion->precios));
             });
         }
     }

@@ -144,7 +144,7 @@ class UserController extends Controller
                 ]
             ];
 
-            return view('usuario.index')->with(compact('msg'));
+            return redirect()->route('usuarios.index')->with(compact('msg'));
         }
 
     }
@@ -339,15 +339,11 @@ class UserController extends Controller
             return redirect()->route('user.indexEmpresa')->with(compact('msg'));
         }
     }
-
-    /**
-     * undocumented function
-     *
-     * @return void
-     */
-    public function destroy(\App\User $user)
+    
+    public function destroy($user)
     {
-        $user->destroy();
+        $user = \App\User::find($user);
+        $user->delete();
 
         $msg = [
             'meta' => [
@@ -356,6 +352,7 @@ class UserController extends Controller
             ]
         ];
 
-        return response()->withJson($msg);
+        return response()->json($msg);
     }
+
 }

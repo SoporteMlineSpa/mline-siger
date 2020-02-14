@@ -202,8 +202,9 @@ class RequerimientoController extends Controller
     {
         $empresa = Auth::user()->userable->empresa()->firstOrFail();
         $centro = Auth::user()->userable;
-        $productos = $empresa->productos()->get();;
-        $presupuesto = $centro->getTotalPresupuestoByDate(date("m"), date("Y"))->monto;
+        $productos = $empresa->productos()->get();
+        $monto = $centro->getTotalPresupuestoByDate(date("m"), date("Y"));
+        $presupuesto = (isset($monto->monto) ? $monto->monto : 0);
 
         $nombre = date("Y-m-d") . ' '
             .Auth::user()->userable->empresa->razon_social . ': '
@@ -666,6 +667,10 @@ class RequerimientoController extends Controller
         }
 
         return response()->download($file);
+    }
+    
+    public function generarGuiadeDespacho(\App\Requerimiento $requerimiento) {
+        return $requerimiento->generarGuiaDespacho();
     }
 
 }

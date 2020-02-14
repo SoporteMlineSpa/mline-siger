@@ -51,13 +51,6 @@
                                     <b>Total: </b>$ {{ number_format($requerimiento->getTotal(), 0) }} <br />
                                     <b>Fecha de Creacion: </b>{{ $requerimiento->created_at }} <br />
                                     <b>Ultima Actualizacion: </b>{{ $requerimiento->updated_at }} <br />
-                                    @if ($requerimiento->guia->count() > 0)
-                                        <a
-                                            class="btn btn-primary"
-                                            href="{{ route('pedidos.descargar', $requerimiento)}}">
-                                            Descargar Guia de Despacho
-                                        </a>
-                                    @endif
                                 </div>
                             </div>
                             <div class="card col-md mx-2">

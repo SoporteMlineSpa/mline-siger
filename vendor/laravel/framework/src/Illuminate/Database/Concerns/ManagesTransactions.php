@@ -154,7 +154,7 @@ trait ManagesTransactions
         if ($this->causedByLostConnection($e)) {
             $this->reconnect();
 
-            $this->getPdo()->beginTransaction();
+            $this->pdo->beginTransaction();
         } else {
             throw $e;
         }
@@ -255,8 +255,7 @@ trait ManagesTransactions
     /**
      * Handle an exception from a rollback.
      *
-     * @param  \Exception  $e
-     * @return void
+     * @param \Exception  $e
      *
      * @throws \Exception
      */

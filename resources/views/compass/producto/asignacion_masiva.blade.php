@@ -12,12 +12,12 @@
     <div class="container">
         <div class="card">
             <div class="card-header font-bold text-xl">{{
-            Auth::user()->getNombreRelacionado() }}: Asignar Masiva de
+            Auth::user()->getNombreRelacionado() }}: Asignacion Masiva de
             Productos - Empresa - Precio</div>
             <div class="card-body">
                 <ol>
                     <li>1. Descarga el formato de Excel: 
-                        <a class="dropdown-item" href="{{ route('productos.formato')}}">Aqui</a>
+                        <a class="dropdown-item" href="{{ asset('storage/formato.xlsx') }}" target="_blank">Aqui</a>
                     </li>
                     <li>2. Ingresa los datos en el archivo:
                         <ul class="list-group">

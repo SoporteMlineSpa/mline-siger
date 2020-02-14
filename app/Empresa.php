@@ -239,9 +239,12 @@ class Empresa extends Model
     public function puedeCrear(\App\Centro $centro = null)
     {
         if (isset($centro) && isset($centro->habilitado)) {
-            return $this->habilitado;
+            return $centro->habilitado;
         } else {
             $horario = $this->horario()->get()->first();
+            if(is_null($horario)) {
+                return false;
+            }
             $horaInicio = \Carbon\Carbon::parse(date("Y-m-d ") . $horario->hora_creacion_inicio);
             $horaFin = \Carbon\Carbon::parse(date("Y-m-d ") . $horario->hora_creacion_fin);
             $ahora = \Carbon\Carbon::now('America/Santiago');
@@ -275,7 +278,10 @@ class Empresa extends Model
         if (isset($this->habilitado)) {
             return $this->habilitado;
         } else {
-            $horario = $this->horario()->get();
+            $horario = $this->horario()->get()->first();
+            if(is_null($horario)) {
+                return false;
+            }
             $horaInicio = \Carbon\Carbon::parse(date("Y-m-d ") . $horario->hora_validacion_inicio);
             $horaFin = \Carbon\Carbon::parse(date("Y-m-d ") . $horario->hora_validacion_fin);
             $ahora = \Carbon\Carbon::now();

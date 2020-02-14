@@ -773,7 +773,7 @@ trait HasAttributes
         // If this value is already a Carbon instance, we shall just return it as is.
         // This prevents us having to re-instantiate a Carbon instance when we know
         // it already is one, which wouldn't be fulfilled by the DateTime check.
-        if ($value instanceof CarbonInterface) {
+        if ($value instanceof Carbon || $value instanceof CarbonInterface) {
             return Date::instance($value);
         }
 
@@ -866,10 +866,7 @@ trait HasAttributes
      */
     public function getDates()
     {
-        $defaults = [
-            $this->getCreatedAtColumn(),
-            $this->getUpdatedAtColumn(),
-        ];
+        $defaults = [static::CREATED_AT, static::UPDATED_AT];
 
         return $this->usesTimestamps()
                     ? array_unique(array_merge($this->dates, $defaults))
@@ -1156,7 +1153,7 @@ trait HasAttributes
     /**
      * Determine if the new and old values for a given key are equivalent.
      *
-     * @param  string  $key
+     * @param  string $key
      * @param  mixed  $current
      * @return bool
      */

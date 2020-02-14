@@ -16,7 +16,7 @@
             <div class="card-body">
                 <ol>
                     <li>1. Descarga el formato de Excel: 
-                        <a class="dropdown-item" href="{{ route('productos.formatoProductos')}}">Aqui</a>
+                        <a class="dropdown-item" href="{{ asset('storage/productos.xlsx') }}" target="_blank">Aqui</a>
                     </li>
                     <li>2. Ingresa los datos en el archivo:
                         <table class="table table-bordered table-sm">

@@ -39,7 +39,9 @@
                     <th scope="row">{{ $loop->index }}</th>
                     <td>{{ $centro->nombre }}</td>
                     <td>{{ $centro->empresa->razon_social }}</td>
-                    <td>{{ isset($centro->habilitado) ? (($centro->habilitado) ? : 'Habilitado' : 'Inhabilitado') : 'Segun Horario'}}</td>
+                    <td>
+                        {{ isset($centro->habilitado) ? (($centro->habilitado) ? 'Habilitado' : 'Inhabilitado') : 'Segun Horario'}}
+                        </td>
                     <td>
                       <a class="btn btn-warning" href="{{ route('centros.habilitar.get', $centro) }}">Cambiar estado</a>
                       <a class="btn btn-primary" href="{{route('centros.edit', $centro)}}"><i class="fas fa-edit"></i></a>

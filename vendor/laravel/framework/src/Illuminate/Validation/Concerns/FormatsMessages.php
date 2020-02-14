@@ -197,7 +197,7 @@ trait FormatsMessages
      * @param  string  $message
      * @param  string  $attribute
      * @param  string  $rule
-     * @param  array  $parameters
+     * @param  array   $parameters
      * @return string
      */
     public function makeReplacements($message, $attribute, $rule, $parameters)
@@ -250,9 +250,7 @@ trait FormatsMessages
         // an implicit attribute we will display the raw attribute's name and not
         // modify it with any of these replacements before we display the name.
         if (isset($this->implicitAttributes[$primaryAttribute])) {
-            return ($formatter = $this->implicitAttributesFormatter)
-                            ? $formatter($attribute)
-                            : $attribute;
+            return $attribute;
         }
 
         return str_replace('_', ' ', Str::snake($attribute));
@@ -307,7 +305,7 @@ trait FormatsMessages
      * Get the displayable name of the value.
      *
      * @param  string  $attribute
-     * @param  mixed  $value
+     * @param  mixed   $value
      * @return string
      */
     public function getDisplayableValue($attribute, $value)
@@ -355,7 +353,7 @@ trait FormatsMessages
      * @param  string  $message
      * @param  string  $attribute
      * @param  string  $rule
-     * @param  array  $parameters
+     * @param  array   $parameters
      * @param  \Illuminate\Validation\Validator  $validator
      * @return string|null
      */
@@ -377,7 +375,7 @@ trait FormatsMessages
      * @param  string  $message
      * @param  string  $attribute
      * @param  string  $rule
-     * @param  array  $parameters
+     * @param  array   $parameters
      * @param  \Illuminate\Validation\Validator  $validator
      * @return string
      */

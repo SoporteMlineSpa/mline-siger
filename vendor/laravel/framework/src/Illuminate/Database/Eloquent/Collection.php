@@ -315,10 +315,6 @@ class Collection extends BaseCollection implements QueueableCollection
     {
         $intersect = new static;
 
-        if (empty($items)) {
-            return $intersect;
-        }
-
         $dictionary = $this->getDictionary($items);
 
         foreach ($this->items as $item) {
@@ -489,7 +485,7 @@ class Collection extends BaseCollection implements QueueableCollection
      * Pad collection to the specified length with a value.
      *
      * @param  int  $size
-     * @param  mixed  $value
+     * @param  mixed $value
      * @return \Illuminate\Support\Collection
      */
     public function pad($size, $value)

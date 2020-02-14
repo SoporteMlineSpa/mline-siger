@@ -715,7 +715,7 @@ if (! function_exists('rescue')) {
                 report($e);
             }
 
-            return $rescue instanceof Closure ? $rescue($e) : $rescue;
+            return value($rescue);
         }
     }
 }
@@ -902,7 +902,7 @@ if (! function_exists('__')) {
      * @param  string|null  $key
      * @param  array  $replace
      * @param  string|null  $locale
-     * @return string|array|null
+     * @return \Illuminate\Contracts\Translation\Translator|string|array|null
      */
     function __($key = null, $replace = [], $locale = null)
     {
@@ -918,7 +918,7 @@ if (! function_exists('url')) {
     /**
      * Generate a url for the application.
      *
-     * @param  string|null  $path
+     * @param  string  $path
      * @param  mixed  $parameters
      * @param  bool|null  $secure
      * @return \Illuminate\Contracts\Routing\UrlGenerator|string

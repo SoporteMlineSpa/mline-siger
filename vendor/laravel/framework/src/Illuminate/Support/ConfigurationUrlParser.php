@@ -95,7 +95,7 @@ class ConfigurationUrlParser
     {
         $path = $url['path'] ?? null;
 
-        return $path && $path !== '/' ? substr($path, 1) : null;
+        return $path ? substr($path, 1) : null;
     }
 
     /**
@@ -124,8 +124,6 @@ class ConfigurationUrlParser
      *
      * @param  string  $url
      * @return array
-     *
-     * @throws \InvalidArgumentException
      */
     protected function parseUrl($url)
     {

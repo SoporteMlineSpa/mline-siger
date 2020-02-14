@@ -31,7 +31,7 @@ class ProgramacionPrecioController extends Controller
      */
     public function formato()
     {
-        return Excel::download(new FormatoAsignacionPrecios, 'formato.xlsx');
+        return response()->download(storage_path('app/formato.xlsx'));
     }
 
     /**
@@ -41,21 +41,35 @@ class ProgramacionPrecioController extends Controller
      */
     public function crearProgramacion(Request $request)
     {
-        $programacion = new ProgramacionPrecio;
-        $programacion->empresa_id = $request->input('empresa');
-        $programacion->precios = $request->file('formato')->store('programaciones');
-        $programacion->fecha = $request->input('fecha');
-
-        if ($programacion->saveOrFail()) {
-            $msg = [
-                "meta" => [
-                    "title" => "Asignacion de precios Programada",
-                    "msg" => "La Asignacion de precios ha sido programada para el " . $programacion->fecha
-                ]
-            ];
-
-            return back()->with(compact('msg'));
+        $fecha = $request->input('fecha');
+        if(($fecha) == "") {
+                Excel::import(new PreciosMasivaImport($request->input('empresa')), $request->file('formato'));
+                                $msg = [
+                    "meta" => [
+                        "title" => "Asignacion de precios realizada",
+                        "msg" => "La asignacion de precios fue realizada"
+                    ]
+                ];
+    
+                return back()->with(compact('msg'));
+        } else {
+            $programacion = new ProgramacionPrecio;
+            $programacion->empresa_id = $request->input('empresa');
+            $programacion->precios = $request->file('formato')->store('programaciones');
+            $programacion->fecha = $request->input('fecha');
+    
+            if ($programacion->saveOrFail()) {
+                $msg = [
+                    "meta" => [
+                        "title" => "Asignacion de precios Programada",
+                        "msg" => "La Asignacion de precios ha sido programada para el " . $programacion->fecha
+                    ]
+                ];
+    
+                return back()->with(compact('msg'));
+            }
         }
+        
     }
     
 }

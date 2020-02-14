@@ -179,12 +179,13 @@ class PresupuestoController extends Controller
             });
         });
 
-        return response(200)->json([
+        $msg = [
             "meta" => [
                 "title" => 'Presupuesto Guardado',
                 "msg" => 'El Presupuesto fue guardado exitosamente'
             ]
-        ]);
+        ];
+        return response()->json($msg);
     }
 
     /**

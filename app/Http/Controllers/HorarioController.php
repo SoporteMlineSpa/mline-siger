@@ -48,6 +48,8 @@ class HorarioController extends Controller
         $horario->hora_validacion_fin = $request->input("horaValidacionFin");
 
         $empresa =  \App\Empresa::findOrFail($request->input('empresa'));
+        $old =$empresa->horario()->first();
+        if (isset($old)) $old->delete();
         $horario->empresa()->associate($empresa);
 
         if ($horario->saveOrFail()) {

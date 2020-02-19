@@ -57,7 +57,7 @@
                             <tbody>
                                 @php
                                     if(array_key_exists($date->month, $inicial)) {
-                                        $saldo = ($inicial[$date->month]->monto / 100);
+                                        $saldo = ($inicial[$date->month]->monto);
                                     } else {
                                         $saldo = $inicial->monto ?? 0;
                                     }

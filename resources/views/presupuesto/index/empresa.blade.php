@@ -60,9 +60,9 @@
                                     <td>Presupuesto</td>
                                     <td>Carga Inicial</td>
                                     <td class="text-center">{{ __($date->year.$date->month) }}</td>
-                                    <td class="text-right">{{ number_format($inicial / 100, 0) }}</td>
+                                    <td class="text-right">{{ number_format($inicial, 0) }}</td>
                                     <td></td>
-                                    <td class="text-right">{{ number_format($inicial / 100, 0)}}</td>
+                                    <td class="text-right">{{ number_format($inicial, 0)}}</td>
                                 </tr>
                                 @php
                                     $saldo = ($inicial / 100);

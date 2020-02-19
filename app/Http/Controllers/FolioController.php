@@ -43,8 +43,10 @@ class FolioController extends Controller
         $ultimo = $desde;
 
         $ultimoFolio = \App\Folio::latest()->first();
-        $ultimoFolio->activo = false;
-        $ultimoFolio->save();
+	if(!is_null($ultimoFolio)) {
+		$ultimoFolio->activo = false;
+		$ultimoFolio->save();
+	}
 
         $folio = new Folio;
         $folio->desde = $desde;

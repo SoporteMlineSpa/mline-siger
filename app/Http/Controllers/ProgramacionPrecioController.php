@@ -31,7 +31,7 @@ class ProgramacionPrecioController extends Controller
      */
     public function formato()
     {
-        return response()->download(storage_path('app/formato.xlsx'));
+        return Excel::download(new FormatoAsignacionPrecios, 'formato.xlsx');
     }
 
     /**

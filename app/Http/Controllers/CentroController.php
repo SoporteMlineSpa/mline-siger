@@ -104,7 +104,7 @@ class CentroController extends Controller
                 ]
             ];
 
-            return redirect()->route('centro.index')->with(compact('msg'));
+            return redirect()->route('centros.index')->with(compact('msg'));
         } else {
             $msg = [
                 'errors' => [
@@ -115,7 +115,7 @@ class CentroController extends Controller
                 ]
             ];
 
-            return redirect()->route('centro.index')->with(compact('msg'));
+            return redirect()->route('centros.index')->with(compact('msg'));
         }
     }
 
@@ -185,7 +185,7 @@ class CentroController extends Controller
                 ]
             ];
 
-            return redirect()->route('centro.index')->with(compact('msg'));
+            return redirect()->route('centros.index')->with(compact('msg'));
         }
     }
 

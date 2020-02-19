@@ -17,7 +17,7 @@
             <div class="card-body">
                 <ol>
                     <li>1. Descarga el formato de Excel: 
-                        <a class="dropdown-item" href="{{ asset('storage/formato.xlsx') }}" target="_blank">Aqui</a>
+                        <a class="dropdown-item" href="{{ route('productos.asignacionMasivaFormato') }}" target="_blank">Aqui</a>
                     </li>
                     <li>2. Ingresa los datos en el archivo:
                         <ul class="list-group">

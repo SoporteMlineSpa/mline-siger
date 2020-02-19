@@ -117,7 +117,6 @@ export default {
         },
         submit: function() {
             let self = this;
-            console.log(self.data);
             Swal.fire({
                 title: 'Guardando Presupuesto',
                 text: '¿Deseas guardar este Presupuesto?',
@@ -154,7 +153,7 @@ export default {
         this.totalCentro = new Array(this.items.length);
         this.totalMes = new Array(12);
         for (var i = 0, len = this.items.length; i < len; i++) {
-            this.presupuesto.push(new Array(12));
+            this.presupuesto.push([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
         }
     }
 }

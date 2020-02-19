@@ -33,6 +33,7 @@ Vue.component('agregar-libreria-component', require('./components/AgregarLibreri
 Vue.component('validar-pedidos-component', require('./components/ValidarPedidosComponent.vue').default);
 Vue.component('despachar-component', require('./components/DespacharComponent.vue').default);
 Vue.component('filterable-select-component', require('./components/FilterableSelectComponent.vue').default);
+Vue.component('filter-select-component', require('./components/FilterComponent.vue').default);
 Vue.component('currency-input-component', require('./components/CurrencyInputComponent.vue').default)
 Vue.component('producto-edit-precio', require('./components/ProductoEditPrecio.vue').default)
 Vue.component('crear-requerimiento-component', require('./components/CrearRequerimientoComponent.vue').default)

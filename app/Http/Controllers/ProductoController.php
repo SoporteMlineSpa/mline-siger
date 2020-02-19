@@ -206,8 +206,7 @@ class ProductoController extends Controller
      */
     public function formatoProductos()
     {
-        return response()->download(storage_path('app/productos.xlsx'));
-        
+        return Excel::download(new FormatoProductos, 'productos.xlsx');
     }
 
     /**

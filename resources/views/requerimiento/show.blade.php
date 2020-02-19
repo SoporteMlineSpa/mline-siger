@@ -51,6 +51,7 @@
                                     <b>Total: </b>$ {{ number_format($requerimiento->getTotal(), 0) }} <br />
                                     <b>Fecha de Creacion: </b>{{ $requerimiento->created_at }} <br />
                                     <b>Ultima Actualizacion: </b>{{ $requerimiento->updated_at }} <br />
+					<a href="{{ route('descargarGuias', $requerimiento) }}" class="btn btn-primary">Guia de despacho</a>
                                 </div>
                             </div>
                             <div class="card col-md mx-2">

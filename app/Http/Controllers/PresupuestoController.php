@@ -111,14 +111,14 @@ class PresupuestoController extends Controller
             $centros = $empresa->centros()->get();
         }
         $cmi = $centros->map(function($centro) {
-            $iniciales = $centro->presupuestos()->whereYear("fecha_gestion", date("Y") + 1)->get();
+            $iniciales = $centro->presupuestos()->latest()->whereYear("fecha_gestion", date("Y"))->limit(12)->get();
             $totales = $centro->getTotalByMes();
 
             return collect(['centro' => $centro, 'iniciales' => $iniciales, 'totales' => $totales]);
         });
 
         $totalPresupuesto = collect([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12])->map(function($i) use ($empresa) {
-            return $empresa->getTotalPresupuestoByDate($i, date("Y") + 1);
+            return $empresa->getTotalPresupuestoByDate($i, date("Y"));
         });
 
         $totalGasto = collect([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12])->map(function($i) use ($empresa) {
@@ -167,13 +167,14 @@ class PresupuestoController extends Controller
         $presupuestos = collect($request->input('input'));
         $year = $request->input('year');
 
+        $empresa = \Auth::user()->userable;
         $presupuestos->map(function ($presupuesto) use ($year) {
             $centro = \App\Centro::find($presupuesto['centro']['id']);
-            array_shift($presupuesto['presupuesto']);
             $presupuestos = collect($presupuesto['presupuesto']);
+            $presupuestos->shift();
             $presupuestos->map(function($presupuesto, $index) use ($centro, $year) {
                 $centro->presupuestos()->create([
-                    "monto" => $presupuesto * 100,
+                    "monto" => $presupuesto,
                     "fecha_gestion" => Carbon::create($year, $index, 1)
                 ]);
             });
@@ -188,48 +189,4 @@ class PresupuestoController extends Controller
         return response()->json($msg);
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Presupuesto  $presupuesto
-     * @return \Illuminate\Http\Response
-     */
-    public function show(Presupuesto $presupuesto)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Presupuesto  $presupuesto
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Presupuesto $presupuesto)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Presupuesto  $presupuesto
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, Presupuesto $presupuesto)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Presupuesto  $presupuesto
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(Presupuesto $presupuesto)
-    {
-        //
-    }
 }

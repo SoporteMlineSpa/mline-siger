@@ -120,4 +120,10 @@
             Cargar Folios
         </a>
     </li>
+    <li class="nav-item">
+        <a class="nav-link" href="{{ route('requerimiento.cargaMasiva') }}">
+            <i class="fas fa-sign-in-alt mr-2"></i>
+            Importar Requerimientos
+        </a>
+    </li>
 @endif

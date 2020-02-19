@@ -92,7 +92,7 @@ class Centro extends Model
     public function getTotalPresupuestoByDate($mesId = null, $year = null)
     {
         $date = \Carbon\Carbon::create($year ?? date("Y"), $mesId ?? date("m"));
-        $query = $this->presupuestos();
+        $query = $this->presupuestos()->latest();
         if ($year !== null) {
             $query = $query->whereYear('fecha_gestion', $date->year);
         }
@@ -126,6 +126,14 @@ class Centro extends Model
             return [$index => $totalMes];
         });
         return $total;
+    }
+
+    public function clearPresupuesto($year)
+    {
+        $presupuestos = $this->presupuestos->whereYear('fecha_gestion', $year)->get();
+        foreach($presupuestos as $presupuesto) {
+            $presupuesto->delete();
+        }
     }
 
 }

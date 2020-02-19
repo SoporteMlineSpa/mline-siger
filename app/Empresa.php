@@ -178,6 +178,15 @@ class Empresa extends Model
         }
     }
 
+    public function clearPresupuesto($year)
+    {
+	    $centros = $this->centros()->get();
+        foreach($centros as $centro)
+        {
+            $centro->clearPresupuesto($year);
+        }
+    }
+
     /**
      * Retorna el Total del Presupuesto segun el Mes y el Año
      *
@@ -188,7 +197,7 @@ class Empresa extends Model
         $date = \Carbon\Carbon::create($year ?? date("Y"), $mesId ?? date("m"));
 
         $presupuestoTotal = $this->centros()->get()->map(function($centro) use ($date, $mesId, $year) {
-            $query = $centro->presupuestos();
+            $query = $centro->presupuestos()->latest();
             if ($year !== null) {
                 $query = $query->whereYear('fecha_gestion', $date->year);
             }

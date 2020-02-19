@@ -7,6 +7,8 @@ use App\Requerimiento;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use App\Imports\RequerimientosImport;
+use Maatwebsite\Excel\Facades\Excel;
 
 class RequerimientoController extends Controller
 {
@@ -99,7 +101,7 @@ class RequerimientoController extends Controller
 
         return view('requerimiento.index.index_mes')->with(compact('centro', 'counts', 'products', 'totals', 'estados'));
     }
-    
+
 
     /**
      * Muestra las ordenes de pedidos pendiente y permite validarlas
@@ -509,7 +511,7 @@ class RequerimientoController extends Controller
      */
     public function programarDespachoView()
     {
-        $requerimientos = Requerimiento::doesntHave('transporte')->where('estado', 'EN BODEGA')->where('folio', '>', 0)->get();
+        $requerimientos = Requerimiento::doesntHave('transporte')->where('estado', 'EN BODEGA')->whereNotNull('folio')->get();
         $abastecimientos = \App\Abastecimiento::all();
 
         return view('compass.programar_despachos')->with(compact('requerimientos', 'abastecimientos'));
@@ -647,7 +649,7 @@ class RequerimientoController extends Controller
         return response()->json($msg);
     }
 
-    
+
     /**
      * Descarga todas las guias de despacho de ese Requerimiento
      *
@@ -668,9 +670,32 @@ class RequerimientoController extends Controller
 
         return response()->download($file);
     }
-    
+
     public function generarGuiadeDespacho(\App\Requerimiento $requerimiento) {
         return $requerimiento->generarGuiaDespacho();
+    }
+
+    public function cargaMasiva()
+    {
+        $centros = \App\Centro::all();
+
+        return view('requerimiento.carga_masiva')->with(compact('centros'));
+    }
+
+    public function importar(Request $request)
+    {
+        $centro = \App\Centro::find($request->input('centro'));
+
+        Excel::import(new RequerimientosImport($centro), $request->file('archivo'));
+
+        $msg = [
+            "meta" => [
+                "title" => "Carga Masiva Exitosa",
+                "msg" => "La carga masiva se realizo correctamente"
+            ]
+        ];
+
+        return back()->with(compact('msg'));
     }
 
 }
